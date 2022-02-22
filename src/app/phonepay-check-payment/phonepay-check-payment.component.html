@@ -1,0 +1,1079 @@
+<div id="wrapper">
+
+<!-- Sidebar -->
+<app-check-request-disabled *ngIf="userDetails.authorities !== 'ServicingAdmin'"></app-check-request-disabled>
+<app-admin-check-request-disabled *ngIf="userDetails.authorities === 'ServicingAdmin'">
+</app-admin-check-request-disabled>
+<div id="content-wrapper">
+
+<div class="user-information">
+  <div class="col-sm-12">
+	<div class="card card-sec payment-sec">
+	  <div class="card-body">
+		<form [formGroup]="phonpayForm" (keydown.enter)="$event.preventDefault()" #userForm="ngForm">
+	   <div *ngIf="coBorrowerEmail.value"> </div>
+
+		  <div class="col-sm-12">
+			<div class="head-sec row">
+			  <div class="col-md-3">
+				<h5>Borrower Information</h5>
+			  </div>
+			  <div class="col-md-4">
+				<p>1 <sup>st</sup> Mortgage: {{phonepayPayment.loanInfoList[0]?.loanNumber}}
+				<span *ngIf="confNum1" style="margin-left: 10px; text-align: center">Conf#: {{confNum1}}</span>
+				</p>
+			  </div>
+
+			  <div class="col-md-4" *ngIf="phonepayPayment.loanInfoList[1]?.loanNumber">
+				<p>2 <sup>nd</sup> Mortgage: {{phonepayPayment.loanInfoList[1]?.loanNumber}}
+				<span *ngIf="confNum2" style="margin-left: 10px; text-align: center">Conf#: {{confNum2}}</span>
+				</p>
+			  </div>
+			</div>
+			<div class="row">
+			  <div class="col-sm-5">
+				<div class="row form-group">
+				  <label class="col-sm-6">{{phonepayPayment?.borrowerName}}
+					{{phonepayPayment?.borrowerLastName}}</label>
+
+				</div>
+				<div class="row form-group">
+				  <label class="col-sm-6">{{phonepayPayment?.coBorrower}}
+					{{phonepayPayment?.coBorrowerLastName}}</label>
+
+				</div>
+				<div class="row form-group">
+				  <label class="col-sm-6">{{phonepayPayment?.mailingAddress?.mailingaddress | uppercase}}</label>
+
+				</div>
+				<div class="row form-group">
+				  <label class="col-sm-6">{{phonepayPayment.mailingAddress.mailingCity | uppercase}}
+					{{phonepayPayment?.mailingAddress?.mailingState | uppercase}}
+					{{phonepayPayment?.mailingAddress?.mailingZip}}</label>
+
+				</div>
+			  </div>
+			  <div class="col-sm-7">
+				<div class="form-group" formGroupName="myCheckboxGroup">
+				  <div class="row form-group">
+					<label class="col-sm-5" for="email">Email Confirmation Letter</label>
+					<div class="col-sm-5">
+					  <div class="custom-control custom-checkbox"
+						[ngClass]="{'custom-checkbox-disabled': phonepayPayment.schedulePaymentList.length > 0}">
+						<input type="checkbox" class="custom-control-input" id="emailCheckbox"
+
+						  formControlName="emailCheckbox" (change)="getEmail($event,phonepayPayment.borrowerEmail,'email')"
+						  tabindex="2">
+						<label class="custom-control-label email-width" for="emailCheckbox"><input  tabindex="1" type="email"
+							class="form-control ml-4" #borrowerEmail [(ngModel)]="phonepayPayment.borrowerEmail"
+							(blur)="validateEmail(borrowerEmail.value,'brwemail')"
+							(keyup)="getEmail($event,phonepayPayment.borrowerEmail,'email')"
+							formControlName="email" id="email"
+							appFocusEmailInputbox
+							[readOnly]="phonepayPayment.schedulePaymentList.length" [focuMe]="true" autocomplete="off">
+							<div class="custom-control" class="text-danger" role="alert"
+						  *ngIf="isEmailSelceted && phonepayPayment.borrowerEmail==null  && (phonpayForm['controls'].myCheckboxGroup['controls'].email.dirty || phonpayForm['controls'].myCheckboxGroup['controls'].email.touched)">
+						  Please enter email first </div>
+
+						  <div class="custom-control" class="text-danger" role="alert"
+							*ngIf="email">
+							{{emailValidateMsg}} </div>
+						</label>
+					  </div>
+					  <div class="custom-control custom-checkbox"
+						[ngClass]="{'custom-checkbox-disabled': phonepayPayment.schedulePaymentList.length > 0}">
+						<input type="checkbox" class="custom-control-input" id="emailCheckbox1"
+						  formControlName="emailCheckbox1" [disabled]="phonepayPayment.schedulePaymentList.length"
+						  (change)="getEmail($event,phonepayPayment.coBorrowerEmail,'email1')" tabindex="4">
+						<label class="custom-control-label email-width" for="emailCheckbox1"><input type="email"
+							class="form-control ml-4"  #coBorrowerEmail [(ngModel)]="phonepayPayment.coBorrowerEmail"
+							(blur)="validateEmail(coBorrowerEmail.value,'emailOne')"
+							(keyup)="getEmail($event,phonepayPayment.coBorrowerEmail,'email1')"
+							formControlName="email1" id="email1" tabindex="3"
+							[readOnly]="phonepayPayment.schedulePaymentList.length" autocomplete="off">
+							<div class="custom-control" class="text-danger" role="alert"
+							*ngIf="isEmailSelceted && phonepayPayment.coBorrowerEmail==null && (phonpayForm['controls'].myCheckboxGroup['controls'].email1.dirty || phonpayForm['controls'].myCheckboxGroup['controls'].email1.touched)">
+							Please enter email first </div>
+
+							<div class="custom-control" class="text-danger" role="alert"
+							*ngIf="email1">
+							{{emailValidateMsg}} </div>
+						</label>
+					  </div>
+					  <div class="custom-control custom-checkbox"
+						[ngClass]="{'custom-checkbox-disabled': phonepayPayment.schedulePaymentList.length > 0}">
+						<input type="checkbox" class="custom-control-input" id="emailCheckbox2"
+						  [disabled]="phonepayPayment.schedulePaymentList.length" formControlName="emailCheckbox2"
+						  (change)="getEmail($event,otherEmail.value,'email2')" tabindex="6">
+						<label class="custom-control-label email-width" for="emailCheckbox2"><input type="email"
+						  (blur)="validateEmail(otherEmail.value,'emailTwo')"
+						  (keyup)="getEmail($event,otherEmail.value,'email2')"
+						  formControlName="email2" class="form-control ml-4" #otherEmail id="email2"  tabindex="5"
+							[readOnly]="phonepayPayment.schedulePaymentList.length" autocomplete="off">
+							<div class="custom-control" class="text-danger" role="alert"
+							*ngIf="isEmailSelceted && otherEmail.value =='' && (phonpayForm['controls'].myCheckboxGroup['controls'].email2.dirty || phonpayForm['controls'].myCheckboxGroup['controls'].email2.touched)">
+							Please enter email first </div>
+
+							<div class="custom-control" class="text-danger" role="alert"
+							*ngIf="email2">
+							{{emailValidateMsg}} </div>
+						</label>
+					  </div>
+					</div>
+				  </div>
+				  <div class="row form-group">
+					<label class="col-sm-5" for="email">Print Confirmation Letter</label>
+					<div class="col-sm-5">
+					  <div class="custom-control custom-checkbox print-check-sec"
+						[ngClass]="{'custom-checkbox-disabled': phonepayPayment.schedulePaymentList.length > 0}">
+						<input type="checkbox" class="custom-control-input" id="printCheckbox3"
+						  formControlName="printCheckbox3" (change)="sendPaymentConfirmationLetter($event)"
+						  tabindex="7" [disabled]="phonepayPayment.schedulePaymentList.length">
+						<label class="custom-control-label email-width" for="printCheckbox3">
+						</label>
+						<div class="custom-control" class="text-danger" role="alert"
+						  *ngIf="(f.myCheckboxGroup.errors && f.myCheckboxGroup.errors.requireOneCheckboxToBeChecked && submitted) || isValidateEmailPrint">
+						  <!-- At least one checkbox is required to check -->
+						  At least one check box must be checked
+						</div>
+					  </div>
+					</div>
+				  </div>
+				</div>
+			  </div>
+			  <div class="col-sm-12">
+				<div class="head-sec row">
+				  <div class="col-md-4">
+					<h5>Banking & Payment Information</h5>
+				  </div>
+				  <div class="col-md-2">
+					<div class="custom-control custom-radio">
+					  <input type="radio" class="custom-control-input" id="customRadio"
+						(change)="showBorrowerInfo('borrower')"
+						[disabled]="phonepayPayment.schedulePaymentList.length"
+						[checked]="!(phonepayPayment.schedulePaymentList.length) || (phonepayPayment.schedulePaymentList.length &&  phonepayPayment.schedulePaymentList[0].payorType==='Borrower') ? 'checked' : null"
+						name="borrInfo" value="borrInfo" tabindex= '8' (focus)="getRadioVal('borrower')" (keydown.space)="borrowerUncheck(true)">
+					  <label class="custom-control-label" for="customRadio" (click)="checkBankingInfoFields()">
+						<p>Borrower</p>
+					  </label>
+					</div>
+				  </div>
+				  <div class="col-md-2" *ngIf="phonepayPayment.coBorrower">
+					<div class="custom-control custom-radio" >
+					  <input type="radio" class="custom-control-input" id="customRadio2"
+						(change)="showBorrowerInfo('coBorrower')"
+						[disabled]="phonepayPayment.schedulePaymentList.length"
+						[checked]="phonepayPayment.schedulePaymentList.length &&  phonepayPayment.schedulePaymentList[0].payorType==='Co-Borrower' ? 'checked' : null"
+						name="borrInfo" value="coBorrInfo" tabindex='8'   (focus)="getRadioVal('coBorrower')" >
+					  <label class="custom-control-label" for="customRadio2" (click)="checkBankingInfoFields()">
+						<p>Co-Borrower</p>
+					  </label>
+					</div>
+				  </div>
+          <div class="col-md-3">
+            <div class="custom-control custom-radio">
+              <input type="radio" class="custom-control-input" id="customRadio3"
+                (change)="showBorrowerInfo('occupantNonBorrower')"
+                [disabled]="phonepayPayment.schedulePaymentList.length"
+                [checked]="phonepayPayment.schedulePaymentList.length &&  phonepayPayment.schedulePaymentList[0].payorType==='Occupant' ? 'checked' : null"
+                name="borrInfo" value="occupantNonBorrowerInfo" tabindex='8'
+                (focus)="getRadioVal('occupantNonBorrower')">
+              <label class="custom-control-label" for="customRadio3" (click)="checkBankingInfoFields()">
+                <p>Occupant Non-Borrower</p>
+              </label>
+            </div>
+          </div>
+				  <div class="col-md-1">
+					<div class="custom-control custom-radio">
+					  <input type="radio" class="custom-control-input" id="customRadio4"
+						(change)="showBorrowerInfo('otherBorrower')"
+						[disabled]="phonepayPayment.schedulePaymentList.length"
+						[checked]="phonepayPayment.schedulePaymentList.length &&  phonepayPayment.schedulePaymentList[0].payorType==='Other' ? 'checked' : null"
+						name="borrInfo" value="otherBorrInfo" tabindex='8' (focus)="getRadioVal('otherBorrower')">
+					  <label class="custom-control-label" for="customRadio4" (click)="checkBankingInfoFields()">
+						<p>Other</p>
+					  </label>
+					</div>
+				  </div>
+				</div>
+				<div class="current-payment-information">
+				  <div class="row form-group">
+					<label class="col-sm-2" for="payor_name">Payor</label>
+					<div class="col-sm-4">
+					  <input type="text" class="form-control" formControlName="payorName" [(ngModel)]="borrowerName"
+						id="payorName" tabindex={{tabindex9}}  [readOnly]="phonepayPayment.schedulePaymentList.length" autocomplete="off" (keyup)= "checkBankingInfoFields()">
+						<div *ngIf="f.payorName.errors && (f.payorName.dirty || f.payorName.touched) || submitted"
+						class="text-danger">
+						<div *ngIf="f.payorName.errors?.required">Payor name is required</div>
+					  </div>
+					</div>
+					<label class="col-sm-2" for="entered_by">Entered By</label>
+					<div class="col-sm-4">
+					  <span *ngIf="phonepayPayment.schedulePaymentList.length+0===0">
+					  <input type="text" class="form-control" formControlName="enteredBy" id="entered_by"
+						[(ngModel)]="this.userDetails.name" tabindex="-1" readonly>
+					  </span>
+					  <span *ngIf="phonepayPayment.schedulePaymentList.length+0>0">
+						<input type="text" class="form-control" formControlName="enteredBy" id="entered_by"
+						  [(ngModel)]="enteredBy" tabindex="-1" readonly>
+						</span>
+					  <div *ngIf="f.enteredBy.errors && (f.enteredBy.dirty || f.enteredBy.touched) || submitted"
+						class="text-danger">
+						<div *ngIf="f.enteredBy.errors?.required">Entered by name is required</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="row form-group">
+					<label class="col-sm-2" for="payor_address">Address</label>
+					<div class="col-sm-4">
+					  <input type="text" class="form-control" formControlName="payorAddress"
+						[(ngModel)]="borrowerAddr" id="payor_address"
+						[readOnly]="phonepayPayment.schedulePaymentList.length" tabindex={{tabindex10}} autocomplete="off" (keyup)= "checkBankingInfoFields()">
+					  <div
+						*ngIf="f.payorAddress.errors && (f.payorAddress.dirty || f.payorAddress.touched) || submitted"
+						class="text-danger">
+						<div *ngIf="f.payorAddress.errors?.required">Address is required</div>
+					  </div>
+					</div>
+					<label class="col-sm-2" for="routing">Routing #</label>
+					<div class="col-sm-4">
+					  <input type="text" class="form-control"
+						(keyup)="verifyBankingInfo(routingnum.value)" #routingnum id="routingNum"
+						autofocus="autofocus" [ngClass]="{ 'is-invalid':  f.routingNumber.errors }"
+						 [(ngModel)]="routingNum" mask='000000000' formControlName="routingNumber" required
+						tabindex={{tabindex15}} [readOnly]="phonepayPayment.schedulePaymentList.length" autocomplete="off">
+					  <div
+						*ngIf="isVerifyBankingInfo && f.routingNumber.errors && (f.routingNumber.dirty || f.routingNumber.touched)"
+						class="invalid-feedback">
+						<div *ngIf="f.routingNumber.errors?.required">Routing is required</div>
+						<div *ngIf="f.routingNumber.errors?.minlength">Routing Number must be for 9-digits</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="row form-group">
+					<label class="col-sm-2" for="payorCity">City</label>
+					<div class="col-sm-4">
+					  <input type="text" class="form-control" formControlName="payorCity" [(ngModel)]="borrowerCity"
+						id="payorCity" tabindex={{tabindex11}}  [readOnly]="phonepayPayment.schedulePaymentList.length" (keyup)="validateCityInpuValue(borrowerCity)" autocomplete="off" >
+					  <div *ngIf="f.payorCity.errors && (f.payorCity.dirty || f.payorCity.touched) || submitted"
+						class="text-danger">
+						<div *ngIf="f.payorCity.errors?.required && inputCityValidate">City is required</div>
+					  </div>
+					  <div *ngIf="!inputCityValidate" class="text-danger">
+						   Please enter only alphabet.
+					  </div>
+					</div>
+					<label class="col-sm-2" for="bank">Bank Name</label>
+					<div class="col-sm-4">
+					  <div *ngIf="bankingInfo">
+						<input type="text" class="form-control" value="{{bankingInfo?.bankingInfo?.bankName}}"
+						  id="bank" tabindex="-1" readonly>
+					  </div>
+					</div>
+				  </div>
+				  <div class="row form-group">
+					<label class="col-sm-2" for="payorCity">State/Zip</label>
+					<div class="col-sm-4">
+					  <div class="row form-group">
+						<div class="col-sm-6">
+						  <input type="text" class="form-control" formControlName="payorState" (keyup)="validateStateInpuValue(borrowerState)"
+							[(ngModel)]="borrowerState" id="payorState"
+							tabindex={{tabindex12}} [readOnly]="phonepayPayment.schedulePaymentList.length" autocomplete="off">
+						  <div
+							*ngIf="f.payorState.errors && (f.payorState.dirty || f.payorState.touched) || submitted"
+							class="text-danger">
+							<div *ngIf="f.payorState.errors?.required">State is required</div>
+							<div *ngIf="f.payorState.errors?.maxlength && !inputStateValidate">Please enter only alphabet.</div>
+							<div *ngIf="f.payorState.errors?.maxlength && inputStateValidate">Max 2 characters allowed in state.</div>
+						  </div>
+						 </div>
+						<div class="col-sm-6">
+						  <input type="text" class="form-control" formControlName="payorZip" appValidateZipcode
+							[(ngModel)]="borrowerZip" id="payorZip"
+							tabindex={{tabindex13}} [readOnly]="phonepayPayment.schedulePaymentList.length" autocomplete="off" (keyup)= "checkBankingInfoFields()">
+						  <div *ngIf="f.payorZip.errors && (f.payorZip.dirty || f.payorZip.touched) || submitted"
+							class="text-danger">
+							<div *ngIf="f.payorZip.errors?.required">Zip is required.</div>
+						  </div>
+						</div>
+					  </div>
+					</div>
+					<label class="col-sm-2" for="addr">Bank Address</label>
+					<div class="col-sm-4">
+					  <div *ngIf="bankingInfo">
+						<input type="text" class="form-control" value="{{bankingInfo?.bankingInfo?.bankAddress}}"
+						  id="addr" tabindex="-1" readonly>
+					  </div>
+					</div>
+				  </div>
+				  <div class="row form-group">
+					<label class="col-sm-2" for="telephone">Telephone #</label>
+					<div class="col-sm-4">
+					  <input type="text" class="form-control"  [(ngModel)]="borrowerPhone" mask='000-000-0000'
+						formControlName="telephone" id="telephone"
+						tabindex={{tabindex14}} [readOnly]="phonepayPayment.schedulePaymentList.length" autocomplete="off">
+					  <div *ngIf="f.telephone.errors && (f.telephone.dirty || f.telephone.touched) || submitted"
+						class="text-danger">
+						<div *ngIf="f.telephone.errors?.required">Telephone number is required</div>
+						<div *ngIf="f.telephone.errors?.mask">Telephone number must be for 10-digits</div>
+					  </div>
+					</div>
+					<label class="col-sm-2" for="bank_city">Bank City/State/Zip</label>
+					<div class="col-sm-4">
+					  <div *ngIf="bankingInfo">
+						<input type="text" class="form-control" value="{{bankCity}}" id="bank_city" tabindex="-1"
+						  readonly>
+					  </div>
+					</div>
+				  </div>
+				  <div class="row form-group">
+					<label class="col-sm-2" for="nbsp"></label>
+					<div class="col-sm-4">
+					</div>
+					<label class="col-sm-2" for="accountNum">Account #</label>
+					  <div class="col-sm-4" >
+
+					  <div class="row form-group">
+						<div  class="col-sm-5" *ngIf="!isRoutingNumMountainAmerica">
+						  <input type="text" class="form-control" #accountnum [(ngModel)]="accountNum"
+							formControlName="accountNumber" autofocus required
+							(keyup)= "checkBankingInfoFields()"
+							[readOnly]="phonepayPayment.schedulePaymentList.length" tabindex="16" appValidateAccountNumber autocomplete="=off">
+						  <div
+							*ngIf="f.accountNumber.errors && (f.accountNumber.dirty || f.accountNumber.touched) || submitted"
+							class="text-danger">
+							<div *ngIf="f.accountNumber.errors?.required">Account number is required</div>
+							<div *ngIf="f.accountNumber.errors?.minlength">Account number must be at least 4-digits</div>
+						  </div>
+						  <div *ngIf="!inputAccountValidate" class="text-danger">
+							Please enter only digit.
+						   </div>
+						 </div>
+						<div  class="col-sm-5" *ngIf="isRoutingNumMountainAmerica">
+						<input type="text" class="form-control" #accountnum [(ngModel)]="accountNum"
+						  formControlName="accountNumber" autofocus  required
+						  (keyup)= "checkBankingInfoFieldsWithMountainAmerica(accountnum.value)"
+						  [readOnly]="phonepayPayment.schedulePaymentList.length" tabindex="16" appValidateAccountNumber>
+						<div
+						  *ngIf="f.accountNumber.errors && (f.accountNumber.dirty || f.accountNumber.touched) || submitted"
+						  class="text-danger">
+						  <div *ngIf="f.accountNumber.errors?.required">Account number is required</div>
+						  <div *ngIf="f.accountNumber.errors?.minlength">Account number must be at least 4-digits</div>
+						</div>
+
+						<div *ngIf="!inputAccountValidate" class="text-danger">
+						  Please enter only digit.
+						 </div>
+					  </div>
+
+						<div class="col-sm-7">
+						  <div class="row form-group">
+							<label class="col-sm-4" for="accountType">Acct Type</label>
+							<div class="col-sm-8">
+							  <div class="custom-control custom-control-inline  w-100" >
+								<select class="form-control" formControlName="accountType"
+								  (change)="getAccountType($event)"
+								  [disabled]="phonepayPayment.schedulePaymentList.length" tabindex="17">
+								  <option><b>Checking</b></option>
+								  <option><b>Saving</b></option>
+								</select>
+								<div *ngIf="isSaving">
+								  <p  class="valid-star-icon" style="color:red"><b>*</b></p>
+								</div>
+							  </div>
+
+							</div>
+						  </div>
+						</div>
+						<div class="col-sm-12">
+						  <div *ngIf="accountnumLen!=12 && accountnumLen>0" class="text-danger input-account-butt col-sm-20">MACU may require a 12-digit account number. If the full 12-digit number is not provided, the payment may be returned and bank fees assessed.</div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+
+				</div>
+				<div class="">
+				  <div class="row">
+					<div class="col-md-2">
+					</div>
+					<div class="col-md-4">
+            <div class="custom-control custom-checkbox" [ngClass]="{'custom-checkbox-disabled': phonepayPayment.schedulePaymentList.length===1 ||
+					  phonepayPayment.schedulePaymentList.length > 1 || (!this.isBankInfoEmpty)}">
+						<input type="checkbox" class="custom-control-input" id="customCheckLoan" name="example1"
+						  #loanCheck1 [(ngModel)]="isLoanInfoFirstChecked" formControlName="checkBoxValue"
+						  (click)="showFirstLoanDetails()" [disabled]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+						  (phonepayPayment.schedulePaymentList.length>1) || (!this.isBankInfoEmpty)" tabindex="18" (focus)="firstLoanCheckValue('firstLoan',isLoanInfoFirstChecked)">
+						<label class="custom-control-label" for="customCheckLoan">&nbsp; &nbsp; &nbsp;
+						  {{phonepayPayment.loanInfoList[0]?.loanNumber}}</label>
+						 </div>
+					</div>
+					<div class="col-md-2">
+					</div>
+					<div class="col-md-4" *ngIf="phonepayPayment.loanInfoList[1]">
+					  <div class="custom-control custom-checkbox" [ngClass]="{'custom-checkbox-disabled': phonepayPayment.schedulePaymentList.length===1 ||
+					  phonepayPayment.schedulePaymentList.length > 1 || (!this.isBankInfoEmpty)}">
+						<input type="checkbox" class="custom-control-input" id="customCheckLoan1" name="example2"
+						  #loanCheck2 [(ngModel)]="isLoanInfoSecondChecked" formControlName="checkBoxValue2"
+						  (click)="showSecondLoanDetails()"  [disabled]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+						  (phonepayPayment.schedulePaymentList.length > 1) || !this.isBankInfoEmpty" tabindex="28" (focus)="secondLoanCheckValue('secondLoan',isLoanInfoSecondChecked)">
+						<label class="custom-control-label" for="customCheckLoan1">&nbsp; &nbsp; &nbsp;
+						  {{phonepayPayment.loanInfoList[1]?.loanNumber}}</label>
+					  </div>
+					</div>
+				  </div>
+				  <div class="row form-group current-payment-information">
+					<div class="col-md-6">
+					  <div class="row" *ngIf="isLoanInfoFirstChecked">
+						<label class="col-sm-4">Payment Amount</label>
+						<div class="col-sm-8">
+						  <div class="input-group">
+							<div class="input-group-prepend">
+							  <span class="input-group-text"
+								[ngClass]="{'colorDissable': isOtherPaymentSelected}">{{loanInfoFirst.monthlyPayment | currency: 'USD': true}}</span>
+							</div>
+							<input type="number" (blur)="getCurrentRegularAmount(regpayment1.value)"
+							  class="form-control" id="regpayment1" #regpayment1
+							  [value]="!isOtherPaymentSelected ? regPayment1 : ''" formControlName="monthlyPayment1"
+							  appOnlynumber readOnly tabindex="">
+						  </div>
+						</div>
+					  </div>
+					</div>
+
+					<div class="col-md-6">
+					  <div class="row" *ngIf="isLoanInfoSecondChecked">
+						<label class="col-sm-4" *ngIf="phonepayPayment.loanInfoList[1]">Payment Amount</label>
+						<div class="col-sm-8" *ngIf="phonepayPayment.loanInfoList[1]">
+						  <div class="input-group">
+							<div class="input-group-prepend">
+							  <span class="input-group-text"
+								[ngClass]="{'colorDissable': isOtherPaymentSelected2}">{{loanInfoSecond.monthlyPayment | currency: 'USD': true}}</span>
+							</div>
+							<input type="number" (blur)="getCurrentRegularAmountForSecondLoan(regpayment2.value)"
+							  class="form-control" #regpayment2
+							  [value]="!isOtherPaymentSelected2 ? regPayment2 : ''"
+							  formControlName="monthlyPayment2" appOnlynumber readOnly>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="row form-group current-payment-information">
+					<div class="col-md-6">
+					  <div class="row" *ngIf="isLoanInfoFirstChecked">
+						<label class="col-sm-4">Other Payment Amount</label>
+						<div class="col-sm-8">
+						  <div class="input-group">
+							<div class="input-group-prepend">
+							  <span class="otherPaymentCheckBox">
+								<span tabindex={{tabindex19}} (focus)="isOtherPaymentAmount(false)">
+								<input type="checkbox"  tabindex={{tabindex19}}
+								  class="form-control custom-input" (change)="disablePaymentAmount($event)"
+								  [checked]="isPaymentAmountMismatch1"  [disabled]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+								  (phonepayPayment.schedulePaymentList.length> 1)" (click)="isOtherPaymentAmount(true)">
+								</span>
+							  </span>
+							</div>
+							<input type="textbox" tabindex={{tabindex20}} (blur)="getCurrentRegularAmount(otherPayment1.value)"
+							  class="form-control color-blue" id="otherPayment1" #otherPayment1
+							  formControlName="otherPayment1" appTwoDigitDecimaNumber (keyup)="getValue(otherPayment1.value,'otherPayment1',amtVal,'')" [readOnly]="!isOtherPaymentSelected || (phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)" ><span *ngIf="isOtherPaymentSelected && !((phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1))" class="fa fa-pen"
+							  (click)="getPaymentAmountForFirstLoan()" min="0" tabindex={{tabindex20}}></span>
+							  <div *ngIf="otherPmt1" style="color:red;">{{messagetdg}}</div>
+						  </div>
+						</div>
+					  </div>
+					</div>
+					<div class="col-md-6">
+					  <div class="row" *ngIf="isLoanInfoSecondChecked">
+						<label class="col-sm-4">Other Payment Amount</label>
+						<div class="col-sm-8">
+						  <div class="input-group">
+							<div class="input-group-prepend">
+							  <span class="otherPaymentCheckBox" >
+								<span tabindex={{tabindex29}} (focus)="isOtherPaymentAmount2(false)">
+								<input type="checkbox"  tabindex={{tabindex29}}
+								  (change)="disablePaymentAmountForSecondPayment($event)"
+								  [checked]="isPaymentAmountMismatch2" class="form-control custom-input" [disabled]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+								(phonepayPayment.schedulePaymentList.length> 1)" (click)="isOtherPaymentAmount2(true)">
+							  </span>
+							  </span>
+							</div>
+							<input type="textbox" tabindex={{tabindex30}} (blur)="getCurrentRegularAmountForSecondLoan(otherPayment2.value)"
+							  class="form-control color-blue" id="otherPayment2" #otherPayment2
+							  formControlName="otherPayment2" appTwoDigitDecimaNumber (keyup)="getValue(otherPayment2.value,'otherPayment2',amtVal,'')" [readOnly]="!isOtherPaymentSelected2 || (phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)"><span *ngIf="isOtherPaymentSelected2 && !((phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1))" class="fa fa-pen"
+							  (click)="getPaymentAmountForSecondLoan()" min="0" tabindex={{tabindex30}}></span>
+							  <div *ngIf="otherPmt2" style="color:red;">{{messagetdg}}</div>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+
+				  <div class="row form-group current-payment-information">
+					<div class="col-md-6">
+					  <div class="row" *ngIf="isLoanInfoFirstChecked">
+						<label class="col-sm-4">NSF</label>
+						<div class="col-sm-8">
+						  <div class="input-group">
+							<div class="input-group-prepend">
+							  <span
+								class="input-group-text">{{loanInfoFirst.nsfFees | currency: 'USD': true}}</span>
+							</div>
+							<input type="textbox" (blur)="getTotalAmount()" class="form-control"
+								   appTwoDigitDecimaNumber [(ngModel)]="nsfFirst" #nsf1 id="nsf1" formControlName="nsf1" [readOnly]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)"  (keyup)="getValue(nsfFirst,'nsfFirst',loanInfoFirst.nsfFees,'')" tabindex={{tabindex23}}>
+							<div *ngIf="nsfst &&  !(+this.nsfFirst>(+loanInfoFirst.nsfFees))" style="color:red;">{{messagetdg}}</div>
+						  </div>
+						  <div class="custom-control" class="text-danger" role="alert"
+							   *ngIf="+this.nsfFirst>(+loanInfoFirst.nsfFees)">
+							The amount entered is greater than the amount owed. </div>
+						</div>
+					  </div>
+					</div>
+					<div class="col-md-6">
+					  <div class="row" *ngIf="isLoanInfoSecondChecked">
+						<label class="col-sm-4" *ngIf="phonepayPayment.loanInfoList[1]">NSF</label>
+						<div class="col-sm-8" *ngIf="phonepayPayment.loanInfoList[1]">
+						  <div class="input-group">
+							<div class="input-group-prepend">
+							  <span
+								class="input-group-text">{{loanInfoSecond.nsfFees | currency: 'USD': true}}</span>
+							</div>
+							<input type="textbox" (blur)="getTotalAmount()" class="form-control"
+								   appTwoDigitDecimaNumber [(ngModel)]="nsfSecond" #nsf2 formControlName="nsf2" [readOnly]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)"(keyup)="getValue(nsfSecond,'nsfSecond','','')"  tabindex={{tabindex32}}>
+							<div *ngIf="nsfnd && !(+this.nsfSecond > (+loanInfoSecond.nsfFees))" style="color:red;">{{messagetdg}}</div>
+						  </div>
+						  <div class="custom-control" class="text-danger" role="alert"
+							   *ngIf="+this.nsfSecond > (+loanInfoSecond.nsfFees)">
+							The amount entered is greater than the amount owed. </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="row form-group current-payment-information">
+					<div class="col-md-6" style="margin-bottom: 10px">
+					  <div class="row" *ngIf="isLoanInfoFirstChecked">
+						<label class="col-sm-4">Late Charge</label>
+						<div class="col-sm-8">
+						  <div class="input-group">
+							<div class="input-group-prepend">
+							  <span
+								class="input-group-text">{{loanInfoFirst.lateFees | currency: 'USD': true}}</span>
+							</div>
+							<input type="textbox" (blur)="getTotalAmount()" class="form-control"
+								   [(ngModel)]="lateFee1" #latecharge1 formControlName="latecharge1" [readOnly]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)" appTwoDigitDecimaNumber (keyup)="getValue(lateFee1,'lateFee1','','')" tabindex={{tabindex24}}>
+							<div *ngIf="lateFe1 && !(+this.lateFee1 > +loanInfoFirst.lateFees)" style="color:red;">{{messagetdg}}</div>
+						  </div>
+						  <div class="custom-control" class="text-danger" role="alert"
+							   *ngIf="+this.lateFee1 > (+loanInfoFirst.lateFees)">
+							The amount entered is greater than the amount owed. </div>
+						</div>
+					  </div>
+					</div>
+					<div class="col-md-6" style="margin-bottom: 10px">
+					  <div class="row" *ngIf="isLoanInfoSecondChecked">
+						<label class="col-sm-4" *ngIf="phonepayPayment.loanInfoList[1]">Late Charge</label>
+						<div class="col-sm-8" *ngIf="phonepayPayment.loanInfoList[1]">
+						  <div class="input-group">
+							<div class="input-group-prepend">
+							  <span
+								class="input-group-text">{{loanInfoSecond.lateFees | currency: 'USD': true}}</span>
+							</div>
+							<input type="textbox" (blur)="getTotalAmount()" class="form-control"
+								   [(ngModel)]="lateFee2" #latecharge2 formControlName="latecharge2" [readOnly]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)" appTwoDigitDecimaNumber (keyup)="getValue(lateFee2,'lateFee2','','')" tabindex={{tabindex33}}>
+							<div *ngIf="lateFe2 && !(+this.lateFee2 > +loanInfoSecond.lateFees)" style="color:red;">{{messagetdg}}</div>
+						  </div>
+						  <div class="custom-control" class="text-danger" role="alert"
+							   *ngIf="+this.lateFee2 > +loanInfoSecond.lateFees">
+							The amount entered is greater than the amount owed. </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+
+				  <div class="row form-group current-payment-information">
+					<div class="col-md-6">
+					  <div class="row" *ngIf="isLoanInfoFirstChecked ">
+						<label class="col-sm-4">Additional Principal</label>
+						<div class="col-sm-8">
+						  <input type="textbox" class="form-control" (blur)="getTotalAmount()"
+						  appTwoDigitDecimaNumber [(ngModel)]="additionalPrincipal1" formControlName="addAmount1" tabindex={{tabindex21}} (keyup)="getValue(additionalPrincipal1,'additionalPrincipal1',isLoanInfoFirstChecked,'')"
+							 [readOnly]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+							(phonepayPayment.schedulePaymentList.length> 1)">
+							<div *ngIf="additionalPrin1" style="color:red;">{{messagetdg}}</div>
+						  </div>
+					  </div>
+					</div>
+					<div class="col-md-6">
+					  <div class="row" *ngIf="isLoanInfoSecondChecked">
+						<label class="col-sm-4" *ngIf="phonepayPayment.loanInfoList[1]">Additional Principal</label>
+						<div class="col-sm-8" *ngIf="phonepayPayment.loanInfoList[1]">
+						  <input type="textbox" class="form-control" (blur)="getTotalAmount()"
+						  appTwoDigitDecimaNumber [(ngModel)]="additionalPrincipal2" value="" id="addAmount2" formControlName="addAmount2" tabindex={{tabindex31}}
+							 (keyup)="getValue(additionalPrincipal2,'additionalPrincipal2',amtVal,'')" [readOnly]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+							(phonepayPayment.schedulePaymentList.length> 1)">
+							<div *ngIf="additionalPrin2" style="color:red;">{{messagetdg}}</div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="row form-group current-payment-information">
+					<div class="col-md-6">
+					  <div class="row" *ngIf="isLoanInfoFirstChecked">
+						<label class="col-sm-4">Additional Escrow</label>
+						<div class="col-sm-8">
+						  <input type="textbox" class="form-control" [(ngModel)]="additionalEscrow1"
+						  appTwoDigitDecimaNumber (blur)="getTotalAmount()" value="" id="addEscrow1" tabindex={{tabindex22}} formControlName="addEscrow1"
+						   (keyup)="getValue(additionalEscrow1,'additionalEscrow1',amtVal,'')"  [readOnly]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+							(phonepayPayment.schedulePaymentList.length> 1)">
+							<div *ngIf="additionalEsc1" style="color:red;">{{messagetdg}}</div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="row form-group current-payment-information">
+					<div class="col-md-6">
+					  <div class="row" *ngIf="isLoanInfoFirstChecked">
+						<label class="col-sm-4">Additional Items</label>
+						<div class="col-sm-8" >
+						  <select class="form-control" [(ngModel)]="defaultFee" formControlName="feeValue"
+							#feeSumValue (change)="addSelectedFee($event)" name="feeValue" [disabled]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+							(phonepayPayment.schedulePaymentList.length> 1) "  tabindex={{tabindex25}}>
+							<option value='0'>--Select Additional Items--</option>
+							<option *ngFor="let feeSum of feeSummary">
+							  {{feeSum.feeName}}
+							</option>
+						  </select>
+						</div>
+					  </div>
+					</div>
+					<div class="col-md-6">
+					  <div class="row" *ngIf="isLoanInfoSecondChecked">
+						<label class="col-sm-4" *ngIf="phonepayPayment.loanInfoList[1]">Additional Items</label>
+						<div class="col-sm-8" *ngIf="phonepayPayment.loanInfoList[1]" >
+						  <select class="form-control" [(ngModel)]="defaultFee1" formControlName="feeValue1"
+							#feeSumValue (change)="addSelectedFeeForSecondLoan($event)" name="feeValue1" [disabled]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+							(phonepayPayment.schedulePaymentList.length> 1)" tabindex={{tabindex34}}>
+							<option value='0'>--Select Additional Items--</option>
+							<option *ngFor="let feeSum of feeSummary">
+							  {{feeSum.feeName}}
+							</option>
+						  </select>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="row form-group current-payment-information">
+					<div class="col-sm-6" formArrayName="otherFeeList">
+					  <div class="row form-group current-payment-information"
+						*ngFor="let item of phonpayForm.get('otherFeeList')['controls']; let i = index;"
+						[formGroupName]="i">
+						<label class="col-sm-4">{{item.controls.feeName.value}}</label>
+						<div class="col-sm-8" >
+						  <input type="numeric" class="form-control" #feeSumAmount
+							(blur)="getFeeAmountForFirstLoan(i)" formControlName="feeAmount" appAutofocus
+							appTwoDigitDecimaNumber [readOnly]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+							(phonepayPayment.schedulePaymentList.length> 1)" tabindex={{tabindex25}} (keyup)="getValue(item.controls.feeAmount.value,item.controls.feeName.value,'',i)">
+						  <span *ngIf="!((phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+						  (phonepayPayment.schedulePaymentList.length> 1))" class="fa fa-window-close"
+							aria-hidden="true" (click)="delInput(i)"></span>
+							<div *ngIf="otherfee && inputIndex== i" style="color:red;">{{messagetdg}}</div>
+							<div *ngIf="corporatefee && inputIndex== i" style="color:red;">{{messagetdg}}</div>
+							<div class="custom-control" class="text-danger" role="alert"
+								 *ngIf="(feeAmount) && (item.controls.feeAmount.value == '' || !item.controls.feeAmount.value  )">
+							  Enter Fee Amount. </div>
+							</div>
+					  </div>
+					</div>
+					<div class="col-sm-6" formArrayName="otherFeeList1" *ngIf="phonepayPayment.loanInfoList[1]">
+					  <div class="row form-group current-payment-information"
+						*ngFor="let item of phonpayForm.get('otherFeeList1').controls; let i=index"
+						[formGroupName]="i">
+						<label class="col-sm-4">{{item.controls.feeName.value}}</label>
+						<div class="col-sm-8">
+						  <input type="numeric" class="form-control" #feeSumAmount1
+							(blur)="getFeeAmountForSecondLoan(i)" formControlName="feeAmount1" appAutofocus
+							appTwoDigitDecimaNumber [readOnly]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+							(phonepayPayment.schedulePaymentList.length> 1)" tabindex={{tabindex34}} (keyup)="getValue(item.controls.feeAmount1.value,item.controls.feeName.value+1,'',i)">
+						  <span class="fa fa-window-close" aria-hidden="true" *ngIf="!((phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+						  (phonepayPayment.schedulePaymentList.length> 1))"
+							(click)="delInputForSecondLoan(i)"></span>
+							<div *ngIf="otherfee1 && inputIndex1== i" style="color:red;">{{messagetdg}}</div>
+							<div *ngIf="corporatefee1 && inputIndex1== i" style="color:red;">{{messagetdg}}</div>
+							<div class="custom-control" class="text-danger" role="alert"
+								 *ngIf="(feeAmount1) && (item.controls.feeAmount1.value == '' || !item.controls.feeAmount1.value )">
+							  Enter Fee Amount. </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				</div>
+				<div class="row form-group current-payment-information">
+				  <div class="col-sm-6"
+					[ngClass]="{
+					'has-danger': isStopFileForFirstLoan && !isAdviceTypeClicked,
+					'has-success': isStopFileForFirstLoan && isAdviceTypeClicked,
+					'has-danger-forAmount-MissMatch': isPaymentAmountMismatch1 && isLoanInfoFirstChecked && !isAdviceTypeClicked }">
+					<div class="row form-group current-payment-information" *ngIf="isLoanInfoFirstChecked" style="text-align: center; margin: auto">
+					  <div class="col-sm-4">
+						&nbsp;
+					  </div>
+					  <div class="col-sm-8"
+						*ngIf="isStopFileForFirstLoan && (f.paymentAdviceNote.value === null || f.paymentAdviceNote.value === undefined || f.paymentAdviceNote.value === '')"
+						class="text-danger" role="alert">
+						<b>This loan is on the stop file as a {{ this.phonepayPayment.loanInfoList[0].stopDesc }} <p>Select an advice type and enter
+              processing notes.</p></b>
+					  </div>
+					  <div class="col-sm-8"
+						*ngIf="isStopFileForFirstLoan && (f.paymentAdviceNote.value !== undefined && f.paymentAdviceNote.value !== '' && f.paymentAdviceNote.value !== null)"
+						class="text-danger" role="alert">
+						<b>This loan is on the stop file</b>
+					  </div>
+					  <div class="col-sm-8"
+						*ngIf="isLoanInfoFirstChecked && isPaymentAmountMismatch1 && !isStopFileForFirstLoan && (f.paymentAdviceNote.value === null || f.paymentAdviceNote.value === undefined || f.paymentAdviceNote.value === '')"
+						class="text-danger" role="alert">
+						<b>The amount entered does not match the regular payment. <p>Select an advice type and enter
+              processing notes.</p></b>
+					  </div>
+					</div>
+					<div class="row form-group current-payment-information" style="justify-content: center" *ngIf="isLoanInfoFirstChecked">
+					  <div class="col-sm-4">
+						<label *ngIf="this.phonepayPayment.loanInfoList.length">Advice Type</label>
+					  </div>
+					  <div class="col-md-4" *ngIf="this.phonepayPayment.loanInfoList.length">
+						<div class="row-md-8" *ngIf="this.phonepayPayment.loanInfoList.length > 1 || ((isStopFileForFirstLoan || isPaymentAmountMismatch1) && isLoanInfoFirstChecked)">
+						  <div class="custom-control custom-radio">
+
+							<input type="radio" class="custom-control-input" id="manual"
+							  (change)="stopFileInfo($event, 'Cashiering')" name="stopFile" [disabled]="!isLoanInfoFirstChecked || (phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)"
+							  [checked]="(isAdviceTypeClicked && paymentAdviceValue === 'Cashiering' && isOtherFeesSelected && !readOnlyPaymentModeForLoan1) || (this.phonepayPayment.schedulePaymentList.length && firstDigitOfLoanNumber!==9 &&  this.phonepayPayment.schedulePaymentList[0].paymentAdvice && this.phonepayPayment.schedulePaymentList[0].paymentAdvice.adviceId === 1) ? 'checked' : null"
+							  value="manual" tabindex={{tabindex26}}>
+							<label class="custom-control-label" for="manual">
+							  <p>Cashiering</p>
+							</label>
+						  </div>
+						</div>
+						<div class="row-md-8"
+						  *ngIf="(isStopFileForFirstLoan || isPaymentAmountMismatch1) && isLoanInfoFirstChecked">
+						  <div class="custom-control custom-radio">
+							<input type="radio" class="custom-control-input" id="collection"
+							  (change)="stopFileInfo($event, 'Collections')" name="stopFile" [disabled]="!isLoanInfoFirstChecked || (phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)"
+							  [checked]="(this.phonepayPayment.schedulePaymentList.length && firstDigitOfLoanNumber!==9 && this.phonepayPayment.schedulePaymentList[0].paymentAdvice && this.phonepayPayment.schedulePaymentList[0].paymentAdvice.adviceId === 3) ? 'checked' : null"
+							  value="collection" tabindex={{tabindex26}}>
+							<label class="custom-control-label" for="collection">
+							  <p>Collections</p>
+							</label>
+						  </div>
+						</div>
+						<div class="row-md-8"
+						  *ngIf="(isStopFileForFirstLoan || isPaymentAmountMismatch1) && isLoanInfoFirstChecked">
+						  <div class="custom-control custom-radio">
+							<input type="radio" class="custom-control-input" id="lossMit"
+							  (change)="stopFileInfo($event,'Loss Mit')" name="stopFile" [disabled]="!isLoanInfoFirstChecked || (phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)"
+							  [checked]="(this.phonepayPayment.schedulePaymentList.length && firstDigitOfLoanNumber!==9 && this.phonepayPayment.schedulePaymentList[0].paymentAdvice && this.phonepayPayment.schedulePaymentList[0].paymentAdvice.adviceId === 4) ? 'checked' : null"
+							  value="lossMit" tabindex={{tabindex26}}>
+							<label class="custom-control-label" for="lossMit">
+							  <p>Loss Mit</p>
+							</label>
+						  </div>
+						</div>
+						<div class="row-md-8"
+						  *ngIf="(isStopFileForFirstLoan || isPaymentAmountMismatch1) && isLoanInfoFirstChecked">
+						  <div class="custom-control custom-radio">
+							<input type="radio" class="custom-control-input" id="bankRuptcy"
+							  (change)="stopFileInfo($event,'Bankruptcy')" name="stopFile" [disabled]="!isLoanInfoFirstChecked || (phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)"
+							  [checked]="(this.phonepayPayment.schedulePaymentList.length && firstDigitOfLoanNumber!==9 && this.phonepayPayment.schedulePaymentList[0].paymentAdvice && this.phonepayPayment.schedulePaymentList[0].paymentAdvice.adviceId === 2) ? 'checked' : null"
+							  value="bankRuptcy" tabindex={{tabindex26}}>
+							<label class="custom-control-label" for="bankRuptcy">
+							  <p>Bankruptcy</p>
+							</label>
+						  </div>
+						</div>
+						<!--
+						<div class="row-md-8" *ngIf="!isStopFileForFirstLoan && !isOtherFeesSelected">
+						  <div class="custom-control custom-radio">
+							<input type="radio" class="custom-control-input" id="clearAdvice"
+							  (change)="stopFileInfo($event, 'clearAdvice')" [disabled]="!isLoanInfoFirstChecked || isOtherFeesSelected || (phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)" name="stopFile" value="clearAdvice"
+							  tabindex={{tabindex26}} >
+							<label class="custom-control-label" for="clearAdvice">
+							  <p>Clear advice</p>
+							</label>
+						  </div>
+						</div>
+						-->
+					  </div>
+					</div>
+				  </div>
+				  <div class="col-sm-6"
+					[ngClass]="{
+					'has-danger': isStopFileForSecondLoan && !isAdviceTypeClicked1,
+					'has-success': isStopFileForSecondLoan && isAdviceTypeClicked1,
+					'has-danger-forAmount-MissMatch': isLoanInfoSecondChecked && isPaymentAmountMismatch2 && !isAdviceTypeClicked1 }">
+					<div class="row form-group current-payment-information" *ngIf="isLoanInfoSecondChecked" style="text-align: center; margin: auto">
+					  <div class="col-sm-4">
+						&nbsp;
+					  </div>
+					  <div class="col-sm-8"
+						*ngIf="isStopFileForSecondLoan && (f.paymentAdviceNote1.value === null || f.paymentAdviceNote1.value === undefined || f.paymentAdviceNote1.value === '')"
+						class="text-danger" role="alert">
+						<b>This loan is on the stop file as a {{ this.phonepayPayment.loanInfoList[1].stopDesc }} <p>Select an advice type and enter
+              processing notes.</p></b>
+					  </div>
+					  <div class="col-sm-8"
+						*ngIf="isStopFileForSecondLoan && (f.paymentAdviceNote1.value !== undefined && f.paymentAdviceNote1.value !== '' && f.paymentAdviceNote1.value !== null)"
+						class="text-danger" role="alert">
+						<b>This loan is on the stop file</b>
+					  </div>
+					  <div class="col-sm-8"
+						*ngIf="isLoanInfoSecondChecked && isPaymentAmountMismatch2 && !isStopFileForSecondLoan && (f.paymentAdviceNote1.value === null || f.paymentAdviceNote1.value === undefined || f.paymentAdviceNote1.value === '')"
+						class="text-danger" role="alert">
+						<b>The amount entered does not match the regular payment. <p>Select an advice type and enter
+              processing notes.</p></b>
+					  </div>
+					</div>
+					<div class="row form-group current-payment-information" style="justify-content: center" *ngIf="isLoanInfoSecondChecked">
+					  <div class="col-sm-4">
+						<label *ngIf="this.phonepayPayment.loanInfoList.length > 1">Advice Type</label>
+					  </div>
+					  <div class="col-md-4">
+						<div class="row-md-8"
+						  *ngIf="this.phonepayPayment.loanInfoList.length > 1 || ((isStopFileForSecondLoan || isPaymentAmountMismatch2) && isLoanInfoSecondChecked)">
+						  <div class="custom-control custom-radio">
+							<input type="radio" class="custom-control-input" id="manual1"
+							  (change)="stopFileInfoForSecondLoan($event, 'Cashiering')" name="stopFile1"
+							  [disabled]="!isLoanInfoSecondChecked || (phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)"
+							  [checked]="(this.phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9 && this.phonepayPayment.schedulePaymentList[0].paymentAdvice && this.phonepayPayment.schedulePaymentList[0].paymentAdvice.adviceId === 1) ? 'checked' : null
+							  ||(isAdviceTypeClicked1 && paymentAdviceValue1 === 'Cashiering' && isOtherFeesSelected1 && !readOnlyPaymentModeForLoan2) || (this.phonepayPayment.schedulePaymentList.length > 1 && this.phonepayPayment.schedulePaymentList[1].paymentAdvice && this.phonepayPayment.schedulePaymentList[1].paymentAdvice.adviceId === 1) ? 'checked' : null"
+							  value="manual1" tabindex={{tabindex35}}>
+							<label class="custom-control-label" for="manual1">
+							  <p>Cashiering</p>
+							</label>
+						  </div>
+						</div>
+						<div class="row-md-8"
+						  *ngIf="(isStopFileForSecondLoan || isPaymentAmountMismatch2) && isLoanInfoSecondChecked">
+						  <div class="custom-control custom-radio">
+							<input type="radio" class="custom-control-input" id="collection1"
+							  (change)="stopFileInfoForSecondLoan($event, 'Collections')" name="stopFile1"
+							  [disabled]="!isLoanInfoSecondChecked || (phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)"
+							  [checked]="(this.phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9 && this.phonepayPayment.schedulePaymentList[0].paymentAdvice && this.phonepayPayment.schedulePaymentList[0].paymentAdvice.adviceId === 3) ? 'checked' : null
+							  ||(this.phonepayPayment.schedulePaymentList.length > 1 && this.phonepayPayment.schedulePaymentList[1].paymentAdvice && this.phonepayPayment.schedulePaymentList[1].paymentAdvice.adviceId === 3) ? 'checked' : null"
+							  value="collection1" tabindex={{tabindex35}}>
+							<label class="custom-control-label" for="collection1">
+							  <p>Collections</p>
+							</label>
+						  </div>
+						</div>
+						<div class="row-md-8"
+						  *ngIf="(isStopFileForSecondLoan || isPaymentAmountMismatch2) && isLoanInfoSecondChecked">
+						  <div class="custom-control custom-radio">
+							<input type="radio" class="custom-control-input" id="lossMit1"
+							  (change)="stopFileInfoForSecondLoan($event,'Loss Mit')" name="stopFile1" [disabled]="!isLoanInfoSecondChecked || (phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)"
+							  [checked]="(this.phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9 && this.phonepayPayment.schedulePaymentList[0].paymentAdvice && this.phonepayPayment.schedulePaymentList[0].paymentAdvice.adviceId === 4) ? 'checked' : null
+							  ||(this.phonepayPayment.schedulePaymentList.length > 1 && this.phonepayPayment.schedulePaymentList[1].paymentAdvice && this.phonepayPayment.schedulePaymentList[1].paymentAdvice.adviceId === 4) ? 'checked' : null"
+							  value="lossMit1" tabindex={{tabindex35}}>
+							<label class="custom-control-label" for="lossMit1">
+							  <p>Loss Mit</p>
+							</label>
+						  </div>
+						</div>
+						<div class="row-md-8"
+						  *ngIf="(isStopFileForSecondLoan || isPaymentAmountMismatch2) && isLoanInfoSecondChecked">
+						  <div class="custom-control custom-radio">
+							<input type="radio" class="custom-control-input" id="bankRuptcy1"
+							  (change)="stopFileInfoForSecondLoan($event,'Bankruptcy')" name="stopFile1" [disabled]="!isLoanInfoSecondChecked || (phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)"
+							  [checked]="(this.phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9 && this.phonepayPayment.schedulePaymentList[0].paymentAdvice && this.phonepayPayment.schedulePaymentList[0].paymentAdvice.adviceId === 2) ? 'checked' : null
+						  ||(this.phonepayPayment.schedulePaymentList.length > 1 && this.phonepayPayment.schedulePaymentList[1].paymentAdvice && this.phonepayPayment.schedulePaymentList[1].paymentAdvice.adviceId === 2) ? 'checked' : null"
+							  value="bankRuptcy1" tabindex={{tabindex35}}>
+							<label class="custom-control-label" for="bankRuptcy1">
+							  <p>Bankruptcy</p>
+							</label>
+						  </div>
+						</div>
+						<!--
+						<div class="row-md-8"
+						  *ngIf="this.phonepayPayment.loanInfoList.length > 1 && (!isStopFileForSecondLoan && !isOtherFeesSelected1)">
+						  <div class="custom-control custom-radio">
+							<input type="radio" class="custom-control-input" id="clearAdvice1"
+							  (change)="stopFileInfoForSecondLoan($event, 'clearAdvice1')" [disabled]="!isLoanInfoSecondChecked || isOtherFeesSelected1 || (phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+							  (phonepayPayment.schedulePaymentList.length> 1)" name="stopFile1"
+							  value="clearAdvice1" tabindex={{tabindex35}}>
+							<label class="custom-control-label" for="clearAdvice1">
+							  <p>Clear advice</p>
+							</label>
+						  </div>
+						</div>
+						-->
+					  </div>
+					</div>
+				  </div>
+				</div>
+				<div class="row form-group current-payment-information">
+				  <div class="col-md-6" style="margin-top: 10px">
+					<div class="row form-group current-payment-information"
+					  *ngIf="isLoanInfoFirstChecked && isAdviceTypeClicked || isOtherPaymentSelected">
+					  <label class="col-sm-4">Processing Notes</label>
+					  <div class="col-sm-8">
+						<input type="textarea" class="form-control" value="" #processingNotes id="processingNotes"
+						  formControlName="paymentAdviceNote"  [readOnly]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber!==9) ||
+						  (phonepayPayment.schedulePaymentList.length> 1)" tabindex={{tabindex27}} autocomplete="off">
+					  </div>
+					</div>
+				  </div>
+				  <div class="col-sm-6" style="margin-top: 10px">
+					<div class="row form-group current-payment-information"
+					  *ngIf="isLoanInfoSecondChecked && isAdviceTypeClicked1 || isOtherPaymentSelected2">
+					  <label class="col-md-4">Processing Notes</label>
+					  <div class="col-sm-8">
+						<input type="textarea" class="form-control" value="" id="processingNotes1"
+						  formControlName="paymentAdviceNote1"  [readOnly]="(phonepayPayment.schedulePaymentList.length===1 && firstDigitOfLoanNumber===9) ||
+						  (phonepayPayment.schedulePaymentList.length> 1)" tabindex={{tabindex36}} autocomplete="off">
+					  </div>
+					</div>
+				  </div>
+				</div>
+				<div class="head-sec row">
+				  <div class="col-md-12">
+					<h5 class="w-100">Current Transaction </h5>
+				  </div>
+				</div>
+				<div class="">
+				  <div class="row form-group current-payment-information">
+					<label class="col-sm-2">PhonePay Service Fee</label>
+					<div class="col-sm-4 custom-checkbox">
+					  <input type="numeric" (keyup)="getTotalAmount()" class="form-control"
+						[(ngModel)]="phonePayServicefee" #fees formControlName="serviceFee" readonly>
+					 <label style="vertical-align: middle"> <span class="myCheckbox">
+						<span tabindex = "37">
+						<input type="checkbox" [checked]="isWaveOffChecked" id="waiveFee"
+						  (change)="setServiceFees($event)" class="form-control custom-input"
+						  [disabled]="phonepayPayment.schedulePaymentList.length">
+						</span>
+						<span class="custom-label">Waive Fee</span></span></label>
+					</div>
+					<label class="col-sm-2">Amount</label>
+					<div class="col-sm-4">
+					  <input type="numeric" style="border-bottom: none !important;" class="form-control"
+						[(ngModel)]="sumOfAmount" value="{{sumOfAmount |currency:'USD':true:'1.2-2'}}"
+						formControlName="totalAmount" tabindex = "-1" readonly />
+						<div *ngIf="sumOfAmount>5000" style="color:red;">The total maximum transaction amount cannot be greater than $5,000.00</div>
+					</div>
+				  </div>
+				  <div class="row form-group current-payment-information">
+					<label class="col-sm-2">Date</label>
+					<div class="col-sm-4">
+					  <input type="datetime" class="form-control" [(ngModel)]="today" value="" id="scheduledate"
+						formControlName="date" tabindex = "-1" readonly />
+					</div>
+					<div class="col-sm-6" *ngIf="isSaving">
+					  <p style="color:red;"><b>* Federal regulations limit the number of transfers and electronic
+						  ACH payments from a savings account to a maximum of six(6) per month or statetment cycle.
+						  Each loan payment counts as a separate ACH Transaction.</b></p>
+					</div>
+				  </div>
+				  <div class="row form-group current-payment-information">
+					&nbsp;
+				  </div>
+				</div>
+				<div class="row text-center ml-35">
+				  <div class="text-center"><button class="btn btn-danger mt-3 ml-1" (click)="closeForm(phonepayPayment.schedulePaymentList.length, coBorrowerEmail.value,otherEmail.value,checkedBorrowerType)" tabindex = "-1">Close
+					  Payment</button></div>
+
+					  <!-- <span>{{mountAmericaAcc}}</span> -->
+				  <div class="text-center"
+					*ngIf="((isLoanInfoFirstChecked && isVerifyBankingInfo) || (isLoanInfoSecondChecked && isVerifyBankingInfo))">
+					<button class="btn btn-primary mt-3" (click)="onSubmit()"
+					  *ngIf="phonepayPayment.schedulePaymentList.length !== phonepayPayment.loanInfoList.length"
+					  [disabled]="(isLoanInfoFirstChecked && (isStopFileForFirstLoan && (!isAdviceTypeClicked || f.paymentAdviceNote.errors &&
+						f.paymentAdviceNote.errors.required) || (!isStopFileForFirstLoan && isAdviceTypeClicked && (f.paymentAdviceNote.errors &&
+						f.paymentAdviceNote.errors.required)))) || (isPaymentAmountMismatch1 && (!isAdviceTypeClicked || f.paymentAdviceNote.errors &&
+						f.paymentAdviceNote.errors.required)) ||
+						 (isLoanInfoSecondChecked && (isStopFileForSecondLoan && (!isAdviceTypeClicked1 || f.paymentAdviceNote1.errors &&
+						 f.paymentAdviceNote1.errors.required) || (isPaymentAmountMismatch2 && (!isAdviceTypeClicked1 || f.paymentAdviceNote1.errors &&
+						 f.paymentAdviceNote1.errors.required)) ||
+						 (!isStopFileForSecondLoan && isAdviceTypeClicked1 && (f.paymentAdviceNote1.errors &&
+						 f.paymentAdviceNote1.errors.required)))) || sumOfAmount>5000 ||
+						 ((!isLoanInfoFirstChecked && !schduledPaymentEx && !isLoanInfoSecondChecked)||
+						 ((isLoanInfoFirstChecked && schduledPaymentEx) && (!isLoanInfoSecondChecked && schduledPaymentEx)) ||
+						 ((!isLoanInfoFirstChecked && schduledPaymentEx) && (isLoanInfoSecondChecked && schduledPaymentEx))) ||
+						 (+nsfFirst>+loanInfoFirst.nsfFees)||
+						 (+lateFee1 >+loanInfoFirst.lateFees) ||
+						 (+nsfSecond >+loanInfoSecond.nsfFees) ||
+						 (+this.lateFee2 >+loanInfoSecond.lateFees) ||
+						 (borrowerEmail.value && email)||
+						 (coBorrowerEmail.value && email1)||
+						 (otherEmail.value && email2) ||
+						 (!inputCityValidate) ||
+						 (!inputStateValidate)||
+						 (payorType===undefined) ||
+						 (isOtherPayment) ||
+						 (isOtherPayment1) ||
+						 (isValidateEmailPrint)
+						 " tabindex="38">Submit</button>
+					<button *ngIf="phonepayPayment.schedulePaymentList.length" class="btn btn-danger mt-3 ml-1"
+					  (click)="cancelPopup()">Cancel Transaction</button>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		  </div>
+		</form>
+		<div class="modalpop" *ngIf='dialogObj.isDialogBox'>
+		  <div class="col s3 back-color-white modalpop-fade">
+			<h6 class="header-color">{{dialogObj.msgHeader}}<a style="float:right" (click)="closeDialogBox()"><i
+				  class="fa fa-close hoverPointer"></i></a>
+			</h6>
+			<div *ngIf="schedulePaymentAlertMessageForBatchPayment" class="body" [innerHTML]="dialogObj.msgContent" style="
+			font-weight:bold; color:red"></div>
+			<div *ngIf="!schedulePaymentAlertMessageForBatchPayment" class="body" [innerHTML]="dialogObj.msgContent"></div>
+			<div class="footer">
+			  <input *ngIf="schedulePaymentFailureMessage" type="button" #myInput class="btn btn-danger mt-3 ml-1"
+				focus (click)="exitForm()" value="NO" />&nbsp;
+			  <input *ngIf="schedulePaymentFailureMessage" type="button" class="btn btn-primary mt-3" focus
+				(click)="closeDialogBox()" value="YES" />
+			  <input *ngIf="schedulePaymentAlertMessageForBatchPayment" [disabled]="this.isCancelPayment" type="button" #myInput class="btn btn-danger mt-3 ml-1"
+				focus (click)="closeDialogBox()" value="NO" />&nbsp;
+			  <input *ngIf="schedulePaymentAlertMessageForBatchPayment" [disabled]="this.isCancelPayment" type="button" class="btn btn-primary mt-3" focus
+				(click)="cancelPayment()" value="YES" />
+			  <input *ngIf="schedulePaymentAlertMessage && !showCancelPaymentPopUp" type="button" #myInput
+				class="btn btn-danger mt-3 ml-1" focus (click)="exitForm()" value="OK" />&nbsp;
+			  <input *ngIf="showCancelPaymentPopUp && schedulePaymentAlertMessage" type="button" #myInput
+				class="btn btn-danger mt-3 ml-1" focus (click)="cancelPayment()" value="OK" />&nbsp;
+			  <input *ngIf="schedulePaymentAlertMessage" type="button" class="btn btn-primary mt-3" focus
+				(click)="closeDialogBox()" value="Cancel" />&nbsp;
+
+			  <input *ngIf="scheduleIncompletePaymentAlertMessage" type="button" #myInput
+				class="btn btn-danger mt-3 ml-1" focus (click)="exitForm()" value="OK" />&nbsp;
+				<input *ngIf="scheduleIncompletePaymentAlertMessage" type="button" class="btn btn-primary mt-3" focus
+				(click)="closeDialogBox()" value="Cancel" />
+			</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+
+        <app-footer></app-footer>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,101 @@
+.has-success{
+    background-color:white;
+  }
+
+  .has-danger{
+    background-color: rgb(236, 163, 163);
+    border-style: solid;
+    border-width: thin;
+    border-color:rgb(202, 66, 66);
+  }
+
+  .has-danger-forAmount-MissMatch{
+    background-color: rgb(236, 163, 163);
+    border-style: solid;
+    border-width: thin;
+    border-color:rgb(202, 66, 66);
+  }
+  .input-account-butt {
+    text-align: justify;
+    font-size: 15px;
+  }
+  .valid-star-icon{
+    color: red;
+    margin-top: 9px;
+    margin-left: 3px;
+  }
+
+  .payment-sec .input-group-text {
+    background: transparent;
+    font-weight: 700;
+    font-size: 14px;
+    border-width: 0 0 1px;
+}
+
+.myCheckbox span.custom-label {
+  margin-left: 104px;
+  position: relative;
+  bottom: 20px;
+}
+
+.myCheckbox input.form-control.custom-input {
+  margin-left: 80px;
+  margin-top: -25px;
+  width: 1rem;
+  height: 1rem;
+}
+
+
+.text-center.ml-35{
+  margin-left:35%
+
+}
+
+.otherPaymentCheckBox input.form-control.custom-input {
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  width: 1rem;
+  height: 1rem;
+}
+
+@media only screen and (max-width:480px){
+  .myCheckbox span.custom-label{
+  
+    bottom: 36px;
+}
+
+.myCheckbox input.form-control.custom-input {
+  
+  margin-top: -41px;
+  
+}
+
+.text-center.ml-35{
+  margin-left:0;
+
+}
+.row.text-center.ml-35 > div {
+  width: 100%;
+}
+
+
+.otherPaymentCheckBox input.form-control.custom-input {
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  width: 1rem;
+  height: 1rem;
+}
+
+
+}
+
+.colorDissable {
+  color: #bfbfbf;
+    font-weight: normal;
+}
+.color-blue {
+  color: #0075ff;
+    font-weight: 700;
+}

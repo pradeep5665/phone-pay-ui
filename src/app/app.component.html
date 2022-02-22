@@ -1,0 +1,67 @@
+<div class="progressbar" *ngIf="progressBar">
+  <div class="p-back-color-white progressbar-fade">
+    <h6>Please Wait...!!!!!</h6>
+    <!-- <mat-progress-spinner mode="indeterminate"></mat-progress-spinner> -->
+    <div class="body">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    </div>
+
+  </div>
+</div>
+
+<div class="progressbar" *ngIf="progressBar1">
+  <div class="p-back-color-white progressbar-fade">
+    <h6>Payments are Processing Please Wait...!!!!!</h6>
+    <!-- <mat-progress-spinner mode="indeterminate"></mat-progress-spinner> -->
+    <div class="body">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    </div>
+
+  </div>
+</div>
+
+<div class="progressbar" *ngIf="progressBar2">
+  <div class="p-back-color-white progressbar-fade">
+    <h6>Notifications are Processing Please Wait...!!!!!</h6>
+    <!-- <mat-progress-spinner mode="indeterminate"></mat-progress-spinner> -->
+    <div class="body">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    </div>
+
+  </div>
+</div>
+
+<div class="modalpop" *ngIf='dialogObj.isDialogBox'>
+  <div class="col s3 back-color-white modalpop-fade">
+    <h6 class="header-color">{{dialogObj.msgHeader}}<a style="float:right" (click)="closeDialogBox()"><i class="fa fa-close hoverPointer"></i></a>
+    </h6>
+    <div class="body" *ngIf="!isAlertForPaymentBatch" [innerHTML]="dialogObj.msgContent"></div>
+    <div class="body" style="color: red; font-weight: bold;"
+     *ngIf="isAlertForPaymentBatch" [innerHTML]="dialogObj.msgContent"></div>
+    <div class="footer">
+      <input type="button" *ngIf="!isAlertForPaymentBatch" #myInput class="waves-effect waves-light btn" focus (click)="closeDialogBox()" value="OK" />
+      <input type="button" *ngIf="isAlertForPaymentBatch" #myInput class="waves-effect waves-light btn" style="color: white;
+      background-color: #009bffde;" focus (click)="closeDialogBox()" value="OK" />
+    </div>
+  </div>
+</div>
+
+<div class="modalpop info-popup" *ngIf='dialogObj.isLegendDialogBox'>
+  <div class="col s3 back-color-white modalpop-fade mt-0 mb-3">
+    <a class="custom-popup-close" (click)="closeLegendDialogBox()">
+      <i class="far fa-window-close cursor-pointer"></i>
+    </a>
+    <div class="d-flex justify-content-between">
+      <h6 class="header-color">{{dialogObj.msgHeader}}</h6>
+      <div>
+      
+      </div>
+    </div>
+   
+    <div class="body" *ngIf="!isAlertForPaymentBatch" [innerHTML]="dialogObj.msgContent"></div>
+    <div class="body" style="color: red; font-weight: bold;"
+     *ngIf="isAlertForPaymentBatch" [innerHTML]="dialogObj.msgContent"></div>
+  
+  </div>
+</div>
+<router-outlet></router-outlet>

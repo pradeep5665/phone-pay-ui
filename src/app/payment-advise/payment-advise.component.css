@@ -1,0 +1,28 @@
+.adviceCheckbox{
+    transform: scale(1.5);
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.left-icon{
+    left: 17.5%;
+    position: fixed;
+    top: 60%;
+    font-size: 38px;
+}
+.right-icon{
+    position: fixed;
+    top: 60%;
+    right: 0.5%;
+    font-size: 38px;
+    z-index: 99999;
+}
+.container {
+    width: 90%;
+    padding-right: 9px;
+    padding-left: 0px;
+    margin-right: auto;
+    margin-left: auto;
+}
+.icon-disable{
+    display: none;
+}

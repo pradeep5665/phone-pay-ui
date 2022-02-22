@@ -1,0 +1,440 @@
+<div id="wrapper">
+  <app-header></app-header>
+  <app-admin-dashboard></app-admin-dashboard>
+  <!-- <app-admin-check-request-disabled></app-admin-check-request-disabled> -->
+  <div id="content-wrapper">
+    <div class="container-fluid">
+      <div class="row">
+        
+        <div class="col-sm-8">
+          <h3 class="pageHeading">PhonePay Payment Advice List For Admin</h3>
+        </div>
+        <div class="col-sm-4 text-right">
+          <i class="fa fa-question-circle fa-2x cursor-pointer" aria-hidden="true" (click)="legendPopup()"></i>
+        </div>
+
+         
+        
+      </div>   
+      <div class="row">
+        <div class="col-xl-3 col-md-6">
+          <div class="drag-container paymentAdvList"> 
+            <div class="listHead">
+              <div class="section-heading">Cashiering</div>
+              <div class="row">
+                <div class="col-6 pr-0">
+                  <span class="heading">Total Advices</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{cashiering.length}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{totalAmountForCashiering |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 pr-0">
+                  <span class="heading">Pending Advices</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{pendingCountForCashiering}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{pendingAmountForCashiering |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 pr-0">
+                  <span class="heading">Processed Advices</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{processedCountForCashiering}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{processedAmountForCashiering |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div>  
+              <div class="row" [ngClass]="{'red-text': processRemovedFromBackendForCashering===false && canceledProcessedBatchCountForCashiering>0,
+              'green-text': processRemovedFromBackendForCashering===true && canceledProcessedBatchCountForCashiering>0}">
+                <div class="col-6 pr-0">
+                  <span class="heading">Canceled in Batch</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{canceledProcessedBatchCountForCashiering}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{canceledProcessedBatchAmountForCashiering |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div> 
+            </div>
+            <cdk-virtual-scroll-viewport itemSize="50" cdkDropList #cashieringList="cdkDropList"
+              [cdkDropListData]="cashiering" [cdkDropListConnectedTo]="[lossMitList,bankruptcyList,collectionsList]"
+              class="item-list mt-2" (cdkDropListDropped)="drop($event,'Cashiering')">
+              <div class="item-box" *ngFor="let item of cashiering; let i=index"
+                (click)="getPaymentAdviceDetailsForAdmin(i, 'Cashiering')" (mouseenter)="enterAdviceIndex(i)" cdkDrag
+                [ngClass]="{
+                  'negative' : item.paymentAdviceStatus === false && item.dateCalcelled === false,
+                  'positive-canceled': (item.paymentAdviceStatus === true && item.dateCalcelled === true), 
+                  'positive' : item.paymentAdviceStatus === true && item.dateCalcelled === false}">
+                <div>
+                  <div class="row form-group">
+                    <label class="col-2">Loan:</label>
+                    <div class="col-3">
+                      {{item.loanNumber}}
+                    </div>
+                    <label class="col-3">Pmt:</label>
+                    <div class="col-3">
+                      {{item.totalPayment.toFixed(2) |currency:'USD':true:'1.2-2'}}
+                    </div>
+                  </div>
+                  <!--section-->
+                  <!-- <div _ngcontent-piy-c6="" class="row form-group">
+                    <label _ngcontent-piy-c6="" class="col-2">Loan1:</label>
+                    <div _ngcontent-piy-c6="" class="col-3"> 1038060 </div>
+                    <label _ngcontent-piy-c6="" class="col-3">Pmt111:</label>
+                    <div _ngcontent-piy-c6="" class="col-3"> $70.00 </div>
+                  </div> -->
+                  <!--End-section-->
+
+                  <div class="row form-group">
+                    <div class="col-6" *ngIf="item.payorType === 'Borrower' || item.payorType === 'Other' || item.payorType === 'Occupant'">
+                      <!-- <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true" style="color: red;">PMT CANCELED</span> -->
+                      <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===false" style="color: red;">{{item.borrowerLastName?.substring(0,10)}}</span>
+                          <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===true" style="color: #119a08;">{{item.borrowerLastName?.substring(0,10)}}</span>
+                      <span *ngIf="(item.paymentAdviceStatus === false && item.dateCalcelled === false) || 
+                      (item.paymentAdviceStatus === true && item.dateCalcelled === false)">{{item.borrowerLastName?.substring(0,10)}}</span>
+                    </div>
+                    <div class="col-6" *ngIf="item.payorType === 'Co-Borrower'">
+                      <span>{{item.coBorrowerLastName?.substring(0,10)}}</span>
+                    </div>
+                    <div class="row form-group">
+                      <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===false" style="margin-left: 10px; color: red;">CANCELED</span>
+                      <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===true" style="color: #119a08;">CANCELED</span>
+                      <label  *ngIf="item.paymentAdviceStatus && item.dateCalcelled === false" class="col-6 p-left">Batch:</label>
+                      <span   *ngIf="item.paymentAdviceStatus && item.dateCalcelled === false" class="col-6">
+                        {{item.batchCode}}
+                      </span>
+                    </div>	
+
+
+                    
+                    <!-- <label class="col-2">Batch:</label>
+                    <div class="col-4" *ngIf="item.paymentAdviceStatus">
+                        {{item.batchCode}}
+                      </div> -->
+                  </div>
+                </div>
+              </div>
+            </cdk-virtual-scroll-viewport>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <div class="drag-container paymentAdvList">
+            <div class="listHead">
+              <div class="section-heading">Loss Mit</div>
+              <div class="row">
+                <div class="col-6 pr-0">
+                  <span class="heading">Total Advices</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{lossMit.length}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{totalAmountForLossMit |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 pr-0">
+                  <span class="heading">Pending Advices</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{pendingCountForLossMit}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{pendingAmountForLossMit |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 pr-0">
+                  <span class="heading">Processed Advices</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{processedCountForLossMit}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{processedAmountForLossMit |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div>
+              <div class="row" [ngClass]="{'red-text': processRemovedFromBackendForLossMit===false && canceledProcessedBatchCountForLossMit>0,
+              'green-text': processRemovedFromBackendForLossMit===true && canceledProcessedBatchCountForLossMit>0}">
+                <div class="col-6 pr-0">
+                  <span class="heading">Canceled in Batch</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading ">{{canceledProcessedBatchCountForLossMit}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{canceledProcessedBatchAmountForLossMit |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div> 
+            </div>
+            <cdk-virtual-scroll-viewport itemSize="50" cdkDropList #lossMitList="cdkDropList"
+              [cdkDropListData]="lossMit" [cdkDropListConnectedTo]="[cashieringList,bankruptcyList,collectionsList]"
+              class="item-list mt-2" (cdkDropListDropped)="drop($event, 'Loss Mit')">
+              <div class="item-box" *ngFor="let item of lossMit; let i=index"
+                (click)="getPaymentAdviceDetailsForAdmin(i, 'LossMit')" (mouseenter)="enterAdviceIndex(i)" cdkDrag
+                [ngClass]="{
+                  'negative' : item.paymentAdviceStatus === false && item.dateCalcelled === false,
+                  'positive-canceled': (item.paymentAdviceStatus === true && item.dateCalcelled === true), 
+                  'positive' : item.paymentAdviceStatus === true && item.dateCalcelled === false}">
+                  <div>
+                      <div class="row form-group">
+                        <label class="col-2">Loan:</label>
+                        <div class="col-4">
+                          {{item.loanNumber}}
+                        </div>
+                        <label class="col-2">Pmt:</label>
+                        <div class="col-4">
+                          {{item.totalPayment.toFixed(2) |currency:'USD':true:'1.2-2'}}
+                        </div>
+                      </div>
+                      <div class="row form-group">
+                        <div class="col-6" *ngIf="item.payorType === 'Borrower' || item.payorType === 'Other' || item.payorType === 'Occupant'">
+                          <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===false" style="color: red;">{{item.borrowerLastName?.substring(0,10)}}</span>
+                          <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===true" style="color: #119a08;">{{item.borrowerLastName?.substring(0,10)}}</span>
+                          <!-- item.removedFromBK -->
+                          <span *ngIf="(item.paymentAdviceStatus === false && item.dateCalcelled === false) || 
+                          (item.paymentAdviceStatus === true && item.dateCalcelled === false)">{{item.borrowerLastName?.substring(0,10)}}</span>
+                        </div>
+                        <div class="col-6" *ngIf="item.payorType === 'Co-Borrower'">
+                          <span>{{item.coBorrowerLastName?.substring(0,10)}}</span>
+                        </div>
+                        <div class="col-6">
+                          <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===false" style="color: red;">CANCELED</span>
+                          <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===true" style="color: #119a08;">CANCELED</span>
+                          <label  *ngIf="item.paymentAdviceStatus && item.dateCalcelled === false" class="col-3 padding-l">Batch:</label>
+                          <span   *ngIf="item.paymentAdviceStatus && item.dateCalcelled === false" class="col-3 ">
+                            {{item.batchCode}}
+                          </span>
+                        </div>
+                        <!-- <label class="col-2">Batch:</label>
+                        <div class="col-4" *ngIf="item.paymentAdviceStatus && item.dateCalcelled === false">
+                            {{item.batchCode}}
+                          </div> -->
+                      </div>
+                    </div>
+              </div>
+            </cdk-virtual-scroll-viewport>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <div class="drag-container paymentAdvList">
+            <div class="listHead">
+              <div class="section-heading">Bankruptcy</div>
+              <div class="row">
+                <div class="col-6 pr-0">
+                  <span class="heading">Total Advices</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{bankruptcy.length}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{totalAmountForBankruptcy |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 pr-0">
+                  <span class="heading">Pending Advices</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{pendingCountForBankruptcy}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{pendingAmountForBankruptcy |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 pr-0">
+                  <span class="heading">Processed Advices</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{processedCountForBankruptcy}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{processedAmountForBankruptcy |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div>
+              <div class="row" [ngClass]="{'red-text': processRemovedFromBackendForBankruptcy===false && canceledProcessedBatchCountForBankruptcy>0,
+              'green-text': processRemovedFromBackendForBankruptcy===true && canceledProcessedBatchCountForBankruptcy>0}">
+                <div class="col-6 pr-0">
+                  <span class="heading">Canceled in Batch</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{canceledProcessedBatchCountForBankruptcy}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{canceledProcessedBatchAmountForBankruptcy |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div> 
+            </div>
+            <cdk-virtual-scroll-viewport itemSize="50" cdkDropList #bankruptcyList="cdkDropList"
+              [cdkDropListData]="bankruptcy" [cdkDropListConnectedTo]="[cashieringList,lossMitList,collectionsList]"
+              class="item-list mt-2" (cdkDropListDropped)="drop($event, 'Bankruptcy')">
+              <div class="item-box" *ngFor="let item of bankruptcy; let i=index"
+                (click)="getPaymentAdviceDetailsForAdmin(i, 'Bankruptcy')" (mouseenter)="enterAdviceIndex(i)" cdkDrag
+                [ngClass]="{
+                  'negative' : item.paymentAdviceStatus === false && item.dateCalcelled === false,
+                  'positive-canceled': (item.paymentAdviceStatus === true && item.dateCalcelled === true), 
+                  'positive' : item.paymentAdviceStatus === true && item.dateCalcelled === false}">
+                <div>
+                  <div class="row form-group">
+                    <label class="col-2">Loan:</label>
+                    <div class="col-4">
+                      {{item.loanNumber}}
+                    </div>
+                    <label class="col-2">Pmt:</label>
+                    <div class="col-4">
+                      {{item.totalPayment.toFixed(2) |currency:'USD':true:'1.2-2'}}
+                    </div>
+                  </div>
+                  <div class="row form-group">
+                    <div class="col-6" *ngIf="item.payorType === 'Borrower' || item.payorType === 'Other' || item.payorType === 'Occupant'">
+                      <!-- <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true" style="color: red;">PMT CANCELED</span> -->
+                      <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===false" style="color: red;">{{item.borrowerLastName?.substring(0,10)}}</span>
+                          <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===true" style="color: #119a08;">{{item.borrowerLastName?.substring(0,10)}}</span>
+                      <span *ngIf="(item.paymentAdviceStatus === false && item.dateCalcelled === false) || 
+                      (item.paymentAdviceStatus === true && item.dateCalcelled === false)">{{item.borrowerLastName?.substring(0,10)}}</span>
+                    </div>
+                    <div class="col-6" *ngIf="item.payorType === 'Co-Borrower'">
+                      <span>{{item.coBorrowerLastName?.substring(0,10)}}</span>
+                    </div>
+                    <div class="col-6">
+                      <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===false" style="color: red;">CANCELED</span>
+                      <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===true" style="color: #119a08;">CANCELED</span>
+                      <label  *ngIf="item.paymentAdviceStatus && item.dateCalcelled === false" class="col-3 padding-l">Batch:</label>
+                      <span   *ngIf="item.paymentAdviceStatus && item.dateCalcelled === false" class="col-3">
+                        {{item.batchCode}}
+                      </span>
+                    </div>	
+                    <!-- <label class="col-2">Batch:</label>
+                    <div class="col-4" *ngIf="item.paymentAdviceStatus">
+                        {{item.batchCode}}
+                      </div> -->
+                  </div>
+                </div>
+              </div>
+            </cdk-virtual-scroll-viewport>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <div class="drag-container paymentAdvList">
+            <div class="listHead">
+              <div class="section-heading">Collections</div>
+              <div class="row">
+                <div class="col-6 pr-0">
+                  <span class="heading">Total Advices</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{collection.length}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{totalAmountForCollection |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 pr-0">
+                  <span class="heading">Pending Advices</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{pendingCountForCollection}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{pendingAmountForCollection |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 pr-0">
+                  <span class="heading">Processed Advices</span>
+                </div>
+                <div class="col-3">
+                  <span class="heading">{{processedCountForCollection}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{processedAmountForCollection |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div>
+              <div class="row" [ngClass]="{'red-text': processRemovedFromBackendForCollections===false && canceledProcessedBatchCountForCollection>0,
+              'green-text': processRemovedFromBackendForCollections===true && canceledProcessedBatchCountForCollection>0}">
+                <div class="col-6 pr-0">
+                  <span class="heading">Canceled in Batch</span>
+                </div>
+                <div class="col-3 ">
+                  <span class="heading">{{canceledProcessedBatchCountForCollection}}</span>
+                </div>
+                <div class="col-3 pl-0">
+                  <span class="amount">{{canceledProcessedBatchAmountForCollection |currency:'USD':true:'1.2-2'}}</span>
+                </div>
+              </div> 
+            </div>
+            <cdk-virtual-scroll-viewport itemSize="50" cdkDropList #collectionsList="cdkDropList"
+              [cdkDropListData]="collection" [cdkDropListConnectedTo]="[cashieringList,lossMitList,bankruptcyList]"
+              class="item-list mt-2" (cdkDropListDropped)="drop($event, 'Collections')">
+              <div class="item-box" *ngFor="let item of collection; let i=index"
+                (click)="getPaymentAdviceDetailsForAdmin(i, 'Collection')" (mouseenter)="enterAdviceIndex(i)" cdkDrag
+                [ngClass]="{
+                  'negative' : item.paymentAdviceStatus === false && item.dateCalcelled === false,
+                  'positive-canceled': (item.paymentAdviceStatus === true && item.dateCalcelled === true), 
+                  'positive' : item.paymentAdviceStatus === true && item.dateCalcelled === false}">
+                <div>
+                  <div class="row form-group">
+                    <label class="col-2">Loan:</label>
+                    <div class="col-4">
+                      {{item.loanNumber}}
+                    </div>
+                    <label class="col-2">Pmt:</label>
+                    <div class="col-4">
+                      {{item.totalPayment.toFixed(2) |currency:'USD':true:'1.2-2'}}
+                    </div>
+                  </div>
+                  <div class="row form-group">
+                    <div class="col-6" *ngIf="item.payorType === 'Borrower' || item.payorType === 'Other' || item.payorType === 'Occupant'">
+                      <!-- <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true" style="color: red;">PMT CANCELED</span> -->
+                      <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===false" style="color: red;">{{item.borrowerLastName?.substring(0,10)}}</span>
+                      <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===true" style="color: #119a08;">{{item.borrowerLastName?.substring(0,10)}}</span>
+                      <span *ngIf="(item.paymentAdviceStatus === false && item.dateCalcelled === false) || 
+                      (item.paymentAdviceStatus === true && item.dateCalcelled === false)">{{item.borrowerLastName?.substring(0,10)}}</span>
+                    </div>
+                    <div class="col-6" *ngIf="item.payorType === 'Co-Borrower'">
+                      <span>{{item.coBorrowerLastName?.substring(0,10)}}</span>
+                    </div>
+                    <div class="col-6">
+                      <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===false" style="color: red;">CANCELED</span>
+                      <span *ngIf="item.paymentAdviceStatus === true && item.dateCalcelled === true && item.removedFromBK===true" style="color: #119a08;">CANCELED</span>
+                      <label  *ngIf="item.paymentAdviceStatus && item.dateCalcelled === false" class="col-3 padding-l">Batch:</label>
+                      <span   *ngIf="item.paymentAdviceStatus && item.dateCalcelled === false"class="col-3">
+                        {{item.batchCode}}
+                      </span>
+                    </div>
+                    <!-- <label class="col-2">Batch:</label>
+                    <div class="col-4" *ngIf="item.paymentAdviceStatus">
+                        {{item.batchCode}}
+                      </div> -->
+                  </div>
+                </div>
+              </div>
+            </cdk-virtual-scroll-viewport>
+          </div>
+        </div>
+      </div>
+    </div>
+    <app-footer></app-footer>
+  </div>
+</div>
+
+
+
+
+
+
+
+

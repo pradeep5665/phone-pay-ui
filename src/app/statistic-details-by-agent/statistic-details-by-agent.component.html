@@ -1,0 +1,398 @@
+<div id="wrapper">
+  <app-header></app-header>
+  <app-check-request-disabled *ngIf="userDetails.authorities !== 'ServicingAdmin'"></app-check-request-disabled>
+  <!-- <app-admin-check-request-disabled *ngIf="userDetails.authorities === 'ServicingAdmin'">
+  </app-admin-check-request-disabled> -->
+
+  <app-admin-dashboard *ngIf="userDetails.authorities === 'ServicingAdmin'">
+  </app-admin-dashboard>
+
+  <!-- <app-check-request *ngIf="userDetails.authorities !== 'ServicingAdmin'"></app-check-request>
+    <app-admin-dashboard *ngIf="userDetails.authorities === 'ServicingAdmin'">
+    </app-admin-dashboard> -->
+  <div id="content-wrapper">
+    <div class="container-fluid mt-3">
+      <div class="row">
+        <div class="col-md-12 mb-4">
+          <div class="card customCardWrapper">
+            <div class="card-header">
+              <h4>Statistics Selection By Agent Criteria</h4>
+            </div>
+            <div class="card-body">
+              <form [formGroup]="statisticDetailAgentForm">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group ">
+                      <div class="datePickerWrapper">
+                        <label for="inputPassword" class="col-form-label">Date From:</label>
+                        <!-- <input type="date" class="form-control" formControlName="dateFrom" [value]="statisticDetailForm.get('dateFrom')?.value | date: 'yyyy-MM-dd'"> -->
+                        <input type="date" class="form-control" formControlName="dateFrom"
+                          value="{{ post.dateFrom | date:'yyyy-MM-dd' }}">
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group ">
+                      <div class="datePickerWrapper">
+                        <label for="inputPassword" class="col-form-label">Date To:</label>
+                        <!-- <input type="date" class="form-control" formControlName="dateTo" [value]="statisticDetailForm.get('dateTo')?.value | date: 'yyyy-MM-dd'"> -->
+                        <input type="date" class="form-control" formControlName="dateTo"
+                          value="{{ post.dateTo | date:'yyyy-MM-dd' }}">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- checkbox section start -->
+                <div class="row static-checkbox-text">
+                  <div class="col-sm-2">
+                    <h4>
+                      payment type
+                    </h4>
+                  </div>
+                  <div class="col-sm-10 d-flex">
+                    <!-- <label class="custom-checkbox-agent">All
+                                <input type="checkbox" checked="checked" id="adviceAll" name="All"
+                                value="customEx" (change)="getAdviceType('All')">
+                                <span class="checkmark"></span>
+                              </label> -->
+                    <label class="custom-checkbox-agent">Cash
+                      <input type="checkbox" id="paymentCash" name="paymentCash" value="customEx"
+                        (change)="getPaymentAdviceType('paymentCash',$event)" checked="checked">
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="custom-checkbox-agent">BK
+                      <input type="checkbox" id="paymentBank" name="paymentBank" value="customEx"
+                        (change)="getPaymentAdviceType('paymentBank',$event)" checked="checked">
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="custom-checkbox-agent">Coll
+                      <input type="checkbox" id="paymentColl" name="paymentColl" value="customEx"
+                        (change)="getPaymentAdviceType('paymentColl',$event)" checked="checked">
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="custom-checkbox-agent">Loss Mit
+                      <input type="checkbox" id="paymentLossMit" name="paymentLossMit" value="customEx"
+                        (change)="getPaymentAdviceType('paymentLossMit',$event)" checked="checked">
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="custom-checkbox-agent">Reg
+                      <input type="checkbox" id="paymentReg" name="paymentReg" value="customEx"
+                        (change)="getPaymentAdviceType('paymentReg',$event)" checked="checked">
+                      <span class="checkmark"></span>
+                    </label>
+
+                  </div>
+
+                </div>
+                <div class="row static-checkbox-text">
+                  <div class="col-sm-2">
+                    <h4>
+                      Advice Type
+                    </h4>
+                  </div>
+                  <div class="col-sm-10 d-flex">
+                    <label class="custom-checkbox-agent">Cash
+                      <input type="checkbox" id="adviceCash" name="adviceCash" value="customEx"
+                        (change)="getAdviceType('adviceCash',$event)" checked="checked">
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="custom-checkbox-agent">BK
+                      <input type="checkbox" id="adviceBank" name="adviceBank" value="customEx"
+                        (change)="getAdviceType('adviceBank',$event)" checked="checked">
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="custom-checkbox-agent">Coll
+                      <input type="checkbox" id="adviceColl" name="adviceColl" value="customEx"
+                        (change)="getAdviceType('adviceColl',$event)" checked="checked">
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="custom-checkbox-agent">Loss Mit
+                      <input type="checkbox" id="adviceLossMit" name="adviceLossMit" value="customEx"
+                        (change)="getAdviceType('adviceLossMit',$event)" checked="checked">
+                      <span class="checkmark"></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="row static-checkbox-text">
+                  <div class="col-sm-2">
+                    <h4>Order By</h4>
+                  </div>
+                  <div class="col-sm-10 d-flex">
+                    <div class="custom-control custom-radio custom-radio-agent">
+                      <input type="radio" class="custom-control-input" id="customRadio" checked="checked" name="radio"
+                        value="Agent" name="AgentType" (change)="getOrderType($event.target.value)">
+                      <label class="custom-control-label custom-radio-text" for="customRadio">
+                        Agent
+                      </label>
+                    </div>
+                    <div class="custom-control custom-radio custom-radio-agent">
+                      <input type="radio" class="custom-control-input" id="customRadio2" name="radio" value="Date"
+                        name="AgentType" (change)="getOrderType($event.target.value)">
+                      <label class="custom-control-label custom-radio-text" for="customRadio2">
+                        Date
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="export-btn-section">
+                  <button class="btn btn-primary" (click)="onSubmit()">Submit</button>
+                </div>
+                <div class="export-btn-section">
+                  <button class="btn btn-primary" (click)="exportAsXLSX()">Export</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="card customCardWrapper mt-5">
+            <div class="card-header">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-12 foroverflow">
+                    <table class="custom-table">
+                      <tr>
+                        <td class="pr-0">
+                          <div class="customLeftTableWrapper static-table-agent">
+                            <table class="table  left-table-section table-sm table-bordered">
+                              <tbody class="left-padding">
+                                <tr style="height: 25px; border-style:hidden;">
+                                </tr>
+                                <tr style="border-style:hidden;">
+                                  <td>Grand Total</td>
+                                </tr>
+                                <tr>
+                                  <td></td>
+                                </tr>
+                              <tr style="border-style:hidden;" *ngIf="selectOrderType === 'Agent'">
+                                <ng-container *ngFor="let agentname of allUniqueAgents; let i = index;">
+                                    <tr class="accordion-toggle" data-toggle="collapse" style="border-style:hidden;"
+                                    [ngClass]="{'forfont': agentsForSelectedRow===agentname, 'collapsed': i !== expandedIndex }">
+                                      <td class="expand-button forline" (click)="expandRow(i, agentname)"  style="border-style:hidden;" ></td>
+                                      <td class="col-md-8 forline" colspan="2" >{{agentname}}</td>
+                                    </tr>
+                                    <ng-container class="add-minus" *ngIf="i === expandedIndex">
+                                      <tr><td></td></tr>
+                                      <tr class="accordion-toggle" data-toggle="collapse" *ngFor="let months of agentMonthlyTransactionDetails; let in = index;"
+                                       [ngClass]="{'forfont': monthForSelectedRow===months, 'collapsed': i !== agentexpandedIndex, 'collapsed': monthForSelectedRow !== months }"
+                                      >
+                                        <td style="border-style:hidden;">&nbsp;</td> 
+                                        <td class="expand-button forline" 
+                                          style="border-style:hidden;"
+                                          (click)="expandRowAgent(in,agentname,months,'')">
+                                       </td>
+                                        <td style="border-style:hidden;" colspan="2">{{months}} 
+                                          <ng-container class="add-minus" *ngIf="in === agentexpandedIndex &&  selectedMonth === months" >
+                                            <tr class="accordion-toggle" data-toggle="collapse" *ngFor="let transdate of agentDateWiseTransactionDetails; let inn = index;"
+                                            >
+                                              <!-- <td style="border-style:hidden; display:table-caption;">&nbsp;</td> -->
+                                              <td  style="border-style:hidden;">{{transdate| date: 'EEEE, MMMM d, y'}} </td>
+                                              <td style="border-style:hidden;">&nbsp;</td>                                   
+                                            </tr>                                  
+                                            </ng-container>
+                                        </td>                                
+                                      </tr>
+                                      <tr><td></td></tr>
+                                    </ng-container>
+                                </ng-container>
+                              </tr>
+                              <!-- Order By date -->
+                              <tr style="border-style:hidden;" *ngIf="selectOrderType==='Date'">
+                                <ng-container *ngFor="let monthname of monthNames; let i = index;">
+                                    <tr class="accordion-toggle" data-toggle="collapse" style="border-style:hidden;"
+                                    [ngClass]="{'forfont': monthsForSelectedRow===monthname, 'collapsed': i !== expandedMonthIndexOrderByDate }">
+                                      <td class="expand-button forline" (click)="expandMonthRowOrderByDate(i, monthname)"  style="border-style:hidden;" ></td>
+                                      <td class="col-md-8 forline" colspan="2" >{{monthname}}</td>
+                                    </tr>
+                                    <ng-container class="add-minus" *ngIf="i === expandedMonthIndexOrderByDate">
+                                      <tr class="accordion-toggle" data-toggle="collapse" *ngFor="let date of dateWiseTransactionDetails; let in = index;"
+                                       [ngClass]="{'forfont': dateForSelectedRow===date, 'collapsed': i !== expandedDateIndexOrderByDate, 'collapsed': dateForSelectedRow !== date }"
+                                      >
+                                        <td style="border-style:hidden;">&nbsp;</td> 
+                                        <td class="expand-button forline" 
+                                          style="border-style:hidden;"
+                                          (click)="expandDateRowOrderByDate(in,monthname,date)">
+                                       </td>
+                                        <td style="border-style:hidden;" colspan="2">{{date| date: 'EEEE, MMMM d, y'}} 
+                                          <ng-container class="add-minus" *ngIf="in === expandedDateIndexOrderByDate" >
+                                            <tr class="accordion-toggle" data-toggle="collapse" *ngFor="let agentname of agentListFordateWise; let inn = index;"
+                                            >
+                                              <!-- <td style="border-style:hidden; display:table-caption;">&nbsp;</td> -->
+                                              <td  style="border-style:hidden;">{{agentname}} </td>
+                                              <td style="border-style:hidden;">&nbsp;</td>                                   
+                                            </tr>                                  
+                                            </ng-container>
+                                        </td>                                
+                                      </tr>
+                                      <tr><td></td></tr>
+                                    </ng-container>
+                                </ng-container>
+                              </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </td>
+                        <div class="customRightTableWrapper table-responsive">
+                          <table class="table table-sm table-bordered for-border for-rightcontent">
+                            <thead>
+                              <tr>
+                                <th [attr.colspan] = paymentColspanVal *ngIf="isTotalPayment">Payment</th>
+                                <th [attr.colspan]=adviceColspanVal *ngIf="isTotalAdvice">Completed Advice</th>
+                              </tr>
+                            </thead>
+                            <tr>
+                              <td *ngIf="isTotalPayment">Total</td>
+                              <td *ngIf="paymentReg">Reg</td>
+                              <td *ngIf="paymentCash">Cash</td>
+                              <td *ngIf="paymentBank">BK</td>
+                              <td *ngIf="paymentColl">Coll</td>
+                              <td *ngIf="paymentLossMit">Loss Mit</td>
+                              <td *ngIf="isWaiveFee">Waive Fee</td>
+                              <td *ngIf="isTotalAdvice">Total</td>
+                              <td *ngIf="adviceCash">Cash</td>
+                              <td *ngIf="adviceBank">BK</td>
+                              <td *ngIf="adviceColl">Coll</td>
+                              <td *ngIf="adviceLossMit">Loss Mit</td>
+                            </tr>
+                             <tr>
+                              <td *ngIf="isTotalPayment">{{grandTotalAllAPaymentCount}}</td> 
+                              <td *ngIf="paymentReg">{{grandTotalRegularCount}}</td>
+                              <td *ngIf="paymentCash">{{grandTotalcashieringCount}}</td>
+                              <td *ngIf="paymentBank">{{grandTotalBankruptcyCount}}</td>
+                              <td *ngIf="paymentColl">{{grandTotalcollectionCount}}</td>
+                              <td *ngIf="paymentLossMit">{{grandTotalLosmitCount}}</td>
+                              <td *ngIf="isWaiveFee">{{grandTotalAllWaveCount}}</td>
+                              <td *ngIf="isTotalAdvice">{{this.grandTotalAllAdviceCount}}</td>
+                              <td *ngIf="adviceCash">{{grandTotalcashieringAdviceCount}}</td>
+                              <td *ngIf="adviceBank">{{grandTotalBankruptcyAdviceCount}}</td>
+                              <td *ngIf="adviceColl">{{grandTotalcollectionAdviceCount}}</td>
+                              <td *ngIf="adviceLossMit">{{grandTotalLosmitAdviceCount}}</td>
+                             </tr>
+                                  <div class="table-content"  *ngIf="selectOrderType==='Agent'">
+                                      <ng-container *ngFor="let agentname of agentMonthelyCountDetailList; let i = index;">
+                                          <tr class="accordion-toggle" data-toggle="collapse" 
+                                          [ngClass]="{'forfont': agentsForSelectedRow===agentname.agentName, 'collapsed': i !== expandedIndex }">
+                                            <td *ngIf="isTotalPayment">{{agentname.totalPaymentAdviceCount}}</td>
+                                            <td *ngIf="paymentReg">{{agentname.regularPaymentCount}}</td>
+                                            <td *ngIf="paymentCash">{{agentname.cashieringPaymentCount}}</td>
+                                            <td *ngIf="paymentBank">{{agentname.BankruptcyPaymentCount}}</td>
+                                            <td *ngIf="paymentColl">{{agentname.collectionsPaymentCount}}</td>
+                                            <td *ngIf="paymentLossMit">{{agentname.losMitPaymentCount}}</td>
+                                            <td *ngIf="isWaiveFee">{{agentname.waiveFeeCount}}</td>
+                                            <td *ngIf="isTotalAdvice">{{agentname.totalAdviceCount}}</td>
+                                            <td *ngIf="adviceCash">{{agentname.cashieringAdviceCount}}</td>
+                                            <td *ngIf="adviceBank">{{agentname.BankruptcyAdviceCount}}</td>
+                                            <td *ngIf="adviceColl">{{agentname.collectionsAdviceCount}}</td>
+                                            <td *ngIf="adviceLossMit">{{agentname.losMitAdviceCount}}</td>
+                                          </tr>
+                                          <ng-container class="add-minus" *ngIf="i === expandedIndex">
+                                          <ng-container class="add-minus" *ngFor="let months of agentMonthSpecificCountDetailList; let in = index;">
+                                            <tr class="accordion-toggle" data-toggle="collapse" *ngIf="i === expandedIndex" 
+                                              [ngClass]="{'forfont': monthForSelectedRow===months.monthName,
+                                               'collapsed': i !== agentexpandedIndex, 'collapsed': monthForSelectedRow !== months }">
+                                              <td *ngIf="isTotalPayment">{{months.totalPaymentAdviceCount}}</td>
+                                              <td *ngIf="paymentReg">{{months.regularPaymentCount}}</td>
+                                              <td  *ngIf="paymentCash">{{months.cashieringPaymentCount}}</td>
+                                              <td *ngIf="paymentBank">{{months.BankruptcyPaymentCount}}</td>
+                                              <td *ngIf="paymentColl">{{months.collectionsPaymentCount}}</td>
+                                              <td *ngIf="paymentLossMit">{{months.losMitPaymentCount}}</td>
+                                              <td *ngIf="isWaiveFee">{{months.waiveFeeCount}}</td>
+                                              <td *ngIf="isTotalAdvice">{{months.totalAdviceCount}}</td>
+                                              <td *ngIf="adviceCash">{{months.cashieringAdviceCount}}</td>
+                                              <td *ngIf="adviceBank">{{months.BankruptcyAdviceCount}}</td>
+                                              <td *ngIf="adviceColl">{{months.collectionsAdviceCount}}</td>
+                                              <td *ngIf="adviceLossMit">{{months.losMitAdviceCount}}</td>
+                                              </tr>
+                                              <ng-container *ngIf="in == agentexpandedIndex &&  selectedMonth === months.monthName">
+                                                <ng-container class="add-minus" *ngIf="in === agentexpandedIndex &&  selectedMonth === months.monthName" >
+                                                  <tr class="accordion-toggle forpadding"  data-toggle="collapse" *ngFor="let transdate of agentdateSpecificCountDetailList; let inn = index;">
+                                                      <td *ngIf="isTotalPayment">{{transdate.totalPaymentAdviceCount}}</td>
+                                                      <td *ngIf="paymentReg">{{transdate.regularPaymentCount}}</td>
+                                                      <td *ngIf="paymentCash">{{transdate.cashieringPaymentCount}}</td>
+                                                      <td *ngIf="paymentBank">{{transdate.BankruptcyPaymentCount}}</td>
+                                                      <td *ngIf="paymentColl">{{transdate.collectionsPaymentCount}}</td>
+                                                      <td *ngIf="paymentLossMit">{{transdate.losMitPaymentCount}}</td>
+                                                      <td *ngIf="isWaiveFee">{{transdate.waiveFeeCount}}</td>
+                                                      <td *ngIf="isTotalAdvice">{{transdate.totalAdviceCount}}</td>
+                                                      <td *ngIf="adviceCash">{{transdate.cashieringAdviceCount}}</td>
+                                                      <td *ngIf="adviceBank">{{transdate.BankruptcyAdviceCount}}</td>
+                                                      <td *ngIf="adviceColl">{{transdate.collectionsAdviceCount}}</td>
+                                                      <td *ngIf="adviceLossMit">{{transdate.losMitAdviceCount}}</td>
+                                                  </tr>                                  
+                                                  </ng-container>
+                                            </ng-container>
+                                          </ng-container>
+                                        </ng-container>
+                                      </ng-container>
+                                    </div>
+                               <!-- //Agent Loop for Date -->
+                          <div class="table-content"  *ngIf="selectOrderType==='Date'">
+                                      <ng-container *ngFor="let monthname of agentMonthelyCountDetailList; let i = index;">
+                                          <tr class="accordion-toggle" data-toggle="collapse" 
+                                          [ngClass]="{'forfont': monthsForSelectedRow===monthname, 'collapsed': i !== expandedMonthIndexOrderByDate }">
+                                            <td *ngIf="isTotalPayment">{{monthname.totalPaymentAdviceCount}}</td>
+                                            <td *ngIf="paymentReg">{{monthname.regularPaymentCount}}</td>
+                                            <td *ngIf="paymentCash">{{monthname.cashieringPaymentCount}}</td>
+                                            <td *ngIf="paymentBank">{{monthname.BankruptcyPaymentCount}}</td>
+                                            <td *ngIf="paymentColl">{{monthname.collectionsPaymentCount}}</td>
+                                            <td *ngIf="paymentLossMit">{{monthname.losMitPaymentCount}}</td>
+                                            <td *ngIf="isWaiveFee">{{monthname.waiveFeeCount}}</td>
+                                            <td *ngIf="isTotalAdvice">{{monthname.totalAdviceCount}}</td>
+                                            <td *ngIf="adviceCash">{{monthname.cashieringAdviceCount}}</td>
+                                            <td *ngIf="adviceBank">{{monthname.BankruptcyAdviceCount}}</td>
+                                            <td *ngIf="adviceColl">{{monthname.collectionsAdviceCount}}</td>
+                                            <td *ngIf="adviceLossMit">{{monthname.losMitAdviceCount}}</td>
+                                          </tr>
+                                          <ng-container class="add-minus" *ngIf="i === expandedMonthIndexOrderByDate">
+                                            <ng-container class="add-minus" *ngFor="let date of agentMonthSpecificCountDetailList; let in = index;">
+                                              <tr class="accordion-toggle" data-toggle="collapse" *ngIf="i === expandedMonthIndexOrderByDate" 
+                                                 [ngClass]="{'forfont': dateForSelectedRow===date, 'collapsed': i !== expandedDateIndexOrderByDate, 'collapsed': dateForSelectedRow !== date }">
+                                               
+                                                <td *ngIf="isTotalPayment">{{date.totalPaymentAdviceCount}}</td>
+                                                <td *ngIf="paymentReg">{{date.regularPaymentCount}}</td>
+                                                <td *ngIf="paymentCash">{{date.cashieringPaymentCount}}</td>
+                                                <td *ngIf="paymentBank">{{date.BankruptcyPaymentCount}}</td>
+                                                <td *ngIf="paymentColl">{{date.collectionsPaymentCount}}</td>
+                                                <td *ngIf="paymentLossMit">{{date.losMitPaymentCount}}</td>
+                                                <td *ngIf="isWaiveFee">{{date.waiveFeeCount}}</td>
+                                                <td *ngIf="isTotalAdvice">{{date.totalAdviceCount}}</td>
+                                                <td *ngIf="adviceCash">{{date.cashieringAdviceCount}}</td>
+                                                <td *ngIf="adviceBank">{{date.BankruptcyAdviceCount}}</td>
+                                                <td *ngIf="adviceColl">{{date.collectionsAdviceCount}}</td>
+                                                <td *ngIf="adviceLossMit">{{date.losMitAdviceCount}}</td>
+                                                </tr>
+                                              <ng-container *ngIf="in == expandedDateIndexOrderByDate &&  selectedDate === date.agentPayDate">
+                                                  <ng-container class="add-minus" *ngIf="in === expandedDateIndexOrderByDate &&  selectedDate === date.agentPayDate" >
+                                                    <tr class="accordion-toggle forpadding"  data-toggle="collapse" *ngFor="let agent of agentdateSpecificCountDetailList; let inn = index;">
+                                                      <td *ngIf="isTotalPayment">{{agent.totalPaymentAdviceCount}}</td>
+                                                        <td *ngIf="paymentReg">{{agent.regularPaymentCount}}</td>
+                                                        <td *ngIf="paymentCash">{{agent.cashieringPaymentCount}}</td>
+                                                        <td *ngIf="paymentBank">{{agent.BankruptcyPaymentCount}}</td>
+                                                        <td *ngIf="paymentColl">{{agent.collectionsPaymentCount}}</td>
+                                                        <td *ngIf="paymentLossMit">{{agent.losMitPaymentCount}}</td>
+                                                        <td *ngIf="isWaiveFee">{{agent.waiveFeeCount}}</td>
+                                                        <td *ngIf="isTotalAdvice">{{agent.totalAdviceCount}}</td>
+                                                        <td *ngIf="adviceCash">{{agent.cashieringAdviceCount}}</td>
+                                                        <td *ngIf="adviceBank">{{agent.BankruptcyAdviceCount}}</td>
+                                                        <td *ngIf="adviceColl">{{agent.collectionsAdviceCount}}</td>
+                                                        <td *ngIf="adviceLossMit">{{agent.losMitAdviceCount}}</td>
+                                                    </tr>                                  
+                                                    </ng-container>
+                                              </ng-container> 
+                                            </ng-container>
+                                          </ng-container>
+                                      </ng-container>  
+                                    </div>
+                          </table>
+                        </div>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+         </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

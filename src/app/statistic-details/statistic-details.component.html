@@ -1,0 +1,1698 @@
+<!-- <h3>Coming Soon............</h3>  -->
+
+<div id="wrapper">
+  <app-header></app-header>
+  <app-check-request-disabled *ngIf="userDetails.authorities !== 'ServicingAdmin'"></app-check-request-disabled>
+  <!-- <app-admin-check-request-disabled *ngIf="userDetails.authorities === 'ServicingAdmin'">
+  </app-admin-check-request-disabled> -->
+  <app-admin-dashboard *ngIf="userDetails.authorities === 'ServicingAdmin'">
+  </app-admin-dashboard>
+  <div id="content-wrapper">
+    <div class="container-fluid mt-3">
+      <div class="row">
+        <div class="col-md-12 mb-4">
+          <div class="card customCardWrapper">
+            <div class="card-header">
+              <h4>Statistics Selection Criteria</h4>
+            </div>
+            <div class="card-body">
+              <form [formGroup]="statisticDetailForm">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group ">
+                      <div class="datePickerWrapper">
+                        <label for="inputPassword" class="col-form-label">Date Range:</label>
+                        <!-- <input type="date" class="form-control" formControlName="dateFrom" [value]="statisticDetailForm.get('dateFrom')?.value | date: 'yyyy-MM-dd'"> -->
+                        <input type="date" class="form-control" formControlName="dateFrom" value="{{ post.dateFrom | date:'yyyy-MM-dd' }}">
+                      </div>
+                    </div>
+                   
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group ">
+                      <div class="datePickerWrapper">
+                        <label for="inputPassword" class="col-form-label">To:</label>
+                        <!-- <input type="date" class="form-control" formControlName="dateTo" [value]="statisticDetailForm.get('dateTo')?.value | date: 'yyyy-MM-dd'"> -->
+                        <input type="date" class="form-control" formControlName="dateTo" value="{{ post.dateTo | date:'yyyy-MM-dd' }}">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="radioBtnWrapper">
+                      <div class="custom-control custom-radio customInnerBox">
+                        <input type="radio" class="custom-control-input" id="customRadio1" name="example1"
+                          value="customEx" (change)="getExactDates('Month')">
+                        <label class="custom-control-label" for="customRadio1">Month</label>
+                      </div>
+                      <div class="custom-control custom-radio customInnerBox">
+                        <input type="radio" class="custom-control-input" id="customRadio2" name="example1"
+                          value="customEx" (change)="getExactDates('Quater')">
+                        <label class="custom-control-label" for="customRadio2">Quarter <span>(09/01/2019
+                            - 10/18/2020)</span></label>
+                      </div>
+                      <div class="custom-control custom-radio customInnerBox">
+                        <input type="radio" class="custom-control-input" id="customRadio3" name="example1"
+                          value="customEx" (change)="getExactDates('Year')">
+                        <label class="custom-control-label" for="customRadio3">Year <span>(09/01/2019 -
+                            10/18/2020)</span></label>
+                      </div>
+                      <div class="custom-control custom-radio customInnerBox">
+                        <input type="radio" class="custom-control-input" id="customRadio4" name="example1"
+                          value="customEx" (change)="getExactDates('Month to Date')">
+                        <label class="custom-control-label" for="customRadio4">Month to Date</label>
+                      </div>
+                      <div class="custom-control custom-radio customInnerBox">
+                        <input type="radio" class="custom-control-input" id="customRadio5" name="example1"
+                          value="customEx" (change)="getExactDates('Quarter to Date')">
+                        <label class="custom-control-label" for="customRadio5">Quarter to Date</label>
+                      </div>
+                      <div class="custom-control custom-radio customInnerBox">
+                        <input type="radio" class="custom-control-input" id="customRadio6" name="example1"
+                          value="customEx" (change)="getExactDates('Year to Date')">
+                        <label class="custom-control-label" for="customRadio6">Year to Date</label>
+                      </div>
+
+                    </div>
+
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 text-right">
+                    <button type="button" class="btn btn-primary submitBtn" (click)="onSubmit()">Submit</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card customCardWrapper">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <table class="custom-table">
+                    <tr>
+                      <td class="pr-0">
+                        <div class="table-responsive customLeftTableWrapper">
+                          <table class="table table-bordered left-table-section">
+                            <thead>
+                              <tr>
+                                <th scope="col">&nbsp;</th>
+                                <th scope="col">&nbsp;</th>
+                                <th scope="col">Number</th>
+                                <th scope="col">Amount</th>
+                              </tr>
+                              <tr>
+                                <th scope="col">&nbsp;</th>
+                                <th scope="col">Grand Total</th>
+                                <!-- <th scope="col">{{grandTotalYear}}</th> -->
+                                <th scope="col">{{grandTotalNumber}}</th>
+                                <th scope="col">{{grandTotalAmount | currency:'USD':true:'1.2-2'}}</th>
+
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <ng-container *ngFor="let month of monthNames; let i = index;">
+                               
+                                <tr class="accordion-toggle" data-toggle="collapse"
+                                  (mouseover)="highlightRowforMonth(month)"
+                                  [ngClass]="{'colorYellow': selectedMonth===month, 'collapsed': i !== expandedIndex }">
+                                  <td class="expand-button" (click)="expandRow(i, month)"></td>
+                                  <td>{{month}}</td>
+                                  <td>{{monthTotalCount[i]}}</td>
+                                  <td>{{monthTotalAmount[i] | currency:'USD':true:'1.2-2'}}</td>
+                                </tr>
+                                <ng-container class="add-minus" *ngIf="i === expandedIndex">
+                                  <tr *ngFor="let stPayment of statisticPaymentList; let in = index;"
+                                    (mouseover)="highlightRowforDate(stPayment.date, stPayment.monthName)"
+                                    [ngClass]="{colorYellow: selectedDate===stPayment.date}">
+                                    <td *ngIf="stPayment.monthName === month">&nbsp;</td>
+                                    <td *ngIf="stPayment.monthName === month">{{stPayment.date}}</td>
+                                    <td *ngIf="stPayment.monthName === month">{{stPayment.paymentCount}}</td>
+                                    <td *ngIf="stPayment.monthName === month">
+                                      {{stPayment.totalPayment | currency:'USD':true:'1.2-2'}}</td>
+                                  </tr>
+                                </ng-container>
+                              </ng-container>
+                            </tbody>
+                          </table>
+                        </div>
+
+                      </td>
+                      <td class="pl-0">
+                        <div class="customRightTableWrapper">
+                          <table class="table table-sm table-bordered">
+                            <thead>
+                              <tr>
+                                <th colspan="7" scope="col">Details</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="tab-wrapper" colspan="7" scope="row">
+                                  <ul class="tab-ui">
+                                    <li (keyup.Tab)="isAllClickedWithGrandTotal('All')"
+                                      (click)="isAllClickedWithGrandTotal('All')">
+                                      <button type="button" class="btn btn-sm"
+                                        [ngClass]="{'active': activeButton === 'All'}" tabindex="1">All</button>
+                                    </li>
+                                    <li (keyup.Tab)="isAllClickedWithGrandTotal('REG')"
+                                      (click)="isAllClickedWithGrandTotal('REG')">
+                                      <button class="btn btn-sm"
+                                        [ngClass]="{'active': activeButton === 'REG'}" tabindex="2">REG</button>
+                                    </li>
+                                    <li (keyup.Tab)="isAllClickedWithGrandTotal('CSH')"
+                                      (click)="isAllClickedWithGrandTotal('CSH')">
+                                      <button type="button" class="btn btn-sm"
+                                        [ngClass]="{'active': activeButton === 'CSH'}" tabindex="3">CSH</button>
+                                    </li>
+                                    <li (keyup.Tab)="isAllClickedWithGrandTotal('LM')"
+                                      (click)="isAllClickedWithGrandTotal('LM')">
+                                      <button type="button" class="btn btn-sm"
+                                        [ngClass]="{'active': activeButton === 'LM'}" tabindex="4">LM</button>
+                                    </li>
+                                    <li (keyup.Tab)="isAllClickedWithGrandTotal('BK')"
+                                      (click)="isAllClickedWithGrandTotal('BK')">
+                                      <button type="button" class="btn btn-sm"
+                                        [ngClass]="{'active': activeButton === 'BK'}" tabindex="5">BK</button>
+                                    </li>
+                                    <li (keyup.Tab)="isAllClickedWithGrandTotal('COL')"
+                                      (click)="isAllClickedWithGrandTotal('COL')">
+                                      <button type="button" class="btn btn-sm"
+                                        [ngClass]="{'active': activeButton === 'COL'}" tabindex="6">COL</button>
+                                    </li>
+                                    <li (keyup.Tab)="isAllClickedWithGrandTotal('AGENT')"
+                                      (click)="isAllClickedWithGrandTotal('AGENT')">
+                                      <button type="button" class="btn btn-sm"
+                                        [ngClass]="{'active': activeButton === 'AGENT'}"  tabindex="7">AGENT</button>
+                                    </li>
+                                  </ul>
+                                </td>
+                              </tr>
+                              <ng-container *ngFor="let month of monthNames; let i = index;">
+
+                                <tr *ngIf="isAllSelectedWithMonth && selectedMonth===month">
+                                  <td class="p-0" colspan="7">
+                                    <table class="custom-accord">
+                                      <tr>
+                                        <td>
+                                          <div class="accord-tabs">
+                                            <div [id]="'accordion'+i" class="myaccordion">
+                                              <div class="card">
+                                                <div class="card-header" [id]="'heading'+i">
+                                                  <h2 class="mb-0">
+                                                    <button
+                                                      class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                      data-toggle="collapse" [attr.data-target]="'#collapse'+i"
+                                                      aria-expanded="false" [attr.aria-controls]="'collapse'+i">
+                                                      <span class="accordion-toggle1 fa-stack fa-sm"
+                                                        (click)="isStatusExpanded('collapse'+i+0)"
+                                                        [ngClass]="{'collapsed': collapseValue !== 'collapse'+i+0}">
+                                                        <i class="expand-button"></i>
+                                                      </span>
+                                                      <div class="accord-content">
+                                                        <span>Regular Payments</span>
+                                                        <span>{{regularPaymentCount}}</span>
+                                                        <span>{{regularPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                      </div>
+
+                                                    </button>
+                                                  </h2>
+                                                </div>
+                                                <div [id]="'collapse'+i" class="collapse"
+                                                  [attr.aria-labelledby]="'heading'+i"
+                                                  [attr.data-parent]="'#accordion'+i">
+                                                  <div class="card-body"
+                                                    *ngFor="let regPayment of regularPaymentList; let in = index;">
+                                                    <ul>
+                                                      <li>
+                                                        {{regPayment?.borrowerName + ' ' + regPayment?.borrowerLastName}}
+                                                        <span>
+                                                          {{regPayment?.coBorrowerName + ' ' + regPayment?.coBorrowerLastName}}</span>
+                                                      </li>
+                                                      <li>
+                                                        {{regPayment?.loanNumber}}
+                                                      </li>
+                                                      <li>{{regPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                      </li>
+                                                      <li>{{regPayment?.agentName}}</li>
+                                                    </ul>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="card">
+                                                <div class="card-header" [id]="'heading'+i">
+                                                  <h2 class="mb-0">
+                                                    <button
+                                                      class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                      data-toggle="collapse" [attr.data-target]="'#heading'+i+1"
+                                                      aria-expanded="false" [attr.aria-controls]="'heading'+i+1">
+                                                      <span class="accordion-toggle1 collapsed fa-stack fa-sm"
+                                                        (click)="isStatusExpanded('collapse'+i+1)"
+                                                        [ngClass]="{'collapsed': collapseValue !== 'collapse'+i+1}">
+                                                        <i class="expand-button"></i>
+                                                      </span>
+                                                      <div class="accord-content">
+                                                        <span>Cashiering Payments</span>
+                                                        <span>{{cashieringPaymentCount}}</span>
+                                                        <span>{{cashieringPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                      </div>
+                                                    </button>
+                                                  </h2>
+                                                </div>
+                                                <div [id]="'heading'+i+1" class="collapse"
+                                                  [attr.aria-labelledby]="'heading'+i+1"
+                                                  [attr.data-parent]="'#accordion'+i">
+                                                  <div class="card-body"
+                                                    *ngFor="let cashPayment of cashieringPaymentList; let in = index;">
+                                                    <ul>
+                                                      <li>
+                                                        {{cashPayment?.borrowerName + ' ' + cashPayment?.borrowerLastName}}
+                                                        <span>{{cashPayment?.coBorrowerName + ' ' + cashPayment?.coBorrowerLastName}}</span>
+                                                      </li>
+                                                      <li>
+                                                        {{cashPayment?.loanNumber}}
+                                                      </li>
+                                                      <li>{{cashPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                      </li>
+                                                      <li>{{cashPayment?.agentName}}</li>
+                                                    </ul>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="card">
+                                                <div class="card-header" [id]="'heading'+i">
+                                                  <h2 class="mb-0">
+                                                    <button
+                                                      class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                      data-toggle="collapse" [attr.data-target]="'#heading'+i+2"
+                                                      aria-expanded="false" [attr.aria-controls]="'heading'+i+2">
+                                                      <span class="accordion-toggle1 collapsed fa-stack fa-sm"
+                                                        (click)="isStatusExpanded('collapse'+i+2)"
+                                                        [ngClass]="{'collapsed': collapseValue !== 'collapse'+i+2}">
+                                                        <i class="expand-button"></i>
+                                                      </span>
+                                                      <div class="accord-content">
+                                                        <span>Loss Mit Payments</span>
+                                                        <span>{{lossMitPaymentCount}}</span>
+                                                        <span>{{lossMitPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                      </div>
+                                                    </button>
+                                                  </h2>
+                                                </div>
+                                                <div [id]="'heading'+i+2" class="collapse"
+                                                  [attr.aria-labelledby]="'heading'+i+2"
+                                                  [attr.data-parent]="'#accordion'+i">
+                                                  <div class="card-body"
+                                                    *ngFor="let lossMitPayment of lossMitPaymentList; let in = index;">
+                                                    <ul>
+                                                      <li>
+                                                        {{lossMitPayment?.borrowerName + ' ' + lossMitPayment?.borrowerLastName}}
+                                                        <span>{{lossMitPayment?.coBorrowerName + ' ' + lossMitPayment?.coBorrowerLastName}}</span>
+                                                      </li>
+                                                      <li>
+                                                        {{lossMitPayment?.loanNumber}}
+                                                      </li>
+                                                      <li>{{lossMitPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                      </li>
+                                                      <li>{{lossMitPayment?.agentName}}</li>
+                                                    </ul>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="card">
+                                                <div class="card-header" [id]="'heading'+i">
+                                                  <h2 class="mb-0">
+                                                    <button
+                                                      class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                      data-toggle="collapse" [attr.data-target]="'#heading'+i+3"
+                                                      aria-expanded="false" [attr.aria-controls]="'heading'+i+3">
+                                                      <span class="accordion-toggle1 collapsed fa-stack fa-sm"
+                                                        (click)="isStatusExpanded('collapse'+i+3)"
+                                                        [ngClass]="{'collapsed': collapseValue !== 'collapse'+i+3}">
+                                                        <i class="expand-button"></i>
+                                                      </span>
+                                                      <div class="accord-content">
+                                                        <span>Bankruptcy Payments</span>
+                                                        <span>{{bankRuptcyPaymentCount}}</span>
+                                                        <span>{{bankRuptcyPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                      </div>
+                                                    </button>
+                                                  </h2>
+                                                </div>
+                                                <div [id]="'heading'+i+3" class="collapse"
+                                                  [attr.aria-labelledby]="'heading'+i+3"
+                                                  [attr.data-parent]="'#accordion'+i">
+                                                  <div class="card-body"
+                                                    *ngFor="let bankRuptcyPayment of bankRuptcyPaymentList; let in = index;">
+                                                    <ul>
+                                                      <li>
+                                                        {{bankRuptcyPayment?.borrowerName + ' ' + bankRuptcyPayment?.borrowerLastName}}
+                                                        <span>{{bankRuptcyPayment?.coBorrowerName + ' ' + bankRuptcyPayment?.coBorrowerLastName}}</span>
+                                                      </li>
+                                                      <li>
+                                                        {{bankRuptcyPayment?.loanNumber}}
+                                                      </li>
+                                                      <li>
+                                                        {{bankRuptcyPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                      </li>
+                                                      <li>{{bankRuptcyPayment?.agentName}}</li>
+                                                    </ul>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="card">
+                                                <div class="card-header" [id]="'heading'+i">
+                                                  <h2 class="mb-0">
+                                                    <button
+                                                      class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                      data-toggle="collapse" [attr.data-target]="'#heading'+i+4"
+                                                      aria-expanded="false" [attr.aria-controls]="'heading'+i+4">
+                                                      <span class="accordion-toggle1 collapsed fa-stack fa-sm"
+                                                        (click)="isStatusExpanded('collapse'+i+4)"
+                                                        [ngClass]="{'collapsed': collapseValue !== 'collapse'+i+4}">
+                                                        <i class="expand-button"></i>
+                                                      </span>
+                                                      <div class="accord-content">
+                                                        <span>Collection Payments</span>
+                                                        <span>{{collectionPaymentCount}}</span>
+                                                        <span>{{collectionPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                      </div>
+                                                    </button>
+                                                  </h2>
+                                                </div>
+                                                <div [id]="'heading'+i+4" class="collapse"
+                                                  [attr.aria-labelledby]="'heading'+i+4"
+                                                  [attr.data-parent]="'#accordion'+i">
+                                                  <div class="card-body"
+                                                    *ngFor="let collectioPayment of collectionPaymentList; let in = index;">
+                                                    <ul>
+                                                      <li>
+                                                        {{collectioPayment?.borrowerName + ' ' + collectioPayment?.borrowerLastName}}
+                                                        <span>{{collectioPayment?.coBorrowerName + ' ' + collectioPayment?.coBorrowerLastName}}</span>
+                                                      </li>
+                                                      <li>
+                                                        {{collectioPayment?.loanNumber}}
+                                                      </li>
+                                                      <li>
+                                                        {{collectioPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                      </li>
+                                                      <li>{{collectioPayment?.agentName}}</li>
+                                                    </ul>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                                <tr *ngIf="isRegSelectedWithMonth && selectedMonth===month">
+                                  <td class="p-0" colspan="7">
+                                    <table class="custom-accord">
+                                      <tr>
+                                        <td>
+                                          <div class="accord-tabs">
+                                            <div [id]="'accordion'+i" class="myaccordion">
+                                              <div class="card">
+                                                <div class="card-header" [id]="'heading'+i">
+                                                  <h2 class="mb-0">
+                                                    <button
+                                                      class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                      data-toggle="collapse" [attr.data-target]="'#collapse'+i"
+                                                      aria-expanded="true" [attr.aria-controls]="'collapse'+i">
+                                                      <span class="accordion-toggle1 fa-stack fa-sm"
+                                                        (click)="isStatusExpanded('collapse'+i+8)"
+                                                        [ngClass]="{'collapsed': isStatusClicked}">
+                                                        <i class="expand-button"></i>
+                                                      </span>
+                                                      <div class="accord-content">
+                                                        <span>Regular Payments</span>
+                                                        <span>{{regularPaymentCount}}</span>
+                                                        <span>{{regularPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                      </div>
+                                                    </button>
+                                                  </h2>
+                                                </div>
+                                                <div [id]="'collapse'+i" class="collapse show"
+                                                  [attr.aria-labelledby]="'heading'+i"
+                                                  [attr.data-parent]="'#accordion'+i">
+                                                  <div class="card-body"
+                                                    *ngFor="let regPayment of regularPaymentList; let in = index;">
+                                                    <ul>
+                                                      <li>
+                                                        {{regPayment?.borrowerName + ' ' + regPayment?.borrowerLastName}}
+                                                        <span>
+                                                          {{regPayment?.coBorrowerName + ' ' + regPayment?.coBorrowerLastName}}</span>
+                                                      </li>
+                                                      <li>
+                                                        {{regPayment?.loanNumber}}
+                                                      </li>
+                                                      <li>{{regPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                      </li>
+                                                      <li>{{regPayment?.agentName}}</li>
+                                                    </ul>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                                <tr *ngIf="isCshSelectedWithMonth && selectedMonth===month">
+                                  <td class="p-0" colspan="7">
+                                    <table class="custom-accord">
+                                      <tr>
+                                        <td>
+                                          <div class="accord-tabs">
+                                            <div [id]="'accordion'+i" class="myaccordion">
+                                              <div class="card">
+                                                <div class="card-header" [id]="'heading'+i">
+                                                  <h2 class="mb-0">
+                                                    <button
+                                                      class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                      data-toggle="collapse" [attr.data-target]="'#collapse'+i"
+                                                      aria-expanded="true" [attr.aria-controls]="'collapse'+i">
+                                                      <span class="accordion-toggle1 fa-stack fa-sm"
+                                                        (click)="isStatusExpanded('collapse'+i+9)"
+                                                        [ngClass]="{'collapsed': isStatusClicked}">
+                                                        <i class="expand-button"></i>
+                                                      </span>
+                                                      <div class="accord-content">
+                                                        <span>Cashiering Payments</span>
+                                                        <span>{{cashieringPaymentCount}}</span>
+                                                        <span>{{cashieringPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                      </div>
+                                                    </button>
+                                                  </h2>
+                                                </div>
+                                                <div [id]="'collapse'+i" class="collapse show"
+                                                  [attr.aria-labelledby]="'heading'+i"
+                                                  [attr.data-parent]="'#accordion'+i">
+                                                  <div class="card-body"
+                                                    *ngFor="let cshPayment of cashieringPaymentList; let in = index;">
+                                                    <ul>
+                                                      <li>
+                                                        {{cshPayment?.borrowerName + ' ' + cshPayment?.borrowerLastName}}
+                                                        <span>
+                                                          {{cshPayment?.coBorrowerName + ' ' + cshPayment?.coBorrowerLastName}}</span>
+                                                      </li>
+                                                      <li>
+                                                        {{cshPayment?.loanNumber}}
+                                                      </li>
+                                                      <li>{{cshPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                      </li>
+                                                      <li>{{cshPayment?.agentName}}</li>
+                                                    </ul>
+                                                  </div>
+                                                </div>
+                                              </div>
+
+                                            </div>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                                <tr *ngIf="isLmSelectedWithMonth && selectedMonth===month">
+                                  <td class="p-0" colspan="7">
+                                    <table class="custom-accord">
+                                      <tr>
+                                        <td>
+                                          <div class="accord-tabs">
+                                            <div [id]="'accordion'+i" class="myaccordion">
+                                              <div class="card">
+                                                <div class="card-header" [id]="'heading'+i">
+                                                  <h2 class="mb-0">
+                                                    <button
+                                                      class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                      data-toggle="collapse" [attr.data-target]="'#collapse'+i"
+                                                      aria-expanded="true" [attr.aria-controls]="'collapse'+i">
+                                                      <span class="accordion-toggle1 fa-stack fa-sm"
+                                                        (click)="isStatusExpanded('collapse'+i+10)"
+                                                        [ngClass]="{'collapsed': isStatusClicked}">
+                                                        <i class="expand-button"></i>
+                                                      </span>
+                                                      <div class="accord-content">
+                                                        <span>Loss Mit Payments</span>
+                                                        <span>{{lossMitPaymentCount}}</span>
+                                                        <span>{{lossMitPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                      </div>
+                                                    </button>
+                                                  </h2>
+                                                </div>
+                                                <div [id]="'collapse'+i" class="collapse show"
+                                                  [attr.aria-labelledby]="'heading'+i"
+                                                  [attr.data-parent]="'#accordion'+i">
+                                                  <div class="card-body"
+                                                    *ngFor="let lmPayment of lossMitPaymentList; let in = index;">
+                                                    <ul>
+                                                      <li>
+                                                        {{lmPayment?.borrowerName + ' ' + lmPayment?.borrowerLastName}}
+                                                        <span>
+                                                          {{lmPayment?.coBorrowerName + ' ' + lmPayment?.coBorrowerLastName}}</span>
+                                                      </li>
+                                                      <li>
+                                                        {{lmPayment?.loanNumber}}
+                                                      </li>
+                                                      <li>{{lmPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                      </li>
+                                                      <li>{{lmPayment?.agentName}}</li>
+                                                    </ul>
+                                                  </div>
+                                                </div>
+                                              </div>
+
+                                            </div>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                                <tr *ngIf="isBkSelectedWithMonth && selectedMonth===month">
+                                  <td class="p-0" colspan="7">
+                                    <table class="custom-accord">
+                                      <tr>
+                                        <td>
+                                          <div class="accord-tabs">
+                                            <div [id]="'accordion'+i" class="myaccordion">
+                                              <div class="card">
+                                                <div class="card-header" [id]="'heading'+i">
+                                                  <h2 class="mb-0">
+                                                    <button
+                                                      class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                      data-toggle="collapse" [attr.data-target]="'#collapse'+i"
+                                                      aria-expanded="true" [attr.aria-controls]="'collapse'+i">
+                                                      <span class="accordion-toggle1 fa-stack fa-sm"
+                                                        (click)="isStatusExpanded('collapse'+i+11)"
+                                                        [ngClass]="{'collapsed': isStatusClicked}">
+                                                        <i class="expand-button"></i>
+                                                      </span>
+                                                      <div class="accord-content">
+                                                        <span>Bankruptcy Payments</span>
+                                                        <span>{{bankRuptcyPaymentCount}}</span>
+                                                        <span>{{bankRuptcyPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                      </div>
+                                                    </button>
+                                                  </h2>
+                                                </div>
+                                                <div [id]="'collapse'+i" class="collapse show"
+                                                  [attr.aria-labelledby]="'heading'+i"
+                                                  [attr.data-parent]="'#accordion'+i">
+                                                  <div class="card-body"
+                                                    *ngFor="let bankRuptcyPayment of bankRuptcyPaymentList; let in = index;">
+                                                    <ul>
+                                                      <li>
+                                                        {{bankRuptcyPayment?.borrowerName + ' ' + bankRuptcyPayment?.borrowerLastName}}
+                                                        <span>
+                                                          {{bankRuptcyPayment?.coBorrowerName + ' ' + bankRuptcyPayment?.coBorrowerLastName}}</span>
+                                                      </li>
+                                                      <li>
+                                                        {{bankRuptcyPayment?.loanNumber}}
+                                                      </li>
+                                                      <li>
+                                                        {{bankRuptcyPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                      </li>
+                                                      <li>{{bankRuptcyPayment?.agentName}}</li>
+                                                    </ul>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                                <tr *ngIf="isColSelectedWithMonth && selectedMonth===month">
+                                  <td class="p-0" colspan="7">
+                                    <table class="custom-accord">
+                                      <tr>
+                                        <td>
+                                          <div class="accord-tabs">
+                                            <div [id]="'accordion'+i" class="myaccordion">
+                                              <div class="card">
+                                                <div class="card-header" [id]="'heading'+i">
+                                                  <h2 class="mb-0">
+                                                    <button
+                                                      class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                      data-toggle="collapse" [attr.data-target]="'#collapse'+i"
+                                                      aria-expanded="true" [attr.aria-controls]="'collapse'+i">
+                                                      <span class="accordion-toggle1 fa-stack fa-sm"
+                                                        (click)="isStatusExpanded('collapse'+i+12)"
+                                                        [ngClass]="{'collapsed': isStatusClicked}">
+                                                        <i class="expand-button"></i>
+                                                      </span>
+                                                      <div class="accord-content">
+                                                        <span>Collection Payments</span>
+                                                        <span>{{collectionPaymentCount}}</span>
+                                                        <span>{{collectionPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                      </div>
+                                                    </button>
+                                                  </h2>
+                                                </div>
+                                                <div [id]="'collapse'+i" class="collapse show"
+                                                  [attr.aria-labelledby]="'heading'+i"
+                                                  [attr.data-parent]="'#accordion'+i">
+                                                  <div class="card-body"
+                                                    *ngFor="let collectionPayment of collectionPaymentList; let in = index;">
+                                                    <ul>
+                                                      <li>
+                                                        {{collectionPayment?.borrowerName + ' ' + collectionPayment?.borrowerLastName}}
+                                                        <span>
+                                                          {{collectionPayment?.coBorrowerName + ' ' + collectionPayment?.coBorrowerLastName}}</span>
+                                                      </li>
+                                                      <li>
+                                                        {{collectionPayment?.loanNumber}}
+                                                      </li>
+                                                      <li>
+                                                        {{collectionPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                      </li>
+                                                      <li>{{collectionPayment?.agentName}}</li>
+                                                    </ul>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                                <tr *ngIf="isAgentSelectedWithMonth && selectedMonth===month">
+                                  <td class="p-0" colspan="7">
+                                    <table class="custom-accord sub-customAccord">
+                                      <tr *ngFor="let agent of agentNames; let i = index;">
+                                        <td colspan="7">
+                                          <table class="custom-accord">
+                                            <tr>
+                                              <td><span class="txt-head">{{agent}}</span></td>
+                                              <td class="txt-right"><button type="button" class="btn btn-light custom-btn" (click)="expandRowForAgent(i, agent)">
+                                                <b>{{i === expandedIndexForAgent ? '-' : '+'}}</b></button></td>
+                                             </tr>
+                                            <tr>
+                                              <ng-container class="add-minus" *ngIf="i === expandedIndexForAgent">
+                                                <!-- <tr> -->
+                                                <td>
+                                                  <div class="accord-tabs">
+                                                    <div [id]="'accordion'+i" class="myaccordion">
+                                                      <div class="card">
+                                                        <div class="card-header" [id]="'heading'+i">
+                                                          <h2 class="mb-0">
+                                                            <button
+                                                              class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                              data-toggle="collapse" [attr.data-target]="'#collapse'+i"
+                                                              aria-expanded="false" [attr.aria-controls]="'collapse'+i">
+                                                              <span class="accordion-toggle1 fa-stack fa-sm"
+                                                                (click)="isStatusExpanded('collapse'+i+13)"
+                                                                [ngClass]="{'collapsed': collapseValue !== 'collapse'+i+13}">
+                                                                <i class="expand-button"></i>
+                                                              </span>
+                                                              <div class="accord-content">
+                                                                <span>Regular Payments</span>
+                                                                <span>{{regularPaymentCount}}</span>
+                                                                <span>{{regularPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                              </div>
+                                                            </button>
+                                                          </h2>
+                                                        </div>
+                                                        <div [id]="'collapse'+i" class="collapse"
+                                                          [attr.aria-labelledby]="'heading'+i"
+                                                          [attr.data-parent]="'#accordion'+i">
+                                                          <div class="card-body"
+                                                            *ngFor="let regPayment of regularPaymentList; let in = index;">
+                                                            <ul>
+                                                              <li>
+                                                                {{regPayment?.borrowerName + ' ' + regPayment?.borrowerLastName}}
+                                                                <span>
+                                                                  {{regPayment?.coBorrowerName + ' ' + regPayment?.coBorrowerLastName}}</span>
+                                                              </li>
+                                                              <li>
+                                                                {{regPayment?.loanNumber}}
+                                                              </li>
+                                                              <li>
+                                                                {{regPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                              </li>
+                                                              <li>{{regPayment?.agentName}}</li>
+                                                            </ul>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                      <div class="card">
+                                                        <div class="card-header" [id]="'heading'+i">
+                                                          <h2 class="mb-0">
+                                                            <button
+                                                              class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                              data-toggle="collapse" [attr.data-target]="'#heading'+i+1"
+                                                              aria-expanded="false"
+                                                              [attr.aria-controls]="'heading'+i+1">
+                                                              <span class="accordion-toggle1 collapsed fa-stack fa-sm"
+                                                                (click)="isStatusExpanded('collapse'+i+14)"
+                                                                [ngClass]="{'collapsed': collapseValue !== 'collapse'+i+14}">
+                                                                <i class="expand-button"></i>
+                                                              </span>
+                                                              <div class="accord-content">
+                                                                <span>Cashiering Payments</span>
+                                                                <span>{{cashieringPaymentCount}}</span>
+                                                                <span>{{cashieringPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                              </div>
+                                                            </button>
+                                                          </h2>
+                                                        </div>
+                                                        <div [id]="'heading'+i+1" class="collapse"
+                                                          [attr.aria-labelledby]="'heading'+i+1"
+                                                          [attr.data-parent]="'#accordion'+i">
+                                                          <div class="card-body"
+                                                            *ngFor="let cashPayment of cashieringPaymentList; let in = index;">
+                                                            <ul>
+                                                              <li>
+                                                                {{cashPayment?.borrowerName + ' ' + cashPayment?.borrowerLastName}}
+                                                                <span>{{cashPayment?.coBorrowerName + ' ' + cashPayment?.coBorrowerLastName}}</span>
+                                                              </li>
+                                                              <li>
+                                                                {{cashPayment?.loanNumber}}
+                                                              </li>
+                                                              <li>
+                                                                {{cashPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                              </li>
+                                                              <li>{{cashPayment?.agentName}}</li>
+                                                            </ul>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                      <div class="card">
+                                                        <div class="card-header" [id]="'heading'+i">
+                                                          <h2 class="mb-0">
+                                                            <button
+                                                              class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                              data-toggle="collapse" [attr.data-target]="'#heading'+i+2"
+                                                              aria-expanded="false"
+                                                              [attr.aria-controls]="'heading'+i+2">
+                                                              <span class="accordion-toggle1 collapsed fa-stack fa-sm"
+                                                                (click)="isStatusExpanded('collapse'+i+15)"
+                                                                [ngClass]="{'collapsed': collapseValue !== 'collapse'+i+15}">
+                                                                <i class="expand-button"></i>
+                                                              </span>
+                                                              <div class="accord-content">
+                                                                <span>Loss Mit Payments</span>
+                                                                <span>{{lossMitPaymentCount}}</span>
+                                                                <span>{{lossMitPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                              </div>
+                                                            </button>
+                                                          </h2>
+                                                        </div>
+                                                        <div [id]="'heading'+i+2" class="collapse"
+                                                          [attr.aria-labelledby]="'heading'+i+2"
+                                                          [attr.data-parent]="'#accordion'+i">
+                                                          <div class="card-body"
+                                                            *ngFor="let lossMitPayment of lossMitPaymentList; let in = index;">
+                                                            <ul>
+                                                              <li>
+                                                                {{lossMitPayment?.borrowerName + ' ' + lossMitPayment?.borrowerLastName}}
+                                                                <span>{{lossMitPayment?.coBorrowerName + ' ' + lossMitPayment?.coBorrowerLastName}}</span>
+                                                              </li>
+                                                              <li>
+                                                                {{lossMitPayment?.loanNumber}}
+                                                              </li>
+                                                              <li>
+                                                                {{lossMitPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                              </li>
+                                                              <li>{{lossMitPayment?.agentName}}</li>
+                                                            </ul>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                      <div class="card">
+                                                        <div class="card-header" [id]="'heading'+i">
+                                                          <h2 class="mb-0">
+                                                            <button
+                                                              class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                              data-toggle="collapse" [attr.data-target]="'#heading'+i+3"
+                                                              aria-expanded="false"
+                                                              [attr.aria-controls]="'heading'+i+3">
+                                                              <span class="accordion-toggle1 collapsed fa-stack fa-sm"
+                                                                (click)="isStatusExpanded('collapse'+i+16)"
+                                                                [ngClass]="{'collapsed': collapseValue !== 'collapse'+i+16}">
+                                                                <i class="expand-button"></i>
+                                                              </span>
+                                                              <div class="accord-content">
+                                                                <span>Bankruptcy Payments</span>
+                                                                <span>{{bankRuptcyPaymentCount}}</span>
+                                                                <span>{{bankRuptcyPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                              </div>
+                                                            </button>
+                                                          </h2>
+                                                        </div>
+                                                        <div [id]="'heading'+i+3" class="collapse"
+                                                          [attr.aria-labelledby]="'heading'+i+3"
+                                                          [attr.data-parent]="'#accordion'+i">
+                                                          <div class="card-body"
+                                                            *ngFor="let bankRuptcyPayment of bankRuptcyPaymentList; let in = index;">
+                                                            <ul>
+                                                              <li>
+                                                                {{bankRuptcyPayment?.borrowerName + ' ' + bankRuptcyPayment?.borrowerLastName}}
+                                                                <span>{{bankRuptcyPayment?.coBorrowerName + ' ' + bankRuptcyPayment?.coBorrowerLastName}}</span>
+                                                              </li>
+                                                              <li>
+                                                                {{bankRuptcyPayment?.loanNumber}}
+                                                              </li>
+                                                              <li>
+                                                                {{bankRuptcyPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                              </li>
+                                                              <li>{{bankRuptcyPayment?.agentName}}</li>
+                                                            </ul>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                      <div class="card">
+                                                        <div class="card-header" [id]="'heading'+i">
+                                                          <h2 class="mb-0">
+                                                            <button
+                                                              class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                              data-toggle="collapse" [attr.data-target]="'#heading'+i+4"
+                                                              aria-expanded="false"
+                                                              [attr.aria-controls]="'heading'+i+4">
+                                                              <span class="accordion-toggle1 collapsed fa-stack fa-sm"
+                                                                (click)="isStatusExpanded('collapse'+i+17)"
+                                                                [ngClass]="{'collapsed': collapseValue !== 'collapse'+i+17}">
+                                                                <i class="expand-button"></i>
+                                                              </span>
+                                                              <div class="accord-content">
+                                                                <span>Collection Payments</span>
+                                                                <span>{{collectionPaymentCount}}</span>
+                                                                <span>{{collectionPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                              </div>
+                                                            </button>
+                                                          </h2>
+                                                        </div>
+                                                        <div [id]="'heading'+i+4" class="collapse"
+                                                          [attr.aria-labelledby]="'heading'+i+4"
+                                                          [attr.data-parent]="'#accordion'+i">
+                                                          <div class="card-body"
+                                                            *ngFor="let collectioPayment of collectionPaymentList; let in = index;">
+                                                            <ul>
+                                                              <li>
+                                                                {{collectioPayment?.borrowerName + ' ' + collectioPayment?.borrowerLastName}}
+                                                                <span>{{collectioPayment?.coBorrowerName + ' ' + collectioPayment?.coBorrowerLastName}}</span>
+                                                              </li>
+                                                              <li>
+                                                                {{collectioPayment?.loanNumber}}
+                                                              </li>
+                                                              <li>
+                                                                {{collectioPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                              </li>
+                                                              <li>{{collectioPayment?.agentName}}</li>
+                                                            </ul>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </td>
+                                                <!-- </tr> -->
+                                              </ng-container>
+                                            </tr>
+                                          </table>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                                
+                                <ng-container *ngIf="isExpanded && monthForSelectedRow===month">
+                                  <ng-container *ngFor="let stPayment of statisticPaymentList; let in = index;">
+                                    <tr *ngIf="isAllSelectedWithDate && stPayment.date===selectedDate">
+                                      <td class="p-0" colspan="7">
+                                        <table class="custom-accord">
+                                          <tr>
+                                            <td>
+                                              <div class="accord-tabs">
+                                                <div [id]="'accordion'+in+1" class="myaccordion">
+                                                  <div class="card">
+                                                    <div class="card-header" [id]="'heading'+in">
+                                                      <h2 class="mb-0">
+                                                        <button
+                                                          class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                          data-toggle="collapse" [attr.data-target]="'#collapse'+in"
+                                                          aria-expanded="false" [attr.aria-controls]="'collapse'+in">
+                                                          <span class="accordion-toggle1 fa-stack fa-sm"
+                                                            (click)="isStatusExpanded('collapse'+in)"
+                                                            [ngClass]="{'collapsed': collapseValue !== 'collapse'+in}">
+                                                            <i class="expand-button"></i>
+                                                          </span>
+                                                          <div class="accord-content">
+                                                            <span>Regular Payments</span>
+                                                            <span>{{regularPaymentCount}}</span>
+                                                            <span>{{regularPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                          </div>
+                                                        </button>
+                                                      </h2>
+                                                    </div>
+                                                    <div [id]="'collapse'+in" class="collapse"
+                                                      [attr.aria-labelledby]="'heading'+in"
+                                                      [attr.data-parent]="'#accordion'+in+1">
+                                                      <div class="card-body"
+                                                        *ngFor="let regPayment of regularPaymentList; let in = index;">
+                                                        <ul>
+                                                          <li>
+                                                            {{regPayment?.borrowerName + ' ' + regPayment?.borrowerLastName}}
+                                                            <span>
+                                                              {{regPayment?.coBorrowerName + ' ' + regPayment?.coBorrowerLastName}}</span>
+                                                          </li>
+                                                          <li>
+                                                            {{regPayment?.loanNumber}}
+                                                          </li>
+                                                          <li>{{regPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                          </li>
+                                                          <li>{{regPayment?.agentName}}</li>
+                                                        </ul>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+
+                                                  <div class="card">
+                                                    <div class="card-header" [id]="'heading'+in">
+                                                      <h2 class="mb-0">
+                                                        <button
+                                                          class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                          data-toggle="collapse" [attr.data-target]="'#heading'+in+5"
+                                                          aria-expanded="false" [attr.aria-controls]="'heading'+in+5">
+                                                          <span class="accordion-toggle1 fa-stack fa-sm"
+                                                            (click)="isStatusExpanded('collapse'+in+1)"
+                                                            [ngClass]="{'collapsed': collapseValue !== 'collapse'+in+1}">
+                                                            <i class="expand-button"></i>
+                                                          </span>
+                                                          <div class="accord-content">
+                                                            <span>Cashiering Payments</span>
+                                                            <span>{{cashieringPaymentCount}}</span>
+                                                            <span>{{cashieringPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                          </div>
+                                                        </button>
+                                                      </h2>
+                                                    </div>
+                                                    <div [id]="'heading'+in+5" class="collapse"
+                                                      [attr.aria-labelledby]="'heading'+in+5"
+                                                      [attr.data-parent]="'#accordion'+in+1">
+                                                      <div class="card-body"
+                                                        *ngFor="let cashPayment of cashieringPaymentList; let in = index;">
+                                                        <ul>
+                                                          <li>
+                                                            {{cashPayment?.borrowerName + ' ' + cashPayment?.borrowerLastName}}
+                                                            <span>{{cashPayment?.coBorrowerName + ' ' + cashPayment?.coBorrowerLastName}}</span>
+                                                          </li>
+                                                          <li>
+                                                            {{cashPayment?.loanNumber}}
+                                                          </li>
+                                                          <li>
+                                                            {{cashPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                          </li>
+                                                          <li>{{cashPayment?.agentName}}</li>
+                                                        </ul>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+
+                                                  <div class="card">
+                                                    <div class="card-header" [id]="'heading'+in">
+                                                      <h2 class="mb-0">
+                                                        <button
+                                                          class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                          data-toggle="collapse" [attr.data-target]="'#heading'+in+6"
+                                                          aria-expanded="false" [attr.aria-controls]="'heading'+in+6">
+                                                          <span class="accordion-toggle1 fa-stack fa-sm"
+                                                            (click)="isStatusExpanded('collapse'+in+2)"
+                                                            [ngClass]="{'collapsed': collapseValue !== 'collapse'+in+2}">
+                                                            <i class="expand-button"></i>
+                                                          </span>
+                                                          <div class="accord-content">
+                                                            <span>Loss Mit Payments</span>
+                                                            <span>{{lossMitPaymentCount}}</span>
+                                                            <span>{{lossMitPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                          </div>
+                                                        </button>
+                                                      </h2>
+                                                    </div>
+                                                    <div [id]="'heading'+in+6" class="collapse"
+                                                      [attr.aria-labelledby]="'heading'+in+6"
+                                                      [attr.data-parent]="'#accordion'+in+1">
+                                                      <div class="card-body"
+                                                        *ngFor="let lmPayment of lossMitPaymentList; let in = index;">
+                                                        <ul>
+                                                          <li>
+                                                            {{lmPayment?.borrowerName + ' ' + lmPayment?.borrowerLastName}}
+                                                            <span>{{lmPayment?.coBorrowerName + ' ' + lmPayment?.coBorrowerLastName}}</span>
+                                                          </li>
+                                                          <li>
+                                                            {{lmPayment?.loanNumber}}
+                                                          </li>
+                                                          <li>{{lmPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                          </li>
+                                                          <li>{{lmPayment?.agentName}}</li>
+                                                        </ul>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+
+                                                  <div class="card">
+                                                    <div class="card-header" [id]="'heading'+in">
+                                                      <h2 class="mb-0">
+                                                        <button
+                                                          class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                          data-toggle="collapse" [attr.data-target]="'#heading'+in+7"
+                                                          aria-expanded="false" [attr.aria-controls]="'heading'+in+7">
+                                                          <span class="accordion-toggle1 fa-stack fa-sm"
+                                                            (click)="isStatusExpanded('collapse'+in+3)"
+                                                            [ngClass]="{'collapsed': collapseValue !== 'collapse'+in+3}">
+                                                            <i class="expand-button"></i>
+                                                          </span>
+                                                          <div class="accord-content">
+                                                            <span>Bankruptcy Payments</span>
+                                                            <span>{{bankRuptcyPaymentCount}}</span>
+                                                            <span>{{bankRuptcyPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                          </div>
+                                                        </button>
+                                                      </h2>
+                                                    </div>
+                                                    <div [id]="'heading'+in+7" class="collapse"
+                                                      [attr.aria-labelledby]="'heading'+in+7"
+                                                      [attr.data-parent]="'#accordion'+in+1">
+                                                      <div class="card-body"
+                                                        *ngFor="let bkPayment of bankRuptcyPaymentList; let in = index;">
+                                                        <ul>
+                                                          <li>
+                                                            {{bkPayment?.borrowerName + ' ' + bkPayment?.borrowerLastName}}
+                                                            <span>{{bkPayment?.coBorrowerName + ' ' + bkPayment?.coBorrowerLastName}}</span>
+                                                          </li>
+                                                          <li>
+                                                            {{bkPayment?.loanNumber}}
+                                                          </li>
+                                                          <li>{{bkPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                          </li>
+                                                          <li>{{bkPayment?.agentName}}</li>
+                                                        </ul>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+
+                                                  <div class="card">
+                                                    <div class="card-header" [id]="'heading'+in">
+                                                      <h2 class="mb-0">
+                                                        <button
+                                                          class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                          data-toggle="collapse" [attr.data-target]="'#heading'+in+8"
+                                                          aria-expanded="false" [attr.aria-controls]="'heading'+in+8">
+                                                          <span class="accordion-toggle1 fa-stack fa-sm"
+                                                            (click)="isStatusExpanded('collapse'+in+4)"
+                                                            [ngClass]="{'collapsed': collapseValue !== 'collapse'+in+4}">
+                                                            <i class="expand-button"></i>
+                                                          </span>
+                                                          <div class="accord-content">
+                                                            <span>Collection Payments</span>
+                                                            <span>{{collectionPaymentCount}}</span>
+                                                            <span>{{collectionPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                          </div>
+                                                        </button>
+                                                      </h2>
+                                                    </div>
+                                                    <div [id]="'heading'+in+8" class="collapse"
+                                                      [attr.aria-labelledby]="'heading'+in+8"
+                                                      [attr.data-parent]="'#accordion'+in+1">
+                                                      <div class="card-body"
+                                                        *ngFor="let colPayment of collectionPaymentList; let in = index;">
+                                                        <ul>
+                                                          <li>
+                                                            {{colPayment?.borrowerName + ' ' + colPayment?.borrowerLastName}}
+                                                            <span>{{colPayment?.coBorrowerName + ' ' + colPayment?.coBorrowerLastName}}</span>
+                                                          </li>
+                                                          <li>
+                                                            {{colPayment?.loanNumber}}
+                                                          </li>
+                                                          <li>{{colPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                          </li>
+                                                          <li>{{colPayment?.agentName}}</li>
+                                                        </ul>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                    </tr>
+                                    <tr *ngIf="isRegSelectedWithDate && stPayment.date===selectedDate">
+                                      <td class="p-0" colspan="7">
+                                        <table class="custom-accord">
+                                          <tr>
+                                            <td>
+                                              <div class="accord-tabs">
+                                                <div [id]="'accordion'+in+1" class="myaccordion">
+                                                  <div class="card">
+                                                    <div class="card-header" [id]="'heading'+in">
+                                                      <h2 class="mb-0">
+                                                        <button
+                                                          class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                          data-toggle="collapse" [attr.data-target]="'#collapse'+in"
+                                                          aria-expanded="true" [attr.aria-controls]="'collapse'+in">
+                                                          <span class="accordion-toggle1 fa-stack fa-sm"
+                                                            (click)="isStatusExpanded('collapse'+in)"
+                                                            [ngClass]="{'collapsed': isStatusClicked}">
+                                                            <i class="expand-button"></i>
+                                                          </span>
+                                                          <div class="accord-content">
+                                                            <span>Regular Payments</span>
+                                                            <span>{{regularPaymentCount}}</span>
+                                                            <span>{{regularPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                          </div>
+                                                        </button>
+                                                      </h2>
+                                                    </div>
+                                                    <div [id]="'collapse'+in" class="collapse show"
+                                                      [attr.aria-labelledby]="'heading'+in"
+                                                      [attr.data-parent]="'#accordion'+in+1">
+                                                      <div class="card-body"
+                                                        *ngFor="let regPayment of regularPaymentList; let in = index;">
+                                                        <ul>
+                                                          <li>
+                                                            {{regPayment?.borrowerName + ' ' + regPayment?.borrowerLastName}}
+                                                            <span>
+                                                              {{regPayment?.coBorrowerName + ' ' + regPayment?.coBorrowerLastName}}</span>
+                                                          </li>
+                                                          <li>
+                                                            {{regPayment?.loanNumber}}
+                                                          </li>
+                                                          <li>{{regPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                          </li>
+                                                          <li>{{regPayment?.agentName}}</li>
+                                                        </ul>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                    </tr>
+                                    <tr *ngIf="isCshSelectedWithDate && stPayment.date===selectedDate">
+                                      <td class="p-0" colspan="7">
+                                        <table class="custom-accord">
+                                          <tr>
+                                            <td>
+                                              <div class="accord-tabs">
+                                                <div [id]="'accordion'+in+1" class="myaccordion">
+                                                  <div class="card">
+                                                    <div class="card-header" [id]="'heading'+in">
+                                                      <h2 class="mb-0">
+                                                        <button
+                                                          class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                          data-toggle="collapse" [attr.data-target]="'#collapse'+in"
+                                                          aria-expanded="true" [attr.aria-controls]="'collapse'+in">
+                                                          <span class="accordion-toggle1 fa-stack fa-sm"
+                                                            (click)="isStatusExpanded('collapse'+in)"
+                                                            [ngClass]="{'collapsed': isStatusClicked}">
+                                                            <i class="expand-button"></i>
+                                                          </span>
+                                                          <div class="accord-content">
+                                                            <span>Cashiering Payments</span>
+                                                            <span>{{cashieringPaymentCount}}</span>
+                                                            <span>{{cashieringPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                          </div>
+                                                        </button>
+                                                      </h2>
+                                                    </div>
+                                                    <div [id]="'collapse'+in" class="collapse show"
+                                                      [attr.aria-labelledby]="'heading'+in"
+                                                      [attr.data-parent]="'#accordion'+in+1">
+                                                      <div class="card-body"
+                                                        *ngFor="let cashPayment of cashieringPaymentList; let in = index;">
+                                                        <ul>
+                                                          <li>
+                                                            {{cashPayment?.borrowerName + ' ' + cashPayment?.borrowerLastName}}
+                                                            <span>
+                                                              {{cashPayment?.coBorrowerName + ' ' + cashPayment?.coBorrowerLastName}}</span>
+                                                          </li>
+                                                          <li>
+                                                            {{cashPayment?.loanNumber}}
+                                                          </li>
+                                                          <li>
+                                                            {{cashPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                          </li>
+                                                          <li>{{cashPayment?.agentName}}</li>
+                                                        </ul>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                    </tr>
+                                    <tr *ngIf="isLmSelectedWithDate && stPayment.date===selectedDate">
+                                      <td class="p-0" colspan="7">
+                                        <table class="custom-accord">
+                                          <tr>
+                                            <td>
+                                              <div class="accord-tabs">
+                                                <div [id]="'accordion'+in+1" class="myaccordion">
+                                                  <div class="card">
+                                                    <div class="card-header" [id]="'heading'+in">
+                                                      <h2 class="mb-0">
+                                                        <button
+                                                          class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                          data-toggle="collapse" [attr.data-target]="'#collapse'+in"
+                                                          aria-expanded="true" [attr.aria-controls]="'collapse'+in">
+                                                          <span class="accordion-toggle1 fa-stack fa-sm"
+                                                            (click)="isStatusExpanded('collapse'+in)"
+                                                            [ngClass]="{'collapsed': isStatusClicked}">
+                                                            <i class="expand-button"></i>
+                                                          </span>
+                                                          <div class="accord-content">
+                                                            <span>Loss Mit Payments</span>
+                                                            <span>{{lossMitPaymentCount}}</span>
+                                                            <span>{{lossMitPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                          </div>
+                                                        </button>
+                                                      </h2>
+                                                    </div>
+                                                    <div [id]="'collapse'+in" class="collapse show"
+                                                      [attr.aria-labelledby]="'heading'+in"
+                                                      [attr.data-parent]="'#accordion'+in+1">
+                                                      <div class="card-body"
+                                                        *ngFor="let lmPayment of lossMitPaymentList; let in = index;">
+                                                        <ul>
+                                                          <li>
+                                                            {{lmPayment?.borrowerName + ' ' + lmPayment?.borrowerLastName}}
+                                                            <span>
+                                                              {{lmPayment?.coBorrowerName + ' ' + lmPayment?.coBorrowerLastName}}</span>
+                                                          </li>
+                                                          <li>
+                                                            {{lmPayment?.loanNumber}}
+                                                          </li>
+                                                          <li>{{lmPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                          </li>
+                                                          <li>{{lmPayment?.agentName}}</li>
+                                                        </ul>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                    </tr>
+                                    <tr *ngIf="isBkSelectedWithDate && stPayment.date===selectedDate">
+                                      <td class="p-0" colspan="7">
+                                        <table class="custom-accord">
+                                          <tr>
+                                            <td>
+                                              <div class="accord-tabs">
+                                                <div [id]="'accordion'+in+1" class="myaccordion">
+                                                  <div class="card">
+                                                    <div class="card-header" [id]="'heading'+in">
+                                                      <h2 class="mb-0">
+                                                        <button
+                                                          class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                          data-toggle="collapse" [attr.data-target]="'#collapse'+in"
+                                                          aria-expanded="true" [attr.aria-controls]="'collapse'+in">
+                                                          <span class="accordion-toggle1 fa-stack fa-sm"
+                                                            (click)="isStatusExpanded('collapse'+in)"
+                                                            [ngClass]="{'collapsed': isStatusClicked}">
+                                                            <i class="expand-button"></i>
+                                                          </span>
+                                                          <div class="accord-content">
+                                                            <span>Bankruptcy Payments</span>
+                                                            <span>{{bankRuptcyPaymentCount}}</span>
+                                                            <span>{{bankRuptcyPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                          </div>
+                                                        </button>
+                                                      </h2>
+                                                    </div>
+                                                    <div [id]="'collapse'+in" class="collapse show"
+                                                      [attr.aria-labelledby]="'heading'+in"
+                                                      [attr.data-parent]="'#accordion'+in+1">
+                                                      <div class="card-body"
+                                                        *ngFor="let bkPayment of bankRuptcyPaymentList; let in = index;">
+                                                        <ul>
+                                                          <li>
+                                                            {{bkPayment?.borrowerName + ' ' + bkPayment?.borrowerLastName}}
+                                                            <span>
+                                                              {{bkPayment?.coBorrowerName + ' ' + bkPayment?.coBorrowerLastName}}</span>
+                                                          </li>
+                                                          <li>
+                                                            {{bkPayment?.loanNumber}}
+                                                          </li>
+                                                          <li>{{bkPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                          </li>
+                                                          <li>{{bkPayment?.agentName}}</li>
+                                                        </ul>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                    </tr>
+                                    <tr *ngIf="isColSelectedWithDate && stPayment.date===selectedDate">
+                                      <td class="p-0" colspan="7">
+                                        <table class="custom-accord">
+                                          <tr>
+                                            <td>
+                                              <div class="accord-tabs">
+                                                <div [id]="'accordion'+in+1" class="myaccordion">
+                                                  <div class="card">
+                                                    <div class="card-header" [id]="'heading'+in">
+                                                      <h2 class="mb-0">
+                                                        <button
+                                                          class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                          data-toggle="collapse" [attr.data-target]="'#collapse'+in"
+                                                          aria-expanded="true" [attr.aria-controls]="'collapse'+in">
+                                                          <span class="accordion-toggle1 fa-stack fa-sm"
+                                                            (click)="isStatusExpanded('collapse'+in)"
+                                                            [ngClass]="{'collapsed': isStatusClicked}">
+                                                            <i class="expand-button"></i>
+                                                          </span>
+                                                          <div class="accord-content">
+                                                            <span>Collection Payments</span>
+                                                            <span>{{collectionPaymentCount}}</span>
+                                                            <span>{{collectionPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                          </div>
+                                                        </button>
+                                                      </h2>
+                                                    </div>
+                                                    <div [id]="'collapse'+in" class="collapse show"
+                                                      [attr.aria-labelledby]="'heading'+in"
+                                                      [attr.data-parent]="'#accordion'+in+1">
+                                                      <div class="card-body"
+                                                        *ngFor="let colPayment of collectionPaymentList; let in = index;">
+                                                        <ul>
+                                                          <li>
+                                                            {{colPayment?.borrowerName + ' ' + colPayment?.borrowerLastName}}
+                                                            <span>
+                                                              {{colPayment?.coBorrowerName + ' ' + colPayment?.coBorrowerLastName}}</span>
+                                                          </li>
+                                                          <li>
+                                                            {{colPayment?.loanNumber}}
+                                                          </li>
+                                                          <li>{{colPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                          </li>
+                                                          <li>{{colPayment?.agentName}}</li>
+                                                        </ul>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                    </tr>
+                                    <tr *ngIf="isAgentSelectedWithDate && stPayment.date===selectedDate">
+                                      <td class="p-0" colspan="7">
+                                        <table class="custom-accord sub-customAccord">
+                                          <tr *ngFor="let agent of agentNames; let i = index;">
+                                            <td colspan="7">
+                                              <table class="custom-accord">
+                                                <tr>
+                                                  <td><span class="txt-head">{{agent}}</span></td>
+                                                  <td class="txt-right"><button type="button" class="btn btn-light custom-btn" (click)="expandRowForAgent(i, agent)">
+                                                    <b>{{i === expandedIndexForAgent ? '-' : '+'}}</b></button></td>                                                </tr>
+                                                <tr>
+                                                  <ng-container class="add-minus" *ngIf="i === expandedIndexForAgent">
+                                                    <!-- <tr> -->
+                                                    <td>
+                                                      <div class="accord-tabs">
+                                                        <div [id]="'accordion'+i" class="myaccordion">
+                                                          <div class="card">
+                                                            <div class="card-header" [id]="'heading'+i">
+                                                              <h2 class="mb-0">
+                                                                <button
+                                                                  class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                                  data-toggle="collapse"
+                                                                  [attr.data-target]="'#collapse'+i"
+                                                                  aria-expanded="false"
+                                                                  [attr.aria-controls]="'collapse'+i">
+                                                                  <span class="accordion-toggle1 fa-stack fa-sm"
+                                                                    (click)="isStatusExpanded('collapse'+in)"
+                                                                    [ngClass]="{'collapsed': collapseValue !== 'collapse'+in}">
+                                                                    <i class="expand-button"></i>
+                                                                  </span>
+                                                                  <div class="accord-content">
+                                                                    <span>Regular Payments</span>
+                                                                    <span>{{regularPaymentCount}}</span>
+                                                                    <span>{{regularPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                                  </div>
+                                                                </button>
+                                                              </h2>
+                                                            </div>
+                                                            <div [id]="'collapse'+i" class="collapse"
+                                                              [attr.aria-labelledby]="'heading'+i"
+                                                              [attr.data-parent]="'#accordion'+i">
+                                                              <div class="card-body"
+                                                                *ngFor="let regPayment of regularPaymentList; let in = index;">
+                                                                <ul>
+                                                                  <li>
+                                                                    {{regPayment?.borrowerName + ' ' + regPayment?.borrowerLastName}}
+                                                                    <span>
+                                                                      {{regPayment?.coBorrowerName + ' ' + regPayment?.coBorrowerLastName}}</span>
+                                                                  </li>
+                                                                  <li>
+                                                                    {{regPayment?.loanNumber}}
+                                                                  </li>
+                                                                  <li>
+                                                                    {{regPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                                  </li>
+                                                                  <li>{{regPayment?.agentName}}</li>
+                                                                </ul>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                          <div class="card">
+                                                            <div class="card-header" [id]="'heading'+i">
+                                                              <h2 class="mb-0">
+                                                                <button
+                                                                  class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                                  data-toggle="collapse"
+                                                                  [attr.data-target]="'#heading'+i+1"
+                                                                  aria-expanded="false"
+                                                                  [attr.aria-controls]="'heading'+i+1">
+                                                                  <span class="accordion-toggle1 fa-stack fa-sm"
+                                                                    (click)="isStatusExpanded('collapse'+in+1)"
+                                                                    [ngClass]="{'collapsed': collapseValue !== 'collapse'+in+1}">
+                                                                    <i class="expand-button"></i>
+                                                                  </span>
+                                                                  <div class="accord-content">
+                                                                    <span>Cashiering Payments</span>
+                                                                    <span>{{cashieringPaymentCount}}</span>
+                                                                    <span>{{cashieringPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                                  </div>
+                                                                </button>
+                                                              </h2>
+                                                            </div>
+                                                            <div [id]="'heading'+i+1" class="collapse"
+                                                              [attr.aria-labelledby]="'heading'+i+1"
+                                                              [attr.data-parent]="'#accordion'+i">
+                                                              <div class="card-body"
+                                                                *ngFor="let cashPayment of cashieringPaymentList; let in = index;">
+                                                                <ul>
+                                                                  <li>
+                                                                    {{cashPayment?.borrowerName + ' ' + cashPayment?.borrowerLastName}}
+                                                                    <span>{{cashPayment?.coBorrowerName + ' ' + cashPayment?.coBorrowerLastName}}</span>
+                                                                  </li>
+                                                                  <li>
+                                                                    {{cashPayment?.loanNumber}}
+                                                                  </li>
+                                                                  <li>
+                                                                    {{cashPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                                  </li>
+                                                                  <li>{{cashPayment?.agentName}}</li>
+                                                                </ul>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                          <div class="card">
+                                                            <div class="card-header" [id]="'heading'+i">
+                                                              <h2 class="mb-0">
+                                                                <button
+                                                                  class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                                  data-toggle="collapse"
+                                                                  [attr.data-target]="'#heading'+i+2"
+                                                                  aria-expanded="false"
+                                                                  [attr.aria-controls]="'heading'+i+2">
+                                                                  <span class="accordion-toggle1 fa-stack fa-sm"
+                                                                    (click)="isStatusExpanded('collapse'+in+2)"
+                                                                    [ngClass]="{'collapsed': collapseValue !== 'collapse'+in+2}">
+                                                                    <i class="expand-button"></i>
+                                                                  </span>
+                                                                  <div class="accord-content">
+                                                                    <span>Loss Mit Payments</span>
+                                                                    <span>{{lossMitPaymentCount}}</span>
+                                                                    <span>{{lossMitPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                                  </div>
+                                                                </button>
+                                                              </h2>
+                                                            </div>
+                                                            <div [id]="'heading'+i+2" class="collapse"
+                                                              [attr.aria-labelledby]="'heading'+i+2"
+                                                              [attr.data-parent]="'#accordion'+i">
+                                                              <div class="card-body"
+                                                                *ngFor="let lossMitPayment of lossMitPaymentList; let in = index;">
+                                                                <ul>
+                                                                  <li>
+                                                                    {{lossMitPayment?.borrowerName + ' ' + lossMitPayment?.borrowerLastName}}
+                                                                    <span>{{lossMitPayment?.coBorrowerName + ' ' + lossMitPayment?.coBorrowerLastName}}</span>
+                                                                  </li>
+                                                                  <li>
+                                                                    {{lossMitPayment?.loanNumber}}
+                                                                  </li>
+                                                                  <li>
+                                                                    {{lossMitPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                                  </li>
+                                                                  <li>{{lossMitPayment?.agentName}}</li>
+                                                                </ul>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                          <div class="card">
+                                                            <div class="card-header" [id]="'heading'+i">
+                                                              <h2 class="mb-0">
+                                                                <button
+                                                                  class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                                  data-toggle="collapse"
+                                                                  [attr.data-target]="'#heading'+i+3"
+                                                                  aria-expanded="false"
+                                                                  [attr.aria-controls]="'heading'+i+3">
+                                                                  <span class="accordion-toggle1 fa-stack fa-sm"
+                                                                    (click)="isStatusExpanded('collapse'+in+3)"
+                                                                    [ngClass]="{'collapsed': collapseValue !== 'collapse'+in+3}">
+                                                                    <i class="expand-button"></i>
+                                                                  </span>
+                                                                  <div class="accord-content">
+                                                                    <span>Bankruptcy Payments</span>
+                                                                    <span>{{bankRuptcyPaymentCount}}</span>
+                                                                    <span>{{bankRuptcyPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                                  </div>
+                                                                </button>
+                                                              </h2>
+                                                            </div>
+                                                            <div [id]="'heading'+i+3" class="collapse"
+                                                              [attr.aria-labelledby]="'heading'+i+3"
+                                                              [attr.data-parent]="'#accordion'+i">
+                                                              <div class="card-body"
+                                                                *ngFor="let bankRuptcyPayment of bankRuptcyPaymentList; let in = index;">
+                                                                <ul>
+                                                                  <li>
+                                                                    {{bankRuptcyPayment?.borrowerName + ' ' + bankRuptcyPayment?.borrowerLastName}}
+                                                                    <span>{{bankRuptcyPayment?.coBorrowerName + ' ' + bankRuptcyPayment?.coBorrowerLastName}}</span>
+                                                                  </li>
+                                                                  <li>
+                                                                    {{bankRuptcyPayment?.loanNumber}}
+                                                                  </li>
+                                                                  <li>
+                                                                    {{bankRuptcyPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                                  </li>
+                                                                  <li>{{bankRuptcyPayment?.agentName}}</li>
+                                                                </ul>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                          <div class="card">
+                                                            <div class="card-header" [id]="'heading'+i">
+                                                              <h2 class="mb-0">
+                                                                <button
+                                                                  class="d-flex align-items-center justify-content-between btn btn-link collapsed"
+                                                                  data-toggle="collapse"
+                                                                  [attr.data-target]="'#heading'+i+4"
+                                                                  aria-expanded="false"
+                                                                  [attr.aria-controls]="'heading'+i+4">
+                                                                  <span class="accordion-toggle1 fa-stack fa-sm"
+                                                                  (click)="isStatusExpanded('collapse'+in+4)"
+                                                                  [ngClass]="{'collapsed': collapseValue !== 'collapse'+in+4}">
+                                                                  <i class="expand-button"></i>
+                                                                </span>
+                                                                  <div class="accord-content">
+                                                                    <span>Collection Payments</span>
+                                                                    <span>{{collectionPaymentCount}}</span>
+                                                                    <span>{{collectionPaymentAmount | currency:'USD':true:'1.2-2'}}</span>
+                                                                  </div>
+                                                                </button>
+                                                              </h2>
+                                                            </div>
+                                                            <div [id]="'heading'+i+4" class="collapse"
+                                                              [attr.aria-labelledby]="'heading'+i+4"
+                                                              [attr.data-parent]="'#accordion'+i">
+                                                              <div class="card-body"
+                                                                *ngFor="let collectioPayment of collectionPaymentList; let in = index;">
+                                                                <ul>
+                                                                  <li>
+                                                                    {{collectioPayment?.borrowerName + ' ' + collectioPayment?.borrowerLastName}}
+                                                                    <span>{{collectioPayment?.coBorrowerName + ' ' + collectioPayment?.coBorrowerLastName}}</span>
+                                                                  </li>
+                                                                  <li>
+                                                                    {{collectioPayment?.loanNumber}}
+                                                                  </li>
+                                                                  <li>
+                                                                    {{collectioPayment?.totalPayment | currency:'USD':true:'1.2-2'}}
+                                                                  </li>
+                                                                  <li>{{collectioPayment?.agentName}}</li>
+                                                                </ul>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    </td>
+                                                    <!-- </tr> -->
+                                                  </ng-container>
+                                                </tr>
+                                              </table>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                    </tr>
+                                  </ng-container>
+                                </ng-container>
+
+                              </ng-container>
+                            </tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>

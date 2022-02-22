@@ -1,0 +1,5 @@
+
+<body class="login-bg">
+	<app-check-request *ngIf="decoded.authorities !== 'ServicingAdmin'"></app-check-request>
+    <app-admin-dashboard *ngIf="decoded.authorities === 'ServicingAdmin'"></app-admin-dashboard>
+</body>

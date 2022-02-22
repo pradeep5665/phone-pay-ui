@@ -1,0 +1,134 @@
+.section-heading {
+    padding: 5px 10px;
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+  }
+   
+  .drag-container {
+    width: 400px;
+    max-width: 100%;
+    margin: 0 25px 25px 0;
+    display: inline-block;
+    vertical-align: top;
+    background-color: #E9ECEF;
+    padding: 15px;
+    border-radius: 5px;
+  }
+   
+  .item-list {
+    min-height: 400px;
+    /* height:100vh; */
+    border-radius: 4px;
+    display: block;
+  }
+   
+  .item-box {
+    padding: 8px 10px;
+    border: solid 1px #ccc;
+    margin-bottom: 5px;
+    color: rgba(0, 0, 0, 0.87);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    cursor: move;
+    background: white;
+    font-size: 14px;
+    border-radius: 5px;
+  }
+   
+  .cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 5px;
+    font-size: 12px;
+    /* line-height: 1; */
+    /* display: block; */
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  }
+  .cdk-drag-preview div{height:auto !important;}
+   
+  .cdk-drag-placeholder {
+    opacity: 0;
+  }
+   
+  .cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+   
+  .item-list.cdk-drop-list-dragging .item-box:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  .red-text{
+    color: red;
+  }
+
+  .green-text{
+    color: #119a08;
+  }
+  .yellow-text{
+    color: #f5bf1c;
+  }
+  
+  .red-star{
+    color: #bd0c25;
+}
+
+  .grey-text{
+    color:grey;
+  }
+
+  .positive{
+    background-color:rgb(121, 206, 121);
+  }
+
+  .positive-canceled{
+    background-color:rgb(240, 222, 151);
+  }
+
+  .negative{
+    background-color: white
+  }
+  .paymentAdvList {
+    font-size: 13px;
+}
+.listHead {
+  background: #fff;
+  border-radius: 5px;
+  padding: 0 15px 7px;
+  border: solid 1px #ccc;
+}
+
+
+.row .heading{
+  float: left;
+}
+
+.row .amount{
+  float: right;
+}
+.p-left{
+  padding-left: 11px;
+}
+.padding-l{
+  padding-left: 0px;
+}
+
+.padding-ll{
+  padding-left: 33px;
+}
+
+/* 16-08-19 */
+.paymentAdvList .item-box label, .paymentAdvList .item-box .form-group,.item-box.cdk-drag-preview .form-group,.item-box.cdk-drag-preview  label{margin-bottom:0;}
+.paymentAdvList .item-box > div {
+  flex: 1;
+}
+
+@media only screen and (max-width:1366px){
+  .paymentAdvList, .paymentAdvList .item-box{font-size: 12px;}
+  
+}

@@ -1,0 +1,202 @@
+<app-header></app-header>
+
+<div id="wrapper">
+
+  <!-- Sidebar -->
+  <ul class="sidebar navbar-nav">
+    <li class="nav-item active">
+      <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link">
+        <i class="fab fa-cloudversify"></i>
+        <span>Verify Payor Info</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <i class="fas fa-ban"></i>
+        <span>Cancel</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <i class="fas fa-power-off"></i>
+        <span>Sign off</span>
+      </a>
+    </li>
+  </ul>
+
+  <div id="content-wrapper">
+
+    <div class="user-information">
+      <div class="col-sm-12">
+        <div class="card card-sec payment-sec">
+          <div class="card-body">
+            <form [formGroup]="phonpayForm">  
+            <h5>Borrower Information</h5>
+            <hr />
+            <div class="row form-group">
+              <label class="col-sm-2" for="name">Name</label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" value="{{phonepayPayment?.borrowerName}} {{phonepayPayment?.borrowerLastName}}"
+                 id="name" readonly>
+              </div>
+
+              <label class="col-sm-2" for="co-borrower">Co-Borrower</label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" value="{{phonepayPayment?.coBorrower}} {{phonepayPayment?.coBorrowerLastName}}"
+                  id="co-borrower" readonly>
+              </div>
+            </div>
+            <div class="row form-group">
+              <label class="col-sm-2" for="p_address">Property Address</label>
+              <div class="col-sm-4">
+                <input type="textarea" class="form-control" value="{{phonepayPayment?.propertyInfo?.address | uppercase}} {{phonepayPayment?.propertyInfo?.city | uppercase}} {{phonepayPayment?.propertyInfo?.state | uppercase}} {{phonepayPayment?.propertyInfo?.zip}}"
+                  id="p_address" readonly>
+              </div>
+
+              <label class="col-sm-2" for="loan1">Loan #(1st)</label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" value="{{phonepayPayment?.loanInfoList[0]?.loanNumber}}"
+                  id="loan1" readonly>
+              </div>
+            </div>
+            <div class="row form-group">
+              <label class="col-sm-2" for="phone">Phone #</label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" value="{{phonepayPayment?.phoneNumber | slice:0:3}}-{{phonepayPayment?.phoneNumber | slice:3:6}}-{{phonepayPayment?.phoneNumber | slice:6:10}}" id="phone" readonly>
+              </div>
+
+              <label class="col-sm-2" for="loan2">Loan #(2nd)</label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" value="{{phonepayPayment?.loanInfoList[1]?.loanNumber}}"
+                  id="loan2" readonly>
+              </div>
+            </div>
+            <div class="row form-group">
+              <label class="col-sm-2" for="m_address">Mail Address</label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" value="{{phonepayPayment?.propertyInfo?.address | uppercase}} {{phonepayPayment?.propertyInfo?.state | uppercase}} {{phonepayPayment?.propertyInfo?.zip}}"
+                  id="m_address" readonly>
+              </div>
+
+              <label class="col-sm-2" for="email">Email</label>
+              <div class="col-sm-4">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="customCheck" name="email" (change)="getEmail(borrowerEmail1.value)">
+                  <label class="custom-control-label email-width" for="customCheck"><input type="email" class="form-control ml-4"
+                      #borrowerEmail1 [(ngModel)]="phonepayPayment.borrowerEmail" [ngModelOptions]="{standalone: true}" (keyup)="getEmail(borrowerEmail1.value)" id="email" required></label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="customCheck1" name="email1" (change)="getEmail(borrowerEmail2.value)">
+                  <label class="custom-control-label email-width" for="customCheck1"><input type="email" class="form-control ml-4"
+                      #borrowerEmail2 [(ngModel)]="phonepayPayment.borrowerEmail" [ngModelOptions]="{standalone: true}" (keyup)="getEmail(borrowerEmail2.value)" id="email1" required></label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="customCheck2" name="email2" (change)="getEmail(borrowerEmail3.value)">
+                  <label class="custom-control-label email-width" for="customCheck2"><input type="email" class="form-control ml-4"
+                      #borrowerEmail3  (keyup)="getEmail(borrowerEmail3.value)" id="email" required></label>
+                </div>
+              </div>
+            </div>
+            <h5>Payment Information</h5>
+            <hr />
+            <div class="current-payment-information">
+              <div class="row form-group">
+                <label class="col-sm-2" for="payor_name">Payor</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" value="{{phonepayPayment?.borrowerName}} {{phonepayPayment?.borrowerLastName}}"
+                    id="payor_name">
+                </div>
+
+                <label class="col-sm-2" for="entered_by">Entered By</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" id="entered_by" readonly>
+                </div>
+              </div>
+              <div class="row form-group">
+                <label class="col-sm-2" for="payor_address">Address</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" value="{{phonepayPayment?.propertyInfo?.address | uppercase}} {{phonepayPayment?.propertyInfo?.city | uppercase}} {{phonepayPayment?.propertyInfo?.state | uppercase}} {{phonepayPayment?.propertyInfo?.zip}}"
+                    id="payor_address">
+                </div>
+                <label class="col-sm-2" for="bank">Bank</label>
+                <div class="col-sm-4">
+                  <div *ngIf="bankingInfo">
+                    <input type="text" class="form-control" value="{{bankingInfo?.bankingInfo?.bankName}}" id="bank">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <label class="col-sm-2" for="routing">Routing #</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control"  #routingnum id="routingNum" autofocus="autofocus">
+                  <div *ngIf="isVerfyInfoClicked && emptyRoutingOrAccount" class="error">
+                    <font color="red">Routing number or Account number is Empty.</font>
+                  </div>
+                </div>
+                <label class="col-sm-2" for="addr">Addr</label>
+                <div class="col-sm-4">
+                  <div *ngIf="bankingInfo">
+                    <input type="text" class="form-control" value="{{bankingInfo?.bankingInfo?.bankAddress}}" id="addr">
+                  </div>
+                </div>
+              </div>
+              <div class="row form-group">
+                <label class="col-sm-2" for="accountNum">Account #</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" #accountnum id="accountNum" autofocus="autofocus">
+                </div>
+                <label class="col-sm-2" for="bank_city">City</label>
+                <div class="col-sm-4">
+                  <div *ngIf="bankingInfo">
+                    <input type="text" class="form-control" value="{{bankingInfo?.bankingInfo?.bankCity}}" id="bank_city">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <label class="col-sm-2" for="telephone">Telephone #</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" value="{{phonepayPayment?.phoneNumber | slice:0:3}}-{{phonepayPayment?.phoneNumber | slice:3:6}}-{{phonepayPayment?.phoneNumber | slice:6:10}}" id="telephone">
+                </div>
+                <label class="col-sm-2" for="nbsp"></label>
+                <div class="col-sm-4">
+                </div>
+              </div>
+              <div class="text-center">
+                <div *ngIf="isVerfyInfoClicked && bankingInfo.bankingInfo">
+                  <button class="btn btn-primary mt-3" routerLink="/loan-information">Accept Payor Info</button>
+                </div>
+              </div>
+            </div>
+          </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- /.container-fluid -->
+
+      <!-- Sticky Footer -->
+      <app-footer></app-footer>
+
+    </div>
+
+    <!-- /.content-wrapper -->
+
+  </div>
+</div>
+<!-- /#wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+  <i class="fas fa-angle-up"></i>
+</a>

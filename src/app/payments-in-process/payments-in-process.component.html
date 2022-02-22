@@ -1,0 +1,149 @@
+<div id="wrapper">
+  <app-header></app-header>
+  <app-check-request *ngIf="userDetails.authorities !== 'ServicingAdmin'"></app-check-request>
+  <app-admin-dashboard *ngIf="userDetails.authorities === 'ServicingAdmin'">
+  </app-admin-dashboard>
+  <div id="content-wrapper"> 
+    <div class="container">
+      <form [formGroup]="paymentInProcessForm">
+     
+
+      <div class="row">
+
+         <!------------------------->
+         <div class="col-sm-8">
+          <h3 class="pageHeading">Payments In Process</h3>
+        </div>
+        <div class="col-sm-4 text-right">
+          <i class="fa fa-question-circle fa-2x cursor-pointer" aria-hidden="true" (click)="legendPopup()"></i>
+        </div>
+      </div> 
+      <div class="row">
+        <div class="col-12">
+          <div class="total-payment border py-2">
+            <div class="row text-center" *ngIf="!isTransactionTotal">
+              <div class="col-md-4">
+                <h5>Total Payments</h5>
+                <span class="num">{{paymentInProcessResponse.paymentInProcessList.length}}</span>
+                <span class="price">{{totalPayment |currency:'USD':true:'1.2-2'}}</span>
+              </div>
+              <div class="col-md-4">
+                <h5>Total Non-Advice Payments</h5>
+                <span class="num">{{totalNonAdvicePaymentCount}}</span>
+                <span class="price">{{totalNonAdvicePayment |currency:'USD':true:'1.2-2'}}</span>
+              </div>
+              <div class="col-md-4">
+                <h5>Total Advice Payments</h5>
+                <span class="num">{{totalAdvicePaymentCount}}</span>
+                <span class="price">{{totalAdvicePayment |currency:'USD':true:'1.2-2'}}</span>
+              </div>
+            </div>
+            <div class="row text-center" *ngIf="isTransactionTotal">
+              <div class="col-md-4">
+                <h5>Total Transactions</h5>
+                <span class="num">{{totalTransactionCount}}</span>
+                <span class="price">{{totalTransaction |currency:'USD':true:'1.2-2'}}</span>
+              </div>
+              <div class="col-md-4">
+                <h5>Total Non-Advice Transactions</h5>
+                <span class="num">{{totalNonAdviceTransactionCount}}</span>
+                <span class="price">{{totalNonAdviceTransaction |currency:'USD':true:'1.2-2'}}</span>
+              </div>
+              <div class="col-md-4">
+                <h5>Total Advice Transactions</h5>
+                <span class="num">{{totalAdviceTransactionCount}}</span>
+                <span class="price">{{totalAdviceTransaction |currency:'USD':true:'1.2-2'}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 shorting-opt my-3">
+          <span class="mr-5">Sort By: </span>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="loan" (change)="sortPaymentsInProcess($event, 'Loan Number')"
+              [checked]="paymentInProcessResponse.paymentInProcessList.length" name="short-opt"
+              class="custom-control-input">
+            <label class="custom-control-label" for="loan">Loan #</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="lastName" (change)="sortPaymentsInProcess($event, 'Last Name')" name="short-opt"
+              class="custom-control-input">
+            <label class="custom-control-label" for="lastName">Last Name</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="dateTime" (change)="sortPaymentsInProcess($event, 'Date Time')" name="short-opt"
+              class="custom-control-input">
+            <label class="custom-control-label" for="dateTime">Date Time</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="paymentAmt" (change)="sortPaymentsInProcess($event, 'Payment Amount')"
+              name="short-opt" class="custom-control-input">
+            <label class="custom-control-label" for="paymentAmt">Payment Amount</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="transactionTotal" (change)="sortPaymentsInProcess($event, 'Transaction Total')"
+              name="short-opt" class="custom-control-input">
+            <label class="custom-control-label" for="transactionTotal">Transaction Total</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="collector" (change)="sortPaymentsInProcess($event, 'Processor')" name="short-opt"
+              class="custom-control-input">
+            <label class="custom-control-label" for="collector">Processor</label>
+          </div>
+          <div class="custom-control custom-control-inline sortingOrder-dropdown">
+            <select class="form-control ascending-position" name="sortingOrder" formControlName="sortingOrder" (change)="addSelectedOrder()">
+              <option><b>Ascending</b></option>
+              <option><b>Descending</b></option>
+            </select>
+          </div>
+        </div>
+        <div class="col-12 loan-boxes">
+          <div class="row">
+            <div class="col-md-3"
+              *ngFor="let paymentDetails of (isTransactionTotal ? paymentInProcessForTransactioList : paymentInProcessList ); let i=index">
+              <div [ngClass]="{'item-box-advice' : paymentDetails.advice || paymentDetails.transactionAdvice,
+                'item-box-advice-processed' :  paymentDetails.advice && paymentDetails.adviceCompleted && !paymentDetails.cancelled,
+                'item-box-canceled-batch-payment':  paymentDetails.advice && paymentDetails.adviceCompleted && paymentDetails.cancelled,
+                'item-box': !paymentDetails.advice
+                }" (click)="getPaymentInfo(paymentDetails.loanNumber, i)">
+                <div>
+                  <div class="row">
+                    <span
+                      class="red-star">{{paymentDetails.advice || paymentDetails.transactionAdvice ? '*' : ''}}</span>
+                    <label class="col-2">Loan:</label>
+                    <div class="col-4">
+                      {{paymentDetails.loanNumber}}
+                    </div>
+                    <label class="col-2">Pmt:</label>
+                    <div class="col-4 custom_col-4" *ngIf="!isTransactionTotal">
+                      {{paymentDetails.totalPayment |currency:'USD':true:'1.2-2'}}
+                    </div>
+                    <div class="col-4 custom_col-4" *ngIf="isTransactionTotal"> 
+                      {{paymentDetails.totalTransactionPayment |currency:'USD':true:'1.2-2'}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-4"  *ngIf="paymentDetails.payorType=='Other';else elseBlock">
+                      <u>{{paymentDetails.payorLastName?.substring(0,8)}}</u>
+                    </div>
+                    <ng-template #elseBlock>
+                      <div class="col-4" >
+                       {{paymentDetails.payorLastName?.substring(0,8)}}
+                      </div>
+
+                    </ng-template>
+                    <div class="col-8">
+                      <div *ngIf="!isCollector">{{paymentDetails.dateTime}}</div>
+                      <div *ngIf="isCollector">{{paymentDetails.collector}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>

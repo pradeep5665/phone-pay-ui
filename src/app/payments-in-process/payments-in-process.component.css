@@ -1,0 +1,116 @@
+.total-payment .num{
+    margin-right: 35px;
+}
+.shorting-opt div.custom-control {
+    padding-left: 1.5rem;
+    margin-right: 2rem;
+}
+
+.loan-boxes {
+    max-height: calc(100vh - 277px);
+    min-height: 400px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+/* .col .col-4{
+    padding-right: 12px;
+    padding-left: 10px;
+} */
+
+.red-star{
+    color: #ff0022;
+    font-weight: bold;
+}
+
+.item-box, .item-box-advice, .item-box-advice-processed, .item-box-canceled-batch-payment {
+    padding: 8px 10px;
+    border: solid 1px #ccc;
+    margin-bottom: 5px;
+    color: rgba(0, 0, 0, 0.87);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    /* cursor: move; */
+    background: white;
+    font-size: 14px;
+    border-radius: 5px;
+    position: relative;
+}
+
+/* .item-box-advice { */
+    /* opt-1 */
+    /* box-shadow: 0 0 0 1px #ccc inset; */
+    /* opt-2 */
+    /* border: 2px solid #000;
+} */
+
+
+/* ::opt-4 */
+.item-box-advice, .item-box-advice-processed, .item-box-canceled-batch-payment {overflow:hidden;
+    border: 2px solid #000;
+}
+
+.item-box-advice .red-star {
+    position: absolute;
+    top: -14px;
+    right: -24px;
+    background: #bd0d25;
+    color: #fff;
+    line-height: 47px;
+    width: 50px;
+    text-align: center;
+    height: 30px;
+    transform: rotate(45deg);
+}
+
+.item-box-advice-processed .red-star {
+    position: absolute;
+    top: -14px;
+    right: -24px;
+    background: #38990b;
+    color: #fff;
+    line-height: 47px;
+    width: 50px;
+    text-align: center;
+    height: 30px;
+    transform: rotate(45deg);
+}
+
+.item-box-canceled-batch-payment .red-star {
+    position: absolute;
+    top: -14px;
+    right: -24px;
+    background: #f5bf1c;
+    color: #fff;
+    line-height: 47px;
+    width: 50px;
+    text-align: center;
+    height: 30px;
+    transform: rotate(45deg);
+}
+
+
+.custom-radio .custom-control-input:checked~.custom-control-label::before{
+    background: #bd0c25;
+    /* background: #df0623; */
+}
+
+.sortingOrder-dropdown{
+    position:absolute;
+    right:30px;
+    top:-8px;
+}
+
+
+.custom_col-4
+{
+    margin: -2px 2px 1px -12px;
+}
+.ascending-position{
+    position: relative;
+    left: 45px;
+    width: 100%;
+}

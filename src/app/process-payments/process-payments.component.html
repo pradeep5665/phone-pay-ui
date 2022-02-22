@@ -1,0 +1,605 @@
+<div id="wrapper">
+  <app-header></app-header>
+  <app-check-request *ngIf="userDetails.authorities !== 'ServicingAdmin'"></app-check-request>
+  <app-admin-dashboard *ngIf="userDetails.authorities === 'ServicingAdmin'">
+  </app-admin-dashboard>
+  <div id="content-wrapper">
+    <div class="container">
+      <div class="form-row">
+        <div class="col-12 text-center">
+          <div class="form-row">
+            <div class="col-md-2 col-sm-12 col-xs-12">
+              <h5 style="border-bottom:2px solid #b9b0b0;font-size:16px;width:110px;">Total Payments</h5>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12">
+              <h5 style="border-bottom:2px solid #b9b0b0;font-size:16px;width:140px">Regular Payments</h5>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12">
+              <h5 style="border-bottom:2px solid #b9b0b0;font-size:16px;width:140px;">Processed Advices</h5>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12">
+              <h5 style="border-bottom:2px solid #b9b0b0;font-size:16px;width:120px;">Pending Advices</h5>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12">
+              <h5 style="border-bottom:2px solid #b9b0b0;font-size:16px;width:140px;">Canceled in Batch</h5>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col-md-2 col-sm-12 col-xs-12">
+              <p style="color:#000000;font-size:14px;margin-left:-50px;">
+                <span>{{paymentInProcessResponse.paymentInProcessList.length}}</span>&nbsp;&nbsp;<span>${{totalPayment}}</span>
+              </p>
+            </div>
+
+            <div class="col-md-2 col-sm-12 col-xs-12">
+              <p style="color:#000000;font-size:14px;margin-left:-25px;">
+                <span>{{totalNonAdvicePaymentCount}}</span>&nbsp;&nbsp;<span>${{totalNonAdvicePayment}}</span>
+              </p>
+            </div>
+
+            <div class="col-md-2 col-sm-12 col-xs-12">
+              <p style="color:#000000;font-size:14px;margin-left:-25px;">
+                <span>{{totalProcessAdvicePaymentCount}}</span>&nbsp;&nbsp;<span>${{totalProcessAdvicePayment}}</span>
+              </p>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12" *ngIf="totalPendingAdvicePaymentCount>0">
+              <p style="color:#f10606;font-size:14px;margin-left:-25px;">
+                <span>{{totalPendingAdvicePaymentCount}}</span>&nbsp;&nbsp;<span>${{totalPendingAdvicePayment}}</span>
+              </p>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12" *ngIf="totalPendingAdvicePaymentCount==0">
+              <p style="color:#000000;font-size:14px;margin-left:-25px;">
+                <span>{{totalPendingAdvicePaymentCount}}</span>&nbsp;&nbsp;<span>${{totalPendingAdvicePayment}}</span>
+              </p>
+            </div>
+
+            <div class="col-md-2 col-sm-12 col-xs-12" *ngIf="totalCanceledAdvicePaymentCount>0">
+              <p style="color:#f10606;font-size:14px;margin-left:-15px;">
+                <span>{{totalCanceledAdvicePaymentCount}}</span>&nbsp;&nbsp;<span>${{totalCanceledAdvicePayment}}</span>
+              </p>
+            </div>
+
+            <div class="col-md-2 col-sm-12 col-xs-12" *ngIf="totalCanceledAdvicePaymentCount==0">
+              <p style="color:#000000;font-size:14px;margin-left:-15px;">
+                <span>{{totalCanceledAdvicePaymentCount}}</span>&nbsp;&nbsp;<span>${{totalCanceledAdvicePayment}}</span>
+              </p>
+            </div>
+          </div>
+          <!-- <button type="button" align="center" class="btn btn-default custom-btn btn-lg" (click)="onClick()"
+            [disabled]="disableProcessPayment || disableProcessPaymentBtn" style="padding:13px 35px;border-radius:15px;">Process Payments</button> -->
+
+          <button type="button" align="center" class="btn btn-default custom-btn btn-lg" (click)="onClick()"
+            [disabled]="false" style="padding:13px 35px;border-radius:15px;">Process Payments</button>
+        </div>
+        <span class="col-12 border-ar mt-3" *ngIf="isPaymentProcessing && !processingFailed">
+          <div *ngIf="paymnetProcessingRes && paymnetProcessingRes.status === '200'">
+
+            <h3 class="text-center my-3 title-green">{{today}} Payments Processing Is Successful</h3>
+            <div class="row">
+              <div class="col-6">
+                <h6>Standard Payment Summary </h6>
+                <table class="table">
+                  <tr>
+                    <td>Payments Total :</td>
+                    <td>{{paymnetProcessingRes.numNonAdvicePayments}} Payments</td>
+                    <td>Total: {{paymnetProcessingRes.totalNonAdvicePayments | currency:'USD':true:'1.2-2'}}</td>
+                  </tr>
+                  <tbody class="thead-light">
+                    <tr>
+                      <th><b>Payments Total :</b></th>
+                      <th><b>{{paymnetProcessingRes.numNonAdvicePayments}} Payments</b></th>
+                      <th><b>Total: {{paymnetProcessingRes.totalNonAdvicePayments | currency:'USD':true:'1.2-2'}}</b>
+                      </th>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h6>Advice Payment Summary </h6>
+                <table class="table ">
+                  <tr>
+                    <td>Cashiering:</td>
+                    <td>{{paymnetProcessingRes.numCashiering}} Payments</td>
+                    <td>Total: {{paymnetProcessingRes.totalCashiering | currency:'USD':true:'1.2-2'}}</td>
+                  </tr>
+                  <tr>
+                    <td>Collections:</td>
+                    <td>{{paymnetProcessingRes.numCollections}} Payments</td>
+                    <td>Total: {{paymnetProcessingRes.totalCollections | currency:'USD':true:'1.2-2'}}</td>
+                  </tr>
+                  <tr>
+                    <td>Bankruptcy:</td>
+                    <td>{{paymnetProcessingRes.numBankruptcy}} Payments</td>
+                    <td>Total: {{paymnetProcessingRes.totalBankruptcy | currency:'USD':true:'1.2-2'}}</td>
+                  </tr>
+                  <tr>
+                    <td>Loss Mit:</td>
+                    <td>{{paymnetProcessingRes.numLossMit}} Payments</td>
+                    <td>Total: {{paymnetProcessingRes.totalLossMit | currency:'USD':true:'1.2-2'}}</td>
+                  </tr>
+
+                  <tbody class="thead-light">
+                    <tr>
+                      <th><b>Advice Total :</b></th>
+                      <th><b>{{paymnetProcessingRes.numCashiering + paymnetProcessingRes.numCollections +
+                          paymnetProcessingRes.numBankruptcy + paymnetProcessingRes.numLossMit}}
+                          Payments</b></th>
+                      <th><b>Total:
+                          {{paymnetProcessingRes.totalCashiering + paymnetProcessingRes.totalCollections +
+                          paymnetProcessingRes.totalBankruptcy + paymnetProcessingRes.totalLossMit |
+                          currency:'USD':true:'1.2-2'}}</b>
+                      </th>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h6>Total Payment Summary </h6>
+                <table class="table ">
+                  <tbody class="thead-light">
+                    <tr>
+                      <th><b>Total Payments :</b></th>
+                      <th><b>{{paymnetProcessingRes.numOfSuccessfulPayments}} Payments</b></th>
+                      <th><b>Total: {{paymnetProcessingRes.totalSuccessfulPayments | currency:'USD':true:'1.2-2'}}</b>
+                      </th>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-6">
+                <h6>Zions File </h6>
+                <table class="table ">
+                  <tr>
+                    <td>Regular Payments (.PPY) :</td>
+                    <td>{{paymnetProcessingRes.numZionsTel}} Payments</td>
+                    <td>Total: {{paymnetProcessingRes.totalZionsTel | currency:'USD':true:'1.2-2'}}</td>
+                  </tr>
+                  <tr>
+                    <td>Advice Payments (.TAD) :</td>
+                    <td>{{paymnetProcessingRes.numZionsTad}} Payments</td>
+                    <td>Total: {{paymnetProcessingRes.totalZionsTad | currency:'USD':true:'1.2-2'}}</td>
+                  </tr>
+                  <tbody class="thead-light">
+                    <tr>
+                      <th><b>Total Payments :</b></th>
+                      <th><b>{{paymnetProcessingRes.numOfSuccessfulPayments}} Payments</b></th>
+                      <th><b>Total: {{paymnetProcessingRes.totalSuccessfulPayments | currency:'USD':true:'1.2-2'}}</b>
+                      </th>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h6>Black Knight File </h6>
+                <table class="table ">
+                  <tr>
+                    <td>Regular Payment 071 Records :</td>
+                    <td>{{paymnetProcessingRes.numBk071}} Payments</td>
+                    <td>Total: {{paymnetProcessingRes.totalBk071 | currency:'USD':true:'1.2-2'}}</td>
+                  </tr>
+                  <tr>
+                    <td>Regular Payment 073 Records :</td>
+                    <td>{{paymnetProcessingRes.numBk073}} Payments</td>
+                    <td>Total: {{paymnetProcessingRes.totalBk073 | currency:'USD':true:'1.2-2'}}</td>
+                  </tr>
+                  <tbody class="thead-light">
+                    <tr>
+                      <th><b>Regular Payment Total :</b></th>
+                      <th><b>{{paymnetProcessingRes.numNonAdvicePayments}} Payments</b></th>
+                      <th><b>Total: {{paymnetProcessingRes.totalNonAdvicePayments | currency:'USD':true:'1.2-2'}}</b>
+                      </th>
+                    </tr>
+                    <tr>
+                      <td>Advice Payment (Hand Posted) :</td>
+                      <td>
+                        {{paymnetProcessingRes.numCashiering + paymnetProcessingRes.numCollections +
+                        paymnetProcessingRes.numBankruptcy + paymnetProcessingRes.numLossMit}}
+                        Payments</td>
+                      <td>Total:
+                        {{paymnetProcessingRes.totalCashiering + paymnetProcessingRes.totalCollections +
+                        paymnetProcessingRes.totalBankruptcy + paymnetProcessingRes.totalLossMit |
+                        currency:'USD':true:'1.2-2'}}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h6>Total Payments Summary</h6>
+                <table class="table ">
+                  <tbody class="thead-light">
+                    <tr>
+                      <th><b>Total Payments:</b></th>
+                      <th><b>{{paymnetProcessingRes.numOfSuccessfulPayments}} Payments</b></th>
+                      <th><b>Total: {{paymnetProcessingRes.totalSuccessfulPayments | currency:'USD':true:'1.2-2'}}</b>
+                      </th>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+          <div *ngIf="processingFailed">
+            <table class="table ">
+              <tbody *ngIf="sendEmailFailed">
+                <tr>
+                  <td class="text-danger"><b>{{"Payment Processing failed."}}<br>{{"[Display error message
+                      here]"}}<br>{{"Error : "+processPaymentNotificationMsg}}</b></td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </span>
+
+        <!--------- second-page ---------->
+
+        <div class="col-12 border-ar mt-3 yellow-section"
+          *ngIf="paymnetProcessingRes && paymnetProcessingRes.status === '207' && !processingFailed">
+          <h3 class="text-center my-3 title-green">{{today}} Payments Processing Partially Successful</h3>
+          <div class="row">
+            <div class="col-6">
+              <h6>Standard Payment Summary </h6>
+              <table class="table ">
+                <tr>
+                  <td>Payments Total :</td>
+                  <td>{{paymnetProcessingRes.numNonAdvicePayments}} Payments</td>
+                  <td>Total: {{paymnetProcessingRes.totalNonAdvicePayments | currency:'USD':true:'1.2-2'}}</td>
+                </tr>
+                <tbody class="thead-light">
+                  <tr>
+                    <th><b>Payments Total :</b></th>
+                    <th><b>{{paymnetProcessingRes.numNonAdvicePayments}} Payments</b></th>
+                    <th><b>Total: {{paymnetProcessingRes.totalNonAdvicePayments | currency:'USD':true:'1.2-2'}}</b></th>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h6>Advice Payment Summary </h6>
+              <table class="table ">
+                <tr>
+                  <td>Cashiering:</td>
+                  <td>{{paymnetProcessingRes.numCashiering}} Payments</td>
+                  <td>Total: {{paymnetProcessingRes.totalCashiering | currency:'USD':true:'1.2-2'}}</td>
+                </tr>
+                <tr>
+                  <td>Collections:</td>
+                  <td>{{paymnetProcessingRes.numCollections}} Payments</td>
+                  <td>Total: {{paymnetProcessingRes.totalCollections | currency:'USD':true:'1.2-2'}}</td>
+                </tr>
+                <tr>
+                  <td>Bankruptcy:</td>
+                  <td>{{paymnetProcessingRes.numBankruptcy}} Payments</td>
+                  <td>Total: {{paymnetProcessingRes.totalBankruptcy | currency:'USD':true:'1.2-2'}}</td>
+                </tr>
+                <tr>
+                  <td>Loss Mit:</td>
+                  <td>{{paymnetProcessingRes.numLossMit}} Payments</td>
+                  <td>Total: {{paymnetProcessingRes.totalLossMit | currency:'USD':true:'1.2-2'}}</td>
+                </tr>
+
+                <tbody class="thead-light">
+                  <tr>
+                    <th><b>Advice Total :</b></th>
+                    <th><b>{{paymnetProcessingRes.numCashiering + paymnetProcessingRes.numCollections +
+                        paymnetProcessingRes.numBankruptcy + paymnetProcessingRes.numLossMit}}
+                        Payments</b></th>
+                    <th><b>Total:
+                        {{paymnetProcessingRes.totalCashiering + paymnetProcessingRes.totalCollections +
+                        paymnetProcessingRes.totalBankruptcy + paymnetProcessingRes.totalLossMit |
+                        currency:'USD':true:'1.2-2'}}</b>
+                    </th>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h6>Total Payment Summary </h6>
+              <table class="table ">
+                <tbody class="thead-light">
+                  <tr>
+                    <th><b>Total Payments :</b></th>
+                    <th><b>{{paymnetProcessingRes.numOfSuccessfulPayments}} Payments</b></th>
+                    <th><b>Total: {{paymnetProcessingRes.totalSuccessfulPayments | currency:'USD':true:'1.2-2'}}</b>
+                    </th>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-6">
+              <h6>Zions File </h6>
+              <table class="table ">
+                <tr>
+                  <td>Regular Payments (.PPY) :</td>
+                  <td>{{paymnetProcessingRes.numZionsTel}} Payments</td>
+                  <td>Total: {{paymnetProcessingRes.totalZionsTel | currency:'USD':true:'1.2-2'}}</td>
+                </tr>
+                <tr>
+                  <td>Advice Payments (.TAD) :</td>
+                  <td>{{paymnetProcessingRes.numZionsTad}} Payments</td>
+                  <td>Total: {{paymnetProcessingRes.totalZionsTad | currency:'USD':true:'1.2-2'}}</td>
+                </tr>
+                <tbody class="thead-light">
+                  <tr>
+                    <th><b>Total Payments :</b></th>
+                    <th><b>{{paymnetProcessingRes.numOfSuccessfulPayments}} Payments</b></th>
+                    <th><b>Total: {{paymnetProcessingRes.totalSuccessfulPayments | currency:'USD':true:'1.2-2'}}</b>
+                    </th>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h6>Black Knight File </h6>
+              <table class="table ">
+                <tr>
+                  <td>Regular Payment 071 Records :</td>
+                  <td>{{paymnetProcessingRes.numBk071}} Payments</td>
+                  <td>Total: {{paymnetProcessingRes.totalBk071 | currency:'USD':true:'1.2-2'}}</td>
+                </tr>
+                <tr>
+                  <td>Regular Payment 073 Records :</td>
+                  <td>{{paymnetProcessingRes.numBk073}} Payments</td>
+                  <td>Total: {{paymnetProcessingRes.totalBk073 | currency:'USD':true:'1.2-2'}}</td>
+                </tr>
+                <tbody class="thead-light">
+                  <tr>
+                    <th><b>Regular Payment Total :</b></th>
+                    <th><b>{{paymnetProcessingRes.numNonAdvicePayments}} Payments</b></th>
+                    <th><b>Total: {{paymnetProcessingRes.totalNonAdvicePayments | currency:'USD':true:'1.2-2'}}</b></th>
+                  </tr>
+                  <tr>
+                    <td>Advice Payment (Hand Posted) :</td>
+                    <td>
+                      {{paymnetProcessingRes.numCashiering + paymnetProcessingRes.numCollections +
+                      paymnetProcessingRes.numBankruptcy + paymnetProcessingRes.numLossMit}}
+                      Payments</td>
+                    <td>Total:
+                      {{paymnetProcessingRes.totalCashiering + paymnetProcessingRes.totalCollections +
+                      paymnetProcessingRes.totalBankruptcy + paymnetProcessingRes.totalLossMit |
+                      currency:'USD':true:'1.2-2'}}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h6>Total Payments Summary</h6>
+              <table class="table ">
+                <tbody class="thead-light">
+                  <tr>
+                    <th><b>Total Payments:</b></th>
+                    <th><b>{{paymnetProcessingRes.numOfSuccessfulPayments}} Payments</b></th>
+                    <th><b>Total: {{paymnetProcessingRes.totalSuccessfulPayments | currency:'USD':true:'1.2-2'}}</b>
+                    </th>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-12">
+              <p id="hideTable" (click)="showFailedPayments()">Show Failed Payments</p>
+
+              <div class="show-table" id="showTable" *ngIf="showFailedPaymentsClicked">
+                <h6>Failed Payements</h6>
+                <table class="table ">
+                  <tr>
+                    <td>Payments Total :</td>
+                    <td>54 Payments</td>
+                    <td>Total:- 102,000.00</td>
+                  </tr>
+                  <tbody class="thead-light">
+                    <tr>
+                      <th><b>Payments Total :</b></th>
+                      <th><b>54 Payments</b></th>
+                      <th><b>Total:- 102,000.00</b></th>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--------- second-page ---------->
+        <span _ngcontent-ked-c6="" class="col-12 border-ar mt-3 error-section" *ngIf="processingFailed">
+            <div class="col-md-12 text-center error-content">
+                <h1>Payment Processing Failed</h1>
+
+              <h3>[Display error message here]</h3>
+
+              <h3>Error: this.processPaymentErrorMsg</h3>
+              </div>
+
+        </span>
+        <!------------Email Notification-------------------->
+        <span class="col-12 border-ar mt-3" *ngIf="isNotificationsProcessingHeader">
+          <div>
+            <h3 class="text-center my-3">Notifications Waiting to Process</h3>
+          </div>
+        </span>
+
+        <span class="col-12 border-ar mt-3"
+          *ngIf="isNotificationsProcessing && ((processPaymentNotificationRes.emailFailedToSend === 0 || processPaymentNotificationRes.emailFailedToSend === undefined) && (processPaymentLetterNotificationRes.letterFailedToPrint === 0 || processPaymentNotificationRes.letterFailedToPrint === undefined))">
+          <div>
+            <span>
+              <h3 class="text-center my-3 title-green">{{today}} Notification Processing Complete</h3>
+              <div class="group-notification">
+                <div class="row">
+                  <div class="col-7">
+                    <h6>E-mail Notifications</h6>
+                    <table class="table ">
+                      <tbody>
+                        <tr>
+                          <td>E-mails sent Successfully : {{emailSentSuccessfully}}</td>
+
+                        </tr>
+                        <tr>
+                          <td>E-mails failed to send : {{emailFailedToSend}}</td>
+
+                        </tr>
+                        <tr>
+                          <td><b>Total Emails : {{totalEmail}}</b></td>
+
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="col-5">
+                    <h6>Letter Notifications</h6>
+                    <table class="table ">
+                      <tbody>
+                        <tr>
+                          <td>Letters printed Successfully : {{letterPrintedSuccessfully}}</td>
+
+                        </tr>
+                        <tr style="font-weight: bold;">
+                          <td>Letters failed to print : {{letterFailedToPrint}}</td>
+
+                        </tr>
+                        <tr>
+                          <td><b>Total Letters : {{totalLetter}}</b></td>
+
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </span>
+
+          </div>
+        </span>
+        <!------------Email notification end--------------->
+
+        <!------------------Failed Notification------------------------->
+
+        <span class="col-12 div-bdr mt-3"
+          *ngIf="isNotificationsProcessing && (((processPaymentNotificationRes.emailFailedToSend !== 0 && processPaymentLetterNotificationRes.letterFailedToPrint !== 0) && (processPaymentNotificationRes.emailFailedToSend !== undefined && processPaymentLetterNotificationRes.letterFailedToPrint !== undefined)) ||
+          ((processPaymentNotificationRes.emailFailedToSend !== 0 && processPaymentNotificationRes.emailFailedToSend !== undefined)|| (processPaymentLetterNotificationRes.letterFailedToPrint !== 0 && processPaymentLetterNotificationRes.letterFailedToPrint !==undefined)))">
+          <!-- ((processPaymentNotificationRes.emailFailedToSend !== 0 || processPaymentLetterNotificationRes.letterFailedToPrint !== 0) && (processPaymentNotificationRes.emailFailedToSend !== undefined || processPaymentLetterNotificationRes.letterFailedToPrint !==undefined)) -->
+          <div>
+            <span>
+              <h3 class="text-center my-3 title-yellow">{{today}} Notification Processing Complete</h3>
+              <div class="group-notification">
+                <div class="row">
+                  <div class="col-7">
+                    <h6>E-mail Notifications</h6>
+                    <table class="table ">
+                      <tbody *ngIf="!sendEmailFailed">
+                        <tr>
+                          <td>E-mails sent Successfully : {{emailSentSuccessfully}}</td>
+
+                        </tr>
+                        <tr>
+                          <td class="content-red">E-mails failed to send : {{emailFailedToSend}}</td>
+
+                        </tr>
+                        <tr>
+                          <td><b>Total Emails : {{totalEmail}}</b></td>
+
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="col-5">
+                    <h6>Letter Notifications</h6>
+                    <table class="table ">
+                      <tbody>
+                        <tr>
+                          <td>Letters printed Successfully : {{letterPrintedSuccessfully}}</td>
+
+                        </tr>
+                        <tr class="content-red" style="font-weight: bold;">
+                          <td>Letters failed to print : {{letterFailedToPrint}}</td>
+
+                        </tr>
+                        <tr>
+                          <td><b>Total Letters : {{totalLetter}}</b></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-12 text-center" *ngIf="showViewFailedNotificationBtn">
+                <span class="text-primary" (click)="showViewFailedNotifications()">Click To View Failed
+                  Notifications</span>
+              </div>
+              <div *ngIf="viewFailedNotification">
+                <div class="col-md-12 text-center" *ngIf="(emailFailedToSend !== 0 || letterFailedToPrint !== 0)">
+                  <span class="text-primary" (click)="hideViewFailedNotification()">Hide Failed Notifications</span>
+                </div>
+                <span *ngIf="disableResendEmail && processPaymentNotificationRes.emailFailedToSend !== 0">
+                  <div class="col-md-12 fail-email">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h6>Failed Notification</h6>
+                      </div>
+
+                      <div class="col-md-6 text-right">
+                        <i _ngcontent-lfl-c5="" class="fas fa-print fa-fw  text-primary"
+                          (click)="resendFailedPrintNotification()"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-12 email-notify">
+                        <p class="mb-0">Email Notification</p>
+                    </div>
+                      <div class="col-md-12"
+                        *ngFor="let emailFailedList of this.processPaymentNotificationRes.failedEmailsList; let i = index;">
+                        <p class="fail-cols"><b>Payer Name</b> {{" : "+ this.emailPayerNameArr[i]}}</p>
+                        <span class="loan-detail" *ngFor="let emailFailedList1 of  emailFailedList">
+                          <div class="row">
+                            <div class="col-md-6" *ngIf="disableResendEmail">
+                              <p class="fail-cols1">Loan Number: {{emailFailedList1.loanNumber}} </p>
+                            </div>
+                            <div class="col-md-6" *ngIf="disableResendEmail">
+                              <p class="fail-cols1">Payment Total: {{"$"+emailFailedList1.totalFee}}</p>
+                            </div>
+                          </div>
+                        </span>
+                      </div>
+                      </div>
+                  </div>
+                </span>
+                <span *ngIf="disableResendPrint && processPaymentLetterNotificationRes.letterFailedToPrint !== 0">
+                  <div class="col-md-12 email-notify">
+                    <p class="mb-0">Letter Notification</p>
+                </div>
+                  <div class="col-md-12 mt-2">
+                   <div class="row">
+                      <div class="col-md-12"
+                        *ngFor="let printFailedList of this.processPaymentLetterNotificationRes.failedPrintsList; let i = index;">
+                        <p class="fail-cols"><b>Payer Name</b> {{" : "+ this.letterPayerNameArr[i]}}</p>
+                        <span class="loan-detail" *ngFor="let printFailedList1 of  printFailedList">
+                          <div class="row">
+                            <div class="col-md-6" *ngIf="disableResendPrint">
+                              <p class="fail-cols1">Loan Number: {{printFailedList1.loanNumber}} </p>
+                            </div>
+                            <div class="col-md-6" *ngIf="disableResendPrint">
+                              <p class="fail-cols1">Payment Total: {{"$"+printFailedList1.totalFee}}</p>
+                            </div>
+                          </div>
+                        </span>
+                      </div>
+                     </div>
+                  </div>
+                </span>
+
+              </div>
+            </span>
+
+          </div>
+        </span>
+        <!--- ------Failed Notificatin End-->
+        <div class="col-12 border-ar mt-3 failed-payment-section" *ngIf="printLetterFailed">
+          <!--  -->
+          <h3 class="text-center my-3 title-green">{{"Print Letter Notification Failed : "}} {{processPaymentLetterNotificationMsg}}</h3>
+        </div>
+        <div class="col-12 border-ar mt-3 failed-payment-section" *ngIf="sendEmailFailed">
+          <!--  -->
+          <h3 class="text-center my-3 title-green">{{"Email Notification Failed : "}} {{processPaymentNotificationMsg}}</h3>
+        </div>
+
+        </div>
+    </div>
+  </div>
+</div>

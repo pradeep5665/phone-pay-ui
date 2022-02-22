@@ -1,0 +1,347 @@
+
+html,body{
+    min-height: 100%;
+ }
+ body{
+     color: #000;
+     background: #fff;
+     font-family: 'Poppins', sans-serif;
+     font-weight: 400;
+ }
+ body.bodyBg{
+     background: #f8f5f6;
+ }
+ button{
+     background: transparent;
+     border: 0;
+ 
+ }
+ ul{
+     list-style: none;
+     margin: 0;
+     padding: 0;
+ }
+ 
+ /* .btn.btn-primary {
+    background-color: rgb(0, 68, 255)
+  } */
+  
+  .btn .btn-sm:active,
+  .btn .btn-sm:hover,
+  .btn .btn-sm:focus {
+    background-color: orange !important;
+  }
+
+ .overLay{
+     height: 100%;
+     width: 100%;
+     position: fixed;
+     background: rgba(0,0,0,0.7);
+     top: 0;
+     left: 0;
+     z-index: 100;
+     display: none;
+ }
+ h1, h2, h3, h4, h5, h6{
+     font-family: 'Poppins', sans-serif;
+     font-weight: 600;
+     margin: 0;
+ }
+ .card.customCardWrapper .card-header{
+     background-color:#fff;
+ }
+ .card.customCardWrapper .card-header > h4{
+     font-size: 18px;
+     font-weight: 500;
+ }
+ .datePickerWrapper {
+     display: flex;
+ }
+ .datePickerWrapper > label{
+     margin-right: 20px;
+     white-space: nowrap;
+ }
+ 
+ .radioBtnWrapper {
+     display: flex;
+     flex-wrap: wrap;
+     padding: 16px;
+ }
+ .radioBtnWrapper .customInnerBox{
+     flex: 0 0 33.33%;
+     margin-bottom: 10px;
+ }
+ .radioBtnWrapper .customInnerBox label > span{
+     font-size: 8px;
+     color: #929292;
+     font-weight: 300;
+ }
+
+ customLeftTableWrapper
+ 
+ /* Table css start ================================================== */
+ 
+ tr.hide-table-padding td {
+     padding: 0;
+   }
+   
+   .expand-button {
+       position: relative;
+       
+   }
+   
+   .accordion-toggle .expand-button:after
+   {
+     position: absolute;
+     left:.75rem;
+     top: 50%;
+     transform: translate(0, -50%);
+     content: '-';
+   }
+   .accordion-toggle.collapsed .expand-button:after
+   {
+     content: '+';
+   }
+
+   .accordion-toggle1 .expand-button:after
+   {
+     position: absolute;
+     left:.75rem;
+     top: 50%;
+     bottom: 50%;
+     transform: translate(0, -50%);
+     content: '-';
+   }
+   .accordion-toggle1.collapsed .expand-button:after
+   {
+     content: '+';
+   }
+
+
+   .colorYellow{
+    background-color: yellow;
+   }
+   .colorRed{
+    background-color: red;
+   }
+
+   .table .table-bordered > tbody > tr:hover{
+    background-color: yellow;
+   }
+
+   .customLeftTableWrapper .table td, .customLeftTableWrapper .table th,
+   .customRightTableWrapper .table td, .customRightTableWrapper .table th{
+     padding: 0 5px;
+     width: 0%;
+   }
+   .customLeftTableWrapper > table > thead > tr:first-child > th,
+   .customRightTableWrapper > table > thead > tr:first-child > th{
+       font-weight: 500;
+       font-size: 14px;
+   }
+ 
+   .customLeftTableWrapper > table > thead > tr > th:nth-child(3),
+   .customLeftTableWrapper > table > thead > tr > th:nth-child(4),
+   .customLeftTableWrapper > table > tbody > tr > td:nth-child(3),
+   .customLeftTableWrapper > table > tbody > tr > td:nth-child(4){
+       text-align: right;
+   }
+   .customLeftTableWrapper > table > tbody > tr > td{
+       font-weight: 600;
+       font-size: 13px;
+   }
+ 
+   .customRightTableWrapper > table > tbody > tr > td{
+     font-weight: 500;
+     font-size: 14px;
+     width: 14%;
+ }
+ 
+ /**** 01-07-2020 ***/
+
+
+
+.customCardWrapper{
+    margin-right: 35px;
+}
+ 
+   /* Table css end ================================================== */
+
+   .custom-table{
+       width: 100%;
+   }
+
+   .custom-table td{
+       padding-top: 2px;
+       vertical-align: baseline;
+   } 
+
+   .custom-table td:last-child{
+       width: 600px;
+   }
+
+   .customLeftTableWrapper table thead tr:first-child{
+       border-top: 1px solid #dee2e6;
+   }
+
+
+  .myaccordion .card,
+  .myaccordion .card:last-child .card-header {
+    border: none;
+  }
+  
+  .myaccordion .card-header {
+    border-bottom-color: #EDEFF0;
+    background: transparent;
+  }
+  
+  .myaccordion .fa-stack {
+    font-size: 18px;
+  }
+  
+  .myaccordion .btn {
+    width: 100%;
+    font-weight: bold;
+    color: #004987;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .myaccordion .btn-link:hover,
+  .myaccordion .btn-link:focus {
+    text-decoration: none;
+  }
+  
+  .myaccordion li + li {
+    margin-top: 10px;
+  }
+
+  .custom-accord{
+      width: 100%;
+  }
+
+  .custom-accord .card-header{
+    padding:2px;
+ }
+
+ .custom-accord button{
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+ }
+
+ .accord-content{
+    width: 92%;
+    display: flex;
+    justify-content: space-between;
+    margin-left: 5px;
+    font-size: 12px;
+    font-weight: 200;
+ }
+
+.accord-tabs ul{
+    width: 97%;
+    display: flex;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    margin-left: 25px;
+    font-weight: 500;
+    font-size: 13px;
+ }
+
+ .accord-tabs ul li span{
+   display: block;
+ }
+
+ .customRightTableWrapper .table tr td .card{
+    -webkit-box-shadow:none;
+    box-shadow: none;
+}
+
+.collapse.show {
+    border-top: 1px solid #ececec;
+}
+
+/****** 08-13-2020 ******/
+
+.tab-wrapper{
+    padding-top: 8px !important;
+    padding-left: 10px !important;
+}
+
+.tab-ui li{
+    display: inline-block;
+}
+
+.tab-ui li button.btn {
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border-top-left-radius: 5px !important;
+    border-top-right-radius: 5px !important;
+    border: 1px solid #b4b4b4;
+    font-size: 12px;
+    border-bottom: 0;
+}
+
+.btn.active {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.sub-customAccord tr td{
+    width: 100%;
+    border-bottom: 0;
+}
+
+.accord-content span:first-child {
+    width: 35%;
+    text-align: left;
+}
+
+.accord-content span:nth-child(2) {
+    width: 20%;
+    text-align: center;
+}
+
+.accord-content span:last-child {
+    width: 22%;
+    text-align: right;
+}
+
+.txt-head{
+    font-weight: 600;
+    padding: 8px;
+    text-transform: capitalize;
+}
+
+.sub-customAccord .custom-accord tr td{
+    border: none;
+    padding: 2px 0;
+}
+
+.left-table-section tr:nth-child(2) th{
+    padding: 11px;
+}
+
+.left-table-section tbody tr td{
+    padding:7px 10px;
+}
+
+.myaccordion .card .card-body li{
+    min-width:120px;
+    max-width:120px;
+    text-align: right;
+}
+.myaccordion .card .card-body li:nth-child(1){
+    min-width:120px;
+    max-width:120px;
+    text-align: left;
+}
+
+button.btn.btn-light.custom-btn {
+    padding: 0px 10px;
+    margin: 0;
+    font-size: 16px;
+    float: right;
+}

@@ -1,0 +1,33 @@
+---
+- hosts: "{{ target }}"
+  tasks:
+    - name: Get the name of the tarball
+      find:
+        paths: /home/gitlab-runner/deploy/phone-pay-ui
+        patterns: 'phone-pay-ui-*.tgz'
+      register: tarball_name
+
+    - name: Set facts for subsequent tasks
+      set_fact:
+        webUser: "www-data"
+        webGroup: "www-data"
+        webDest: "/srv/uhcweb/phonepay"
+
+    - name: Make sure "{{ webDest }}" exists
+      become: yes
+      file:
+        path: "{{ webDest }}"
+        state: directory
+        mode: 0755
+        owner: "{{ webUser }}"
+        group: "{{ webGroup }}"
+
+    - name: Unarchive executable files
+      become: yes
+      unarchive:
+        remote_src: yes
+        src: "{{ tarball_name.files[0].path }}"
+        dest: "{{ webDest }}"
+        owner: "{{ webUser }}"
+        group: "{{ webGroup }}"
+

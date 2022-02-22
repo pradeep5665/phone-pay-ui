@@ -1,0 +1,357 @@
+<div id="wrapper">
+  <app-header></app-header>
+  <app-check-request *ngIf="userDetails.authorities !== 'ServicingAdmin'"></app-check-request>
+  <app-admin-dashboard *ngIf="userDetails.authorities === 'ServicingAdmin'">
+  </app-admin-dashboard>
+  <div id="content-wrapper">
+    <div class="ut-researchpaymnet-main user-information">
+      <div class="card card-sec">
+        <div class="card-body">
+          <form [formGroup]="searchCriteriaForm" class="form-input-full-width">
+            <div class="head-sec">
+              <h5 class="pageHeading">Search Criteria</h5>
+              <i class="fa fa-question-circle fa-2x cursor-pointer font-fa" aria-hidden="true"  (click)="legendPopup()"></i>
+            </div>
+            <div class="row">
+              <div class="col-md-2">
+                <label for="dateRangeFrom">Date Range</label>
+              </div>
+              <div class="col-md-4">
+                <input type="date" class="form-control" formControlName="dateRangeFrom" />
+              </div>
+              <div class="col-md-2 text-center">
+                <label for="dateRangeTo">To</label>
+              </div>
+              <div class="col-md-4">
+                <input type="date" class="form-control" formControlName="dateRangeTo" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-2">
+                <label for="amountFrom">Amount</label>
+              </div>
+              <div class="col-md-4">
+                <div class="custom-control">
+                <input type="numeric" class="form-control" formControlName="amountFrom" />
+              </div>
+              </div>
+              <div class="col-md-2 text-center">
+                <label for="amountTo">To</label>
+              </div>
+              <div class="col-md-4">
+                <div class="custom-control">
+                <input type="numeric" class="form-control" formControlName="amountTo" />
+              </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-2">
+                <label for="loanFrom">Loan(s)</label>
+              </div>
+              <div class="col-md-4">
+                <div class="custom-control">
+                <input type="numeric" class="form-control" formControlName="loanFrom" />
+              </div>
+              </div>
+              <div class="col-md-2 text-center">
+                <label for="loanTo">,</label>
+              </div>
+              <div class="col-md-4">
+                <div class="custom-control">
+                <input type="numeric" class="form-control" formControlName="loanTo" />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="agent1">Service Agent(s)</label>
+              </div>
+              <div class="col-md-4">
+                <!-- <input type="text" class="form-control" formControlName="agent1" /> -->
+                <div class="custom-control form-input-label-animate">
+
+                  <input type="text" class="form-control"  [matAutocomplete]="auto" placeholder="Enter Agent Name"
+                    (keyup)="getLastNameAuto(agent1.value)" formControlName="agent1"
+                    #agent1  />
+                  <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngIf="isLoading" class="is-loading"><mat-spinner diameter="50"></mat-spinner></mat-option>
+                    <ng-container *ngIf="!isLoading">
+                    <mat-option *ngFor="let agent1 of lastNames" [value]="agent1">
+                      {{ agent1 }}
+                    </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+
+              </div>
+              </div>
+              <div class="col-md-2 text-center">
+                <label for="agent2">,</label>
+              </div>
+              <div class="col-md-4">
+                <!-- <input type="text" class="form-control" formControlName="agent2" /> -->
+                <div class="custom-control form-input-label-animate">
+                  <input type="text" class="form-control" [matAutocomplete]="auto1" placeholder="Enter Agent Name"
+                    (keyup)="getFirstNameAuto(agent2.value)" formControlName="agent2"
+                    #agent2 />
+                  <mat-autocomplete #auto1="matAutocomplete">
+                    <mat-option *ngIf="isLoading" class="is-loading"><mat-spinner diameter="50"></mat-spinner></mat-option>
+                    <!-- <ng-container *ngIf="!isLoading"> -->
+                    <mat-option *ngFor="let agent2 of firstNames" [value]="agent2">
+                      {{ agent2 }}
+                    </mat-option>
+                  <!-- </ng-container> -->
+                  </mat-autocomplete>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 text-right mob-center">
+                <button class="btn btn-primary mt-3" (click)="onSearch()">Search</button>
+              </div>
+              <div class="col-md-6 mob-center">
+                <button class="btn btn-danger mt-3" (click)="onClear()">Clear</button>
+              </div>
+            </div>
+          </form>
+          <div class="ut-searchresult-main">
+            <div class="head-sec">
+              <h5 class="pageHeading">Search Results</h5>
+            </div>
+            <div class="scroll-table">
+              <div class="table-responsive">
+
+              <table class="table research-tbl">
+                  <thead>
+                    <tr>
+                      <th (click)="sortNumberColumn1()">Date
+                         <span *ngIf = "(dateSort && this.addImageDate)" ><i class="fa fa-arrow-up"></i>
+                        </span>
+                        <span *ngIf = "(!dateSort && addImageDate)" ><i class="fa fa-arrow-down"></i>
+                        </span>
+                      </th>
+                      <th  (click)="sortByStatusMultiLevel()">Status
+                        <span *ngIf = "(statusSort && addImageStatus)" ><i class="fa fa-arrow-up"></i></span>
+                        <span *ngIf = "(!statusSort && addImageStatus)"><i class="fa fa-arrow-down"></i></span>
+                      </th>
+
+                      <th class="text-right" (click)="sortNumberColumn2()">Amount
+                        <span *ngIf = "(amountSort && addImageAmunt)" ><i class="fa fa-arrow-up"></i></span>
+                        <span *ngIf = "(!amountSort && addImageAmunt)"><i class="fa fa-arrow-down"></i></span>
+                      </th>
+                      <th (click)="sortNumberColumn()">Loan Number
+                        <span *ngIf = "(loanNumberSort && addImageLoan)" ><i class="fa fa-arrow-up"></i></span>
+                        <span *ngIf = "(!loanNumberSort && addImageLoan)" ><i class="fa fa-arrow-down"></i></span>
+                      </th>
+                      <th (click)="sortByBorrowerMultiLevel()">Borrower
+                        <span *ngIf = "(borrowerSort && addImageBorrower)" ><i class="fa fa-arrow-up"></i></span>
+                        <span *ngIf = "(!borrowerSort && addImageBorrower)" ><i class="fa fa-arrow-down"></i></span>
+                      </th>
+                      <th class="text-center">Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-container *ngFor="let researchPayment of researchPaymentDto; let i=index">
+
+                     <tr *ngIf="(researchPayment.totalAmount-0)<(researchPayment.monthlyPayment-0) && !researchPayment.lateProcess"  (click)="getResearchDetails(i, researchPayment.paymentId)">
+                      <td style="color: red;">{{researchPayment.paymentDate}}</td>
+                      <td style="color: red;">{{researchPayment.paymentStatus}}</td>
+                      <td class="text-right" style="color: red;">{{researchPayment.totalAmount | currency: 'USD': true}}</td>
+                      <td style="color: red;">{{researchPayment.loanNumber}}</td>
+                      <td>
+                        <p style="color: red;">{{researchPayment.borrowerName}}</p>
+                        <p style="color: red;">{{researchPayment.coBorrowerName}}</p>
+                      </td>
+                      <td class="text-center">
+                        <span class="fa fa-plus" aria-hidden="true"></span>
+                      </td>
+                    </tr>
+
+                    <tr *ngIf="(researchPayment.totalAmount-0)<(researchPayment.monthlyPayment-0) && researchPayment.lateProcess"  (click)="getResearchDetails(i, researchPayment.paymentId)">
+                      <td style="color: red;">{{researchPayment.paymentDate}}<span>*</span></td>
+                      <td style="color: red;">{{researchPayment.paymentStatus}}</td>
+                      <td class="text-right" style="color: red;">{{researchPayment.totalAmount | currency: 'USD': true}}</td>
+                      <td style="color: red;">{{researchPayment.loanNumber}}</td>
+                      <td>
+                        <p style="color: red;">{{researchPayment.borrowerName}}</p>
+                        <p style="color: red;">{{researchPayment.coBorrowerName}}</p>
+                      </td>
+                      <td class="text-center">
+                        <span class="fa fa-plus" aria-hidden="true"></span>
+                      </td>
+                    </tr>
+
+                    <tr *ngIf="researchPayment.phonePayFee===10 && (researchPayment.totalAmount-0)>(researchPayment.monthlyPayment-0)+10"  (click)="getResearchDetails(i, researchPayment.paymentId)">
+                      <td style="font-weight: bold;" *ngIf="!researchPayment.lateProcess">{{researchPayment.paymentDate}}</td>
+                      <td style="font-weight: bold;" *ngIf="researchPayment.lateProcess">{{researchPayment.paymentDate}}<span>*</span></td>
+                      <td style="font-weight: bold;">{{researchPayment.paymentStatus}}</td>
+                      <td class="text-right" style="font-weight: bold;">{{researchPayment.totalAmount | currency: 'USD': true}}</td>
+                      <td style="font-weight: bold;">{{researchPayment.loanNumber}}</td>
+                      <td>
+                        <p style="font-weight: bold;">{{researchPayment.borrowerName}}</p>
+                        <p style="font-weight: bold;">{{researchPayment.coBorrowerName}}</p>
+                      </td>
+                      <td class="text-center">
+                        <span class="fa fa-plus" aria-hidden="true"></span>
+                      </td>
+                    </tr>
+                    <tr *ngIf="researchPayment.phonePayFee===0 && (researchPayment.totalAmount-0)>(researchPayment.monthlyPayment-0)"  (click)="getResearchDetails(i, researchPayment.paymentId)">
+                      <td style="font-weight: bold;" *ngIf="!researchPayment.lateProcess">{{researchPayment.paymentDate}}</td>
+                      <td style="font-weight: bold;" *ngIf="researchPayment.lateProcess">{{researchPayment.paymentDate}}<span>*</span></td>
+                      <td style="font-weight: bold;">{{researchPayment.paymentStatus}}</td>
+                      <td class="text-right" style="font-weight: bold;">{{researchPayment.totalAmount | currency: 'USD': true}}</td>
+                      <td style="font-weight: bold;">{{researchPayment.loanNumber}}</td>
+                      <td>
+                        <p style="font-weight: bold;">{{researchPayment.borrowerName}}</p>
+                        <p style="font-weight: bold;">{{researchPayment.coBorrowerName}}</p>
+                      </td>
+                      <td class="text-center">
+                        <span class="fa fa-plus" aria-hidden="true"></span>
+                      </td>
+                    </tr>
+                    <tr *ngIf="(researchPayment.phonePayFee===0 && (researchPayment.totalAmount-0)===(researchPayment.monthlyPayment-0)) || (researchPayment.phonePayFee===10 && (researchPayment.totalAmount-0)===(researchPayment.monthlyPayment-0)+10)" (click)="getResearchDetails(i, researchPayment.paymentId)">
+                      <td *ngIf="!researchPayment.lateProcess">{{researchPayment.paymentDate}}</td>
+                      <td *ngIf="researchPayment.lateProcess">{{researchPayment.paymentDate}}<span>*</span></td>
+                      <td>{{researchPayment.paymentStatus}}</td>
+                      <td class="text-right">{{researchPayment.totalAmount | currency: 'USD': true}}</td>
+                      <td>{{researchPayment.loanNumber}}</td>
+                      <td>
+                        <p>{{researchPayment.borrowerName}}</p>
+                        <p>{{researchPayment.coBorrowerName}}</p>
+                      </td>
+                      <td class="text-center">
+                        <span class="fa fa-plus" aria-hidden="true"></span>
+                      </td>
+                    </tr>
+                     <ng-container *ngIf="i === expandedIndex">
+                       <tr>
+                         <td colspan="6">
+                          <div class="inner-box">
+                            <div class="row-box">
+                              <div class="label-box">
+                                <label for="">Payor: (<span *ngIf="getResearchPaymentDto?.paymentList[0]?.payorType == 'Borrower'">B</span>
+                                  <span *ngIf="getResearchPaymentDto?.paymentList[0]?.payorType == 'Co-Borrower'">C</span>
+                                  <span *ngIf="getResearchPaymentDto?.paymentList[0]?.payorType == 'Other'">O</span>
+                                  <span *ngIf="getResearchPaymentDto?.paymentList[0]?.payorType == 'Occupant'">N</span>
+                                  )</label> <span>{{getResearchPaymentDto?.paymentList[0]?.payorName}}</span>
+                              </div>
+                              <div class="label-box">
+                                <label for="">Enterd-By:</label> <span>{{getResearchPaymentDto?.paymentList[0]?.enteredBy}}</span>
+                              </div>
+                              <div class="label-box">
+                                <label>Conf #:</label> <span>{{getResearchPaymentDto?.paymentList[0]?.confNum}}</span>
+                              </div>
+                              <div class="label-box">
+                                <label for="">Date Recieved:</label> <span>{{getResearchPaymentDto?.paymentList[0]?.scheduledDate}}</span>
+                              </div>
+                              <div class="label-box"*ngIf="getResearchPaymentDto?.paymentList[0]?.canceledBy" >
+                                <label for="">Canceled By:</label> <span>{{getResearchPaymentDto?.paymentList[0]?.canceledBy}}</span>
+                              </div>
+                            </div>
+                           <div class="row-box">
+                            <div class="label-box">
+                              <label for="">Bank:</label> <span>{{bankingInfo?.bankingInfo?.bankName}}</span>
+                            </div>
+                            <div class="label-box">
+                              <label for="">Routing #:</label> <span>{{getResearchPaymentDto?.paymentList[0]?.routingNumber}}</span>
+                            </div>
+                            <div class="label-box">
+                              <label>Account #:</label> <span> {{getResearchPaymentDto?.paymentList[0]?.accountNumber}} </span>
+                            </div>
+                             <div class="label-box">
+                               <label>Account Type:</label>
+                                  <span *ngIf="getResearchPaymentDto?.paymentList[0]?.accountType == 'C'">Checking</span>
+                                  <span *ngIf="getResearchPaymentDto?.paymentList[0]?.accountType == 'S'">Savings</span>
+                             </div>
+                             <div class="label-box"*ngIf="getResearchPaymentDto?.paymentList[0]?.canceledDate" >
+                               <label for="">Date Canceled:</label> <span>{{getResearchPaymentDto?.paymentList[0]?.canceledDate}}</span>
+                             </div>
+                          </div>
+
+                          <div class="row-box">
+                            <div class="col-sm-3">
+                             <div class="row" *ngFor="let feeDetail of getResearchPaymentDto?.paymentList[0]?.otherFeeList; let i=index">
+                              <div class="col-sm-12 label-box text-right">
+                                <label for="">{{feeDetail.feeName}}:</label> <span class="amt"> {{feeDetail.feeAmount | currency: 'USD': true}} </span>
+                              </div>
+                             </div>
+                             <div class="row">
+                              <div class="col-sm-12 label-box text-right">
+                                <label>Total Payment:</label> <span class="amt"> {{getResearchPaymentDto?.paymentList[0]?.totalPayment | currency: 'USD': true}} </span>
+                              </div>
+                            </div>
+                            </div>
+
+                            <div class="col-sm-4" *ngIf="this.getResearchPaymentDto?.paymentList[0]?.paymentAdvice">
+                              <div class="row">
+                                <div class="col-sm-12 label-box">
+                                  <label for="">Advice Type:</label> <span>{{adviceType}}</span>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-sm-12 label-box">
+                                  <label for="">Advice Notes:</label> <span>{{adviceNote}}</span>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-sm-12 label-box">
+                                  <label for="">Batch Code:</label> <span>{{this.getResearchPaymentDto?.paymentList[0]?.paymentAdvice?.batchCode}}</span>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-sm-12 label-box">
+                                  <label for="">Advice Processed By:</label> <span>{{this.getResearchPaymentDto?.paymentList[0]?.paymentAdvice?.processedBy}}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-sm-4" *ngIf="!this.getResearchPaymentDto?.paymentList[0]?.paymentAdvice">
+                              <div class="row">
+                                <div class="col-sm-12 label-box">
+                                  <span>NO ADVICE</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-sm-4 ml-auto">
+                              <div class="row" *ngIf="getResearchPaymentDto?.paymentList[0]?.canceledDate != null" >
+                                <div class="col-sm-12 label-box">
+                                  <label for="">Print Conf Letter:</label>
+                                  <span *ngIf="this.getResearchPaymentDto?.paymentList[0]?.printConfirmation">Yes</span>
+                                  <span *ngIf="!this.getResearchPaymentDto?.paymentList[0]?.printConfirmation">No</span>
+                                </div>
+                              </div>
+                              <div class="row" *ngIf="getResearchPaymentDto?.paymentList[0]?.canceledDate != null && getResearchPaymentDto?.paymentList[0]?.emails || getResearchPaymentDto?.paymentList[0]?.processedDate != null" >
+                                <div class="col-sm-12 label-box">
+                                  <label for="">Email Conf:</label>
+                                  <div class="text-right">
+                                  <div *ngFor="let email of splitDescription(getResearchPaymentDto?.paymentList[0]?.emails)">
+                                      <span class="amt">
+                                      {{email}} <a href="javascript:"><i (click)="resendEmail(email, getResearchPaymentDto)" class="fa fa-envelope"></i></a>
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                          </div>
+
+                         </div>
+
+                         </td>
+                       </tr>
+
+                    </ng-container>
+                  </ng-container>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

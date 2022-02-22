@@ -1,0 +1,95 @@
+<app-header></app-header>
+<div id="wrapper">
+
+  <!-- Sidebar -->
+  <ul class="sidebar navbar-nav">
+    <!-- <li class="nav-item active">
+      <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+    </li> -->
+    <li class="nav-item active">
+      <form [formGroup]="checkPaymentReqForm">
+        <label for="loanNumber">Loan#&nbsp;</label>
+        <input type="numeric" class="form-control" #loanNum placeholder="Enter 1-10 digit Loan Number." formControlName="loanNumber"
+          value="" (keyup.enter)="getLoanNumber(loanNum.value)" appValidateLoanNumber/>
+      </form>
+    </li>
+    <!-- <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" routerLink="#" id="pageSubmenu" role="button" data-toggle="dropdown"
+        aria-haspopup="true" aria-expanded="false"> -->
+        <!-- <i class="fas fa-users"></i> -->
+        <!-- <span>Maintenance Phonepay Payments</span>
+      </a>
+
+      <ul class="collapse list-unstyled" id="pageSubmenu">
+        <li>
+          <a href="#">Page 1</a>
+        </li>
+        <li>
+          <a href="#">Page 2</a>
+        </li>
+        <li>
+          <a href="#">Page 3</a>
+        </li>
+      </ul>
+    </li> -->
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/app-admin-payment-advice-list" routerLinkActive="active">
+        <!-- <i class="fas fa-user-alt"></i> -->
+        <span>Payment Advice Maintenance</span></a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/app-payments-in-process" routerLinkActive="active">
+        <!-- <i class="fas fa-user-alt"></i> -->
+        <span>Payments in Process</span></a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/app-process-payments" routerLinkActive="active">
+        <!-- <i class="fas fa-user-alt"></i> -->
+        <span>Process Payments</span></a>
+    </li>
+    <!-- <li class="nav-item">
+      <a class="nav-link" routerLink="/app-research-payments" routerLinkActive="active">
+          <i class="fas fa-user-alt"></i> -->
+        <!-- <span>Research Payments</span></a> -->
+    <!-- </li>  -->
+    <li class="nav-item dropdown submenu"> 
+
+      <!-- <a class="nav-link" routerLink="/app-report">
+        <span>Reports</span></a>  -->
+
+      <a class="dropdown-toggle nav-link" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
+        <span>Reports</span>
+      </a>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" routerLink="/app-research-payments" routerLinkActive="active">Research Payments</a>
+        <a class="dropdown-item" routerLink="/app-statistic-details">Retrieving Statistics</a>
+        <a class="dropdown-item" routerLink="/app-statistic-details-by-agent">Statistics by Agent</a>
+        <a class="dropdown-item" routerLink="#">Reports Retrieval</a>
+      </div>
+
+    </li> 
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/app-logout" routerLinkActive="active">
+        <!-- <i class="fas fa-power-off"></i> -->
+        <span>Sign off</span></a>
+    </li>
+  </ul>
+
+  <div id="content-wrapper">
+
+    <div class="container-fluid">
+    </div>
+    <!-- /.content-wrapper -->
+  </div>
+</div>
+<!-- /#wrapper -->
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+  <i class="fas fa-angle-up"></i>
+</a>

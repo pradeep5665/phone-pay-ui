@@ -1,0 +1,128 @@
+<div id="wrapper">
+    <app-header></app-header>
+    <!-- <app-check-request-disabled></app-check-request-disabled> -->
+    <app-check-request></app-check-request>
+    <div id="content-wrapper">
+        <div class="container">
+            <h3 class="pageHeading">{{adviceName}} Payment Advice List</h3>
+            <div class="row"> 
+                <div class="col-sm-6">
+                    <div class="table-responsive bg-white">
+
+                        <!-- Add header Informaion -->
+                        
+                        <div class="listHead" >
+                           
+                            <div class="row">
+                              <div class="col-7 pr-0">
+                                <span class="heading">Total Advices</span>
+                              </div>
+                              <div class="col-2">
+                                <span class="heading">{{adviceType.length}}</span>
+                              </div>
+                              <div class="col-3 pl-0">
+                                <span class="amount">{{totalAmountForAdvice |currency:'USD':true:'1.2-2'}}</span>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-7 pr-0">
+                                <span class="heading">Pending Advices</span>
+                              </div>
+                              <div class="col-2">
+                                <span class="heading">{{pendingCountForAdvice}}</span>
+                              </div>
+                              <div class="col-3 pl-0">
+                                <span class="amount">{{pendingAmountForAdvice |currency:'USD':true:'1.2-2'}}</span>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-7 pr-0">
+                                <span class="heading">Processed Advices</span>
+                              </div>
+                              <div class="col-2">
+                                <span class="heading">{{processedCountForAdvice}}</span>
+                              </div>
+                              <div class="col-3 pl-0">
+                                <span class="amount">{{processedAmountForAdvice |currency:'USD':true:'1.2-2'}}</span>
+                              </div>
+                            </div>
+                            <div class="row" [ngClass]="{'red-text': processRemovedFromBackendForAdvice===false && canceledProcessedBatchCountForAdvice>0,
+                            'green-text': processRemovedFromBackendForAdvice===true && canceledProcessedBatchCountForAdvice>0}">
+                              <div class="col-7 pr-0">
+                                <span class="heading">Canceled in Batch</span>
+                              </div>
+                              <div class="col-2">
+                                <span class="heading">{{canceledProcessedBatchCountForAdvice}}</span>
+                              </div>
+                              <div class="col-3 pl-0">
+                                <span class="amount">{{canceledProcessedBatchAmountForAdvice |currency:'USD':true:'1.2-2'}}</span>
+                              </div>
+                            </div> 
+                          </div>
+
+                        <!-- End header Information -->
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="">Loan Number</th>
+                                    <th class="">Borrower's Last Name</th>
+                                    <th class="">Total Payment</th>
+                                    <th class="">Batch</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let paymentAdviceLoanNum of paymentAdviceList; let i=index"
+                                [ngClass]="{
+                                    'negative' : paymentAdviceLoanNum.paymentAdviceStatus === false && paymentAdviceLoanNum.dateCalcelled === false,
+                                    'positive-canceled': (paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === true),
+                                    'positive' : paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === false}" (click)="getPaymentAdviceDetails(i)">
+                                    <td >{{paymentAdviceLoanNum.loanNumber}}</td>
+                                    <!-- <td *ngIf="paymentAdviceLoanNum.payorType === 'Borrower' || paymentAdviceLoanNum.payorType === 'Other' || paymentAdviceLoanNum.payorType === 'Co-Borrower'" >
+                                        <span *ngIf="paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === true && paymentAdviceLoanNum.removedFromBK===false" style="color: red;">{{paymentAdviceLoanNum.borrowerLastName}}</span>
+
+                                        <span *ngIf="paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === true && paymentAdviceLoanNum.removedFromBK===true" style="color: #119a08;">{{paymentAdviceLoanNum.borrowerLastName}}</span>
+
+                                        <span *ngIf="(paymentAdviceLoanNum.paymentAdviceStatus === false && paymentAdviceLoanNum.dateCalcelled === false) || (paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === false)">{{paymentAdviceLoanNum.borrowerLastName}}</span>
+                                    </td> -->
+                                    <td *ngIf="paymentAdviceLoanNum.payorType === 'Borrower'">
+                                      <span *ngIf="paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === true && paymentAdviceLoanNum.removedFromBK===false" style="color: red;">{{paymentAdviceLoanNum.borrowerLastName}}</span>
+
+                                      <span *ngIf="paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === true && paymentAdviceLoanNum.removedFromBK===true" style="color: #119a08;">{{paymentAdviceLoanNum.borrowerLastName}}</span>
+
+                                      <span *ngIf="(paymentAdviceLoanNum.paymentAdviceStatus === false && paymentAdviceLoanNum.dateCalcelled === false) || (paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === false)">{{paymentAdviceLoanNum.borrowerLastName}}</span>
+                                  </td>
+                                  <td *ngIf="paymentAdviceLoanNum.payorType === 'Other'">
+                                    <span *ngIf="paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === true && paymentAdviceLoanNum.removedFromBK===false" style="color: red;">{{paymentAdviceLoanNum.borrowerLastName}}<span>*</span></span>
+
+                                    <span *ngIf="paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === true && paymentAdviceLoanNum.removedFromBK===true" style="color: #119a08;">{{paymentAdviceLoanNum.borrowerLastName}}<span>*</span></span>
+
+                                    <span *ngIf="(paymentAdviceLoanNum.paymentAdviceStatus === false && paymentAdviceLoanNum.dateCalcelled === false) || (paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === false)">{{paymentAdviceLoanNum.borrowerLastName}}<span>*</span></span>
+                                </td>
+                                <td *ngIf="paymentAdviceLoanNum.payorType ==='Occupant'">
+                                  <span *ngIf="paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === true && paymentAdviceLoanNum.removedFromBK===false" style="color: red;">{{paymentAdviceLoanNum.borrowerLastName}}<span>*</span></span>
+
+                                  <span *ngIf="paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === true && paymentAdviceLoanNum.removedFromBK===true" style="color: #119a08;">{{paymentAdviceLoanNum.borrowerLastName}}<span>*</span></span>
+
+                                  <span *ngIf="(paymentAdviceLoanNum.paymentAdviceStatus === false && paymentAdviceLoanNum.dateCalcelled === false) || (paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === false)">{{paymentAdviceLoanNum.borrowerLastName}}<span>*</span></span>
+                              </td>
+                                  <td  *ngIf="paymentAdviceLoanNum.payorType === 'Co-Borrower'">
+                                      <span *ngIf="paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === true && paymentAdviceLoanNum.removedFromBK===false" style="color: red;">{{paymentAdviceLoanNum.coBorrowerLastName}}</span>
+                                      <span *ngIf="paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === true && paymentAdviceLoanNum.removedFromBK===true" style="color: #119a08;">{{paymentAdviceLoanNum.coBorrowerLastName}}</span>
+                                      <span *ngIf="(paymentAdviceLoanNum.paymentAdviceStatus === false && paymentAdviceLoanNum.dateCalcelled === false) || (paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === false)">{{paymentAdviceLoanNum.coBorrowerLastName}}</span>
+                                    </td>
+                                    <td>{{paymentAdviceLoanNum.totalPayment | currency:'USD':true:'1.2-2'}}</td>
+                                    <td *ngIf="paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === true && paymentAdviceLoanNum.removedFromBK===false" style="color: red;">CANCELED</td>
+                                    <td *ngIf="paymentAdviceLoanNum.paymentAdviceStatus === true && paymentAdviceLoanNum.dateCalcelled === true && paymentAdviceLoanNum.removedFromBK===true" style="color: #119a08;">CANCELED</td>
+                                    <td  *ngIf="paymentAdviceLoanNum.paymentAdviceStatus && paymentAdviceLoanNum.dateCalcelled === false">{{paymentAdviceLoanNum.batchCode}}</td>
+                                    <td  *ngIf="paymentAdviceLoanNum.paymentAdviceStatus== false && paymentAdviceLoanNum.dateCalcelled === false"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-sm-6">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

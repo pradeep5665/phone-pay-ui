@@ -1,0 +1,88 @@
+<app-header></app-header>
+<ul class="sidebar navbar-nav">
+    <!-- <li class="nav-item active">
+      <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+    </li> -->
+    <li class="nav-item active">
+    <form [formGroup]="checkPaymentReqForm">
+      <label for="loanNumber">Loan#&nbsp;</label>
+      <input type = "numeric" class="form-control" #loanNum placeholder="Loan Number" formControlName="loanNumber" value = "" appOnlynumber readonly>
+    </form>
+    </li>
+   
+    
+
+    <li class="nav-item">
+      <a class="nav-link" (click)="goToPaymentAdviceList()" routerLinkActive="active">
+        <span *ngIf="adviceGroup!=''">Payment Advice</span>
+      </a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link" (click)="goToPaymentsInProcess()" routerLinkActive="active">
+        <span>Payments in Process</span></a>
+    </li>
+    
+    <!-- <li class="nav-item">
+      <a class="nav-link" routerLink="#">
+        <span>Pending Payment</span>
+      </a>
+    </li> -->
+
+    <li class="nav-item dropdown submenu"> 
+
+      <!-- <a class="nav-link" routerLink="/app-report">
+        <span>Reports</span></a>  -->
+
+      <a class="dropdown-toggle nav-link" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
+        <span>Reports</span>
+      </a>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" (click)="goToResearchPayments()"  routerLinkActive="active">Research Payments</a>
+        <!-- <a class="dropdown-item" routerLink="/app-statistic-details">Retrieving Statistics</a>
+        <a class="dropdown-item" routerLink="/app-statistic-details-by-agent">Statistics by Agent</a>
+        <a class="dropdown-item" routerLink="#">Reports Retrieval</a> -->
+      </div>
+    </li> 
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/app-logout" routerLinkActive="active">
+        <!-- <i class="fas fa-power-off"></i> -->
+        <span>Sign off</span>
+      </a>
+    </li>
+  </ul>
+
+
+  <div class="modalpop" *ngIf='dialogObj.isDialogBox'>
+    <div class="col s3 back-color-white modalpop-fade">
+    <h6 class="header-color">{{dialogObj.msgHeader}}<a style="float:right" (click)="closeDialogBox()"><i
+        class="fa fa-close hoverPointer"></i></a>
+    </h6>
+    <div *ngIf="schedulePaymentAlertMessageForBatchPayment" class="body" [innerHTML]="dialogObj.msgContent" style="
+    font-weight:bold; color:red"></div>
+    <div *ngIf="!schedulePaymentAlertMessageForBatchPayment" class="body" [innerHTML]="dialogObj.msgContent"></div>
+    <div class="footer">
+      <input *ngIf="scheduleIncompletePaymentAlertMessage" type="button" #myInput
+      class="btn btn-danger mt-3 ml-1" focus (click)="displayPaymentAdviceList()" value="OK" />&nbsp;
+  
+      <input *ngIf="scheduleIncompletePaymentAlertMessageByPaymentsInProcess" type="button" #myInput
+      class="btn btn-danger mt-3 ml-1" focus (click)="displayPaymentInProcess()" value="OK" />&nbsp;
+  
+      <input *ngIf="scheduleIncompletePaymentAlertMessageByResearchPayments" type="button" #myInput
+      class="btn btn-danger mt-3 ml-1" focus (click)="displayResearchPayments()" value="OK" />&nbsp;
+  
+      <input *ngIf="scheduleIncompletePaymentAlertMessage" type="button" class="btn btn-primary mt-3" focus
+      (click)="closeDialogBox()" value="Cancel" />
+  
+      <input *ngIf="scheduleIncompletePaymentAlertMessageByPaymentsInProcess" type="button" class="btn btn-primary mt-3" focus
+      (click)="closeDialogBox()" value="Cancel" />
+   
+      <input *ngIf="scheduleIncompletePaymentAlertMessageByResearchPayments" type="button" class="btn btn-primary mt-3" focus
+      (click)="closeDialogBox()" value="Cancel" />
+    </div>
+    </div>
+  </div>

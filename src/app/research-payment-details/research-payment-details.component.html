@@ -1,0 +1,522 @@
+<div id="wrapper">
+
+  <!-- Sidebar -->
+  <app-check-request-disabled *ngIf="userDetails.authorities !== 'ServicingAdmin'"></app-check-request-disabled>
+  <app-admin-check-request-disabled *ngIf="userDetails.authorities === 'ServicingAdmin'">
+  </app-admin-check-request-disabled>
+  <div id="content-wrapper">
+    <div class="user-information">
+      <div class="col-sm-12">
+        <div class="card card-sec payment-sec">
+          <div class="card-body">
+            <form [formGroup]="researchDetailForm">
+              <div class="col-sm-12">
+                <div class="head-sec row">
+                  <div class="col-md-4">
+                    <h5>Borrower Information</h5>
+                  </div>
+                  <div class="col-md-4">
+                    <p>1 <sup>st</sup> Mortgage:{{getResearchPaymentDto.loanNumbers[0]}}</p>
+                  </div>
+
+                  <div class="col-md-4" >
+                    <p>2 <sup>nd</sup> Mortgage:{{getResearchPaymentDto.loanNumbers[1]}}</p>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-5">
+                    <div class="row form-group">
+                      <label class="col-sm-6">{{getResearchPaymentDto.borrowerName}}</label>
+
+                    </div>
+                    <div class="row form-group">
+                      <label class="col-sm-6">{{getResearchPaymentDto.coBorrowerName}}</label>
+
+                    </div>
+                    <div class="row form-group">
+                      <label class="col-sm-6">{{getResearchPaymentDto?.propertyInfo?.address | uppercase}}</label>
+
+                    </div>
+                    <div class="row form-group">
+                      <label class="col-sm-6">{{getResearchPaymentDto?.propertyInfo?.city | uppercase}}
+                        {{getResearchPaymentDto?.propertyInfo?.state | uppercase}}
+                        {{getResearchPaymentDto?.propertyInfo?.zip}}</label>
+
+                    </div>
+                  </div>
+                  <div class="col-sm-7">
+                    <div class="form-group" formGroupName="myCheckboxGroup">
+                      <div class="row form-group">
+                        <label class="col-sm-5" for="email">Email Confirmation Letter</label>
+                        <div class="col-sm-5">
+                          <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="emailCheckbox" formControlName="emailCheckbox">
+                            <label class="custom-control-label email-width" for="emailCheckbox">
+                              <input type="email" class="form-control ml-4" formControlName="email" id="email" required readonly>
+                            </label>
+                          </div>
+                          <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="emailCheckbox1" formControlName="emailCheckbox1">
+                            <label class="custom-control-label email-width" for="emailCheckbox1">
+                              <input type="email" class="form-control ml-4" formControlName="email1" id="email1" readonly>
+                            </label>
+                          </div>
+                          <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="emailCheckbox2" formControlName="emailCheckbox2">
+                            <label class="custom-control-label email-width" for="emailCheckbox2">
+                              <input type="email" formControlName="email2" class="form-control ml-4" id="email2" readonly>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row form-group">
+                        <label class="col-sm-5" for="email">Print Confirmation Letter</label>
+                        <div class="col-sm-5">
+                          <div class="custom-control custom-checkbox check-sec">
+                            <input type="checkbox" class="custom-control-input" id="printCheckbox3" formControlName="printCheckbox3" readonly>
+                            <label class="custom-control-label email-width" for="printCheckbox3" readonly>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-12">
+                    <div class="head-sec row">
+                      <div class="col-md-5">
+                        <h5>Banking & Payment Information</h5>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="custom-control custom-radio">
+                          <input type="radio" class="custom-control-input" id="customRadio" name="borrInfo" value="borrInfo"
+                          [checked]="getResearchPaymentDto?.paymentList[0]?.bankDetails?.payorType === 'Borrower'" readonly>
+                          <label class="custom-control-label" for="customRadio">
+                            <p>Borrower</p>
+                          </label>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="custom-control custom-radio">
+                          <input type="radio" class="custom-control-input" id="customRadio2" name="borrInfo" value="coBorrInfo"
+                          [checked]="getResearchPaymentDto?.paymentList[0]?.bankDetails?.payorType === 'Co-Borrower'" readonly>
+                          <label class="custom-control-label" for="customRadio2">
+                            <p>Co-Borrower</p>
+                          </label>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="custom-control custom-radio">
+                          <input type="radio" class="custom-control-input" id="customRadio3" name="borrInfo" value="otherBorrInfo"
+                          [checked]="getResearchPaymentDto?.paymentList[0]?.bankDetails?.payorType === 'Other'" readonly>
+                          <label class="custom-control-label" for="customRadio3">
+                            <p>Other</p>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="current-payment-information">
+                      <div class="row form-group">
+                        <label class="col-sm-2" for="payor_name">Payor</label>
+                        <div class="col-sm-4">
+                          <input type="text" class="form-control" formControlName="payorName" id="payorName" value="{{getResearchPaymentDto?.paymentList[0]?.bankDetails?.payorName}}" readonly>
+                        </div>
+                        <label class="col-sm-2" for="entered_by">Entered By</label>
+                        <div class="col-sm-4">
+                          <input type="text" class="form-control" formControlName="enteredBy" id="entered_by" value="{{getResearchPaymentDto?.paymentList[0]?.bankDetails?.enteredBy}}" readonly>
+                        </div>
+                      </div>
+                      <div class="row form-group">
+                        <label class="col-sm-2" for="payor_address">Address</label>
+                        <div class="col-sm-4">
+                          <input type="text" class="form-control" formControlName="payorAddress" value="{{getResearchPaymentDto?.paymentList[0]?.bankDetails?.payorAddress}}" id="payor_address" readonly>
+                        </div>
+                        <label class="col-sm-2" for="bank">Bank</label>
+                        <div class="col-sm-4">
+                          <div>
+                            <input type="text" class="form-control" id="bank" value="{{bankingInfo?.bankingInfo?.bankName}}" readonly>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row form-group">
+                        <label class="col-sm-2" for="routing">Routing #</label>
+                        <div class="col-sm-4">
+                          <input type="text" class="form-control" #routingnum id="routingNum" value="{{getResearchPaymentDto?.paymentList[0]?.bankDetails?.routingNumber}}" formControlName="routingNumber" readonly>
+                        </div>
+                        <label class="col-sm-2" for="addr">Bank Address</label>
+                        <div class="col-sm-4">
+                          <div *ngIf="bankingInfo">
+                            <input type="text" class="form-control" value="{{bankingInfo?.bankingInfo?.bankAddress}}" id="addr" readonly>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row form-group">
+                        <label class="col-sm-2" for="accountNum">Account #</label>
+                        <div class="col-sm-4">
+                          <input type="text" class="form-control" #accountnum formControlName="accountNumber" value="{{getResearchPaymentDto?.paymentList[0]?.bankDetails?.accountNumber}}" readonly>
+                        </div>
+                        <label class="col-sm-2" for="bank_city">City</label>
+                        <div class="col-sm-4">
+                          <div *ngIf="bankingInfo">
+                            <input type="text" class="form-control" id="bank_city" value="{{bankingInfo?.bankingInfo?.bankCity}}" readonly>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row form-group">
+                        <label class="col-sm-2" for="telephone">Telephone #</label>
+                        <div class="col-sm-4">
+                          <input type="text" class="form-control" mask='000-000-0000' value="{{getResearchPaymentDto?.paymentList[0]?.bankDetails?.payorPhone}}" readonly  id="telephone">
+                        </div>
+                        <label class="col-sm-2" for="nbsp"></label>
+                        <div class="col-sm-4">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="">
+                      <div class="row">
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-4">
+                          <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="customCheckLoan" name="example1" formControlName="checkBoxValue" readonly>
+                            <label class="custom-control-label" for="customCheckLoan">&nbsp; &nbsp; &nbsp; {{getResearchPaymentDto?.loanNumbers[0]}}
+                              </label>
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-4">
+                          <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="customCheckLoan1" name="example2" formControlName="checkBoxValue2" readonly>
+                            <label class="custom-control-label" for="customCheckLoan1">&nbsp; &nbsp; &nbsp; {{getResearchPaymentDto?.loanNumbers[1]}}
+                             </label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row form-group current-payment-information">
+                        <label class="col-sm-2">Payment Amount:</label>
+                        <div class="col-sm-4">
+                            <div class="input-group">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text"><b>{{regPayment1 | currency: 'USD': true}}</b></span>
+                              </div>
+                            <input type="number" class="form-control" id="regpayment1" formControlName="monthlyPayment1" readonly>
+                            <span class="fa fa-pen"></span>
+                          </div>
+                        </div>
+                        <label class="col-sm-2">Payment Amount:</label>
+                        <div class="col-sm-4" *ngIf="firstDigitOfLoanNumber === 9">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text">{{regPayment2 | currency: 'USD': true}}</span>
+                                </div>
+                          <input type="number" class="form-control" id="regpayment2" formControlName="monthlyPayment2" readonly>
+                          <span class="fa fa-pen"></span>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="row form-group current-payment-information">
+                        <label class="col-sm-2">Additional Principal:</label>
+                        <div class="col-sm-4">
+                          <input type="number" class="form-control" value="" id="addAmount1" formControlName="addAmount1" readonly>
+                        </div>
+                        <label class="col-sm-2">Additional Principal:</label>
+                        <div class="col-sm-4">
+                          <input type="number" class="form-control" value="" id="addAmount2" formControlName="addAmount2" readonly>
+                        </div>
+                      </div>
+
+                      <div class="row form-group current-payment-information">
+                        <label class="col-sm-2">Additional Escrow:</label>
+                        <div class="col-sm-4">
+                          <input type="number" class="form-control" value="" id="addEscrow1" formControlName="addEscrow1" readonly>
+                        </div>
+                      </div>
+
+                      <div class="row form-group current-payment-information">
+                        <label class="col-sm-2">NSF: </label>
+                        <div class="col-sm-4">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text"><b>{{nsfFirst | currency: 'USD': true}}</b></span>
+                                </div>
+                          <input type="number" class="form-control" id="nsf1" formControlName="nsf1" readonly>
+                            </div>
+                        </div>
+
+                        <label class="col-sm-2" >NSF: </label>
+                        <div class="col-sm-4">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text"><b>{{nsfSecond | currency: 'USD': true}}</b></span>
+                                </div>
+                              <input type="number" class="form-control" formControlName="nsf2" readonly>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="row form-group current-payment-information">
+                        <label class="col-sm-2">Late Charge:</label>
+                        <div class="col-sm-4">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text"><b>{{lateFee1 | currency: 'USD': true}}</b></span>
+                                </div>
+                          <input type="number" class="form-control" formControlName="latecharge1" readonly>
+                            </div>
+                        </div>
+
+                        <label class="col-sm-2">Late Charge:</label>
+                        <div class="col-sm-4">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text">{{lateFee2 | currency: 'USD': true}}</span>
+                                </div>
+                          <input type="number" class="form-control" formControlName="latecharge2" readonly>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="row form-group current-payment-information">
+                        <label class="col-sm-2">Additional items:</label>
+                        <div class="col-sm-4">
+                          <select class="form-control" formControlName="feeValue" #feeSumValue name="feeValue">
+                            <option value='0'>--Select Additional Items--</option>
+                            <option *ngFor="let feeSum of feeSummary">{{feeSum.feeName}}</option>
+                          </select>
+                        </div>
+                        <label class="col-sm-2">Additional items:</label>
+                        <div class="col-sm-4">
+                          <select class="form-control" formControlName="feeValue1" name="feeValue1">
+                            <option value='0'>--Select Additional Items--</option>
+                            <option *ngFor="let feeSum of feeSummary">{{feeSum.feeName}}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row form-group current-payment-information">
+                        <div class="col-sm-6" formArrayName="otherFeeList">
+                          <div class="row form-group current-payment-information"
+                            *ngFor="let item of researchDetailForm.get('otherFeeList')['controls']; let i = index;"
+                            [formGroupName]="i">
+                            <label class="col-sm-4">{{item.controls.feeName.value}}</label>
+                            <div class="col-sm-8">
+                              <input type="numeric" class="form-control" #feeSumAmount
+                                (blur)="!updateFeeForFirstLoan ? getFeeAmountForFirstLoan(i): null"
+                                formControlName="feeAmount" appAutofocus readonly>
+                              <span class="fa fa-window-close" aria-hidden="true" (click)="delInput(i)"></span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-sm-6" formArrayName="otherFeeList1">
+                          <div class="row form-group current-payment-information"
+                            *ngFor="let item of researchDetailForm.get('otherFeeList1')['controls']; let i=index"
+                            [formGroupName]="i">
+                            <label class="col-sm-4">{{item.controls.feeName.value}}:</label>
+                            <div class="col-sm-8">
+                              <input type="numeric" class="form-control" #feeSumAmount1
+                                (blur)="!updateFeeForSecondLoan ? getFeeAmountForSecondLoan(i): null"
+                                formControlName="feeAmount1" appAutofocus readonly>
+                              <span class="fa fa-window-close" aria-hidden="true"
+                                (click)="delInputForSecondLoan(i)"></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row form-group current-payment-information">
+                        <div class="col-sm-6">
+                         <div class="row form-group current-payment-information">
+                          <div class="col-sm-4">
+                            <label *ngIf="getResearchPaymentDto.paymentList.length">Advices:</label>
+                          </div>
+                          <div class="col-md-8">
+                            <div class="row-md-8" *ngIf="!isStopFileForFirstLoan">
+                              <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" id="manual" name="stopFile"
+                                (change)="stopFileInfo($event, 'Cashiering')"
+                                [disabled]="!isLoanInfoFirstChecked"
+                                [checked]="(isAdviceTypeClicked && paymentAdviceValue === 'Cashiering' && isOtherFeesSelected) ||(this.getResearchPaymentDto.paymentList.length && firstDigitOfLoanNumber!==9 &&  this.getResearchPaymentDto.paymentList[0].paymentAdvice && this.getResearchPaymentDto.paymentList[0].paymentAdvice.adviceId === 1) ? 'checked' : null" value="manual">
+                                <label class="custom-control-label" for="manual">
+                                  <p>Cashiering</p>
+                                </label>
+                              </div>
+                            </div>
+                            <div class="row-md-8" *ngIf="(isStopFileForFirstLoan) && researchDetailForm.get('checkBoxValue2').value === 'true'">
+                              <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" id="collection" name="stopFile"
+                                (change)="stopFileInfo($event, 'Collections')"
+                                [disabled]="!isLoanInfoFirstChecked"
+                                [checked]="(this.getResearchPaymentDto.paymentList.length && firstDigitOfLoanNumber!==9 &&  this.getResearchPaymentDto.paymentList[0].paymentAdvice && this.getResearchPaymentDto.paymentList[0].paymentAdvice.adviceId === 3) ? 'checked' : null"
+                                value="collection">
+                                <label class="custom-control-label" for="collection">
+                                <p>Collections</p>
+                                </label>
+                              </div>
+                            </div>
+                            <div class="row-md-8" *ngIf="(isStopFileForFirstLoan) && researchDetailForm.get('checkBoxValue2').value === 'true'">
+                              <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" id="lossMit" name="stopFile"
+                                (change)="stopFileInfo($event, 'Loss Mit')"
+                                [disabled]="!isLoanInfoFirstChecked"
+                                [checked]="(this.getResearchPaymentDto.paymentList.length && firstDigitOfLoanNumber!==9 &&  this.getResearchPaymentDto.paymentList[0].paymentAdvice && this.getResearchPaymentDto.paymentList[0].paymentAdvice.adviceId === 4) ? 'checked' : null"
+                                value="lossMit">
+                                <label class="custom-control-label" for="lossMit">
+                                  <p>Loss Mit</p>
+                                </label>
+                              </div>
+                            </div>
+                            <div class="row-md-8" *ngIf="(isStopFileForFirstLoan) && researchDetailForm.get('checkBoxValue').value === 'true'">
+                              <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" id="bankRuptcy" name="stopFile"
+                                (change)="stopFileInfo($event, 'Bankruptcy')"
+                                [disabled]="!isLoanInfoFirstChecked"
+                                [checked]="(this.getResearchPaymentDto.paymentList.length && firstDigitOfLoanNumber!==9 &&  this.getResearchPaymentDto.paymentList[0].paymentAdvice && this.getResearchPaymentDto.paymentList[0].paymentAdvice.adviceId === 2) ? 'checked' : null"
+                                value="bankRuptcy">
+                                <label class="custom-control-label" for="bankRuptcy">
+                                  <p>Bankruptcy</p>
+                                </label>
+                              </div>
+                            </div>
+                            <div class="row-md-8" *ngIf="!isStopFileForFirstLoan">
+                              <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" id="clearAdvice"
+                                (change)="stopFileInfo($event, 'clearAdvice')" [disabled]="!isLoanInfoFirstChecked"
+                                name="stopFile" value="clearAdvice">
+                                <label class="custom-control-label" for="clearAdvice">
+                                  <p>Clear advice</p>
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                        <div class="col-sm-6">
+                         <div class="row form-group current-payment-information">
+                          <div class="col-sm-4">
+                            <label *ngIf="getResearchPaymentDto.paymentList.length">Advices:</label>
+                          </div>
+                          <div class="col-md-8">
+                            <div class="row-md-8" *ngIf="!isStopFileForSecondLoan">
+                              <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" id="manual1" name="stopFile1"
+                                (change)="stopFileInfoForSecondLoan($event, 'Cashiering')"
+                                [disabled]="!isLoanInfoSecondChecked"
+                                [checked]="(isAdviceTypeClicked1 && paymentAdviceValue1 === 'Cashiering' && isOtherFeesSelected1) ||(this.getResearchPaymentDto.paymentList.length && firstDigitOfLoanNumber===9 &&  this.getResearchPaymentDto.paymentList[0].paymentAdvice && this.getResearchPaymentDto.paymentList[0].paymentAdvice.adviceId === 1) ? 'checked' : null"
+                                value="manual1">
+                                <label class="custom-control-label" for="manual1">
+                                  <p>Cashiering</p>
+                                </label>
+                              </div>
+                            </div>
+                            <div class="row-md-8" *ngIf="(isStopFileForSecondLoan)">
+                              <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" id="collection1" name="stopFile1"
+                                (change)="stopFileInfoForSecondLoan($event, 'Collections')"
+                                [disabled]="!isLoanInfoSecondChecked"
+                                [checked]="(this.getResearchPaymentDto.paymentList.length && firstDigitOfLoanNumber===9 &&  this.getResearchPaymentDto.paymentList[0].paymentAdvice && this.getResearchPaymentDto.paymentList[0].paymentAdvice.adviceId === 3) ? 'checked' : null"
+                                value="collection1">
+                                <label class="custom-control-label" for="collection1">
+                                  <p>Collections</p>
+                                </label>
+                              </div>
+                            </div>
+                            <div class="row-md-8" *ngIf="(isStopFileForSecondLoan)">
+                              <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" id="lossMit1" name="stopFile1"
+                                (change)="stopFileInfoForSecondLoan($event, 'Loss Mit')"
+                                [disabled]="!isLoanInfoSecondChecked"
+                                [checked]="(this.getResearchPaymentDto.paymentList.length && firstDigitOfLoanNumber===9 &&  this.getResearchPaymentDto.paymentList[0].paymentAdvice && this.getResearchPaymentDto.paymentList[0].paymentAdvice.adviceId === 4) ? 'checked' : null"
+                                value="lossMit1">
+                                <label class="custom-control-label" for="lossMit1">
+                                  <p>Loss Mit</p>
+                                </label>
+                              </div>
+                            </div>
+                            <div class="row-md-8">
+                              <div class="custom-control custom-radio" *ngIf="(isStopFileForSecondLoan)">
+                                <input type="radio" class="custom-control-input" id="bankRuptcy1" name="stopFile1"
+                                (change)="stopFileInfoForSecondLoan($event, 'Bankruptcy')"
+                                [disabled]="!isLoanInfoSecondChecked"
+                                [checked]="(this.getResearchPaymentDto.paymentList.length && firstDigitOfLoanNumber===9 &&  this.getResearchPaymentDto.paymentList[0].paymentAdvice && this.getResearchPaymentDto.paymentList[0].paymentAdvice.adviceId === 2) ? 'checked' : null"
+                                value="bankRuptcy1">
+                                <label class="custom-control-label" for="bankRuptcy1">
+                                  <p>Bankruptcy</p>
+                                </label>
+                              </div>
+                            </div>
+                            <div class="row-md-8" *ngIf="!isStopFileForSecondLoan">
+                              <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" id="clearAdvice1"
+                                (change)="stopFileInfoForSecondLoan($event, 'clearAdvice')" [disabled]="!isLoanInfoSecondChecked"
+                                name="stopFile1" value="clearAdvice1">
+                                <label class="custom-control-label" for="clearAdvice1">
+                                  <p>Clear advice</p>
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      </div>
+                    <div class="row form-group current-payment-information">
+                      <div class="col-sm-6">
+                        <div class="row form-group current-payment-information" *ngIf="isAdviceTypeClicked">
+                          <label class="col-sm-4">Processing Notes:</label>
+                          <div class="col-sm-8">
+                            <input type="textarea" class="form-control" value="" id="processingNotes" formControlName="paymentAdviceNote">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-sm-6">
+                        <div class="row form-group current-payment-information" *ngIf="isAdviceTypeClicked">
+                          <label class="col-sm-4">Processing Notes:</label>
+                          <div class="col-sm-8">
+                            <input type="textarea" class="form-control" value="" id="processingNotes1" formControlName="paymentAdviceNote1">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="head-sec row">
+                      <div class="col-md-12">
+                        <h5 class="w-100">Current Transaction </h5>
+                      </div>
+                    </div>
+                    <div class="">
+                      <div class="row form-group current-payment-information">
+                        <label class="col-sm-2">PhonePay Service Fee:</label>
+                        <div class="col-sm-4">
+                          <input type="numeric" class="form-control" formControlName="serviceFee" value = {{phonePayServicefee}} readonly>
+                        </div>
+                        <label class="col-sm-2">Amount:</label>
+                        <div class="col-sm-4">
+                          <input type="numeric" style="border-bottom: none !important;" class="form-control" value=""
+                            formControlName="totalAmount" readonly />
+                        </div>
+                      </div>
+                      <div class="row form-group current-payment-information">
+                        <label class="col-sm-2">Date:</label>
+                        <div class="col-sm-4">
+                          <input type="datetime" class="form-control" value="" id="scheduledate"  formControlName="date" readonly />
+                        </div>
+                        <div class="col-sm-6">
+                          &nbsp;
+                        </div>
+                      </div>
+                      <div class="row form-group current-payment-information">
+                        &nbsp;
+                      </div>
+                    </div>
+                    <div class="col-md-12 text-center mb-4 ">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          </div>
+        </div>
+
+        <app-footer></app-footer>
+
+      </div>
+    </div>
+   </div>

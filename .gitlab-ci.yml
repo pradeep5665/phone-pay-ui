@@ -1,0 +1,86 @@
+---
+stages:
+  - build
+  - deploy
+
+variables:
+  ARTIFACTS_PATH: "/home/gitlab-runner/builds/f08a0bd1/0/internal/phone-pay-ui/resources"
+  DEV_ARTIFACTS_PATH: "$ARTIFACTS_PATH/phone-pay-ui-dev.tgz"
+  TEST_ARTIFACTS_PATH: "$ARTIFACTS_PATH/phone-pay-ui-test.tgz"
+  PROD_ARTIFACTS_PATH: "$ARTIFACTS_PATH/phone-pay-ui-prod.tgz"
+
+# Build for Nebo
+build-dev:
+  stage: build
+  script:
+    - npm install --silent
+    - rm -rf node_modules/@angular-devkit/build-angular/node_modules/uglify*
+    - ng build --configuration=dev
+    - tar cfz $DEV_ARTIFACTS_PATH -C resources/dev .
+  artifacts:
+    paths:
+      - $DEV_ARTIFACTS_PATH
+  only:
+    - development
+
+# Build for uhctest
+build-test:
+  stage: build
+  script:
+    - npm install --silent
+    - rm -rf node_modules/@angular-devkit/build-angular/node_modules/uglify*
+    - ng build --configuration=test
+    - tar cfz $TEST_ARTIFACTS_PATH -C resources/test .
+  artifacts:
+    paths:
+      - $TEST_ARTIFACTS_PATH
+  only:
+      - test
+
+# Build for phone-pay-ui
+build-prod:
+  stage: build
+  script:
+    - npm install --silent
+    - rm -rf node_modules/@angular-devkit/build-angular/node_modules/uglify*
+    - ng build --prod
+    - tar cfz $PROD_ARTIFACTS_PATH -C resources/prod .
+  artifacts:
+    paths:
+      - $PROD_ARTIFACTS_PATH
+  only:
+      - master
+
+
+# Deploy to nebo
+deploy-dev:
+  stage: deploy
+  script:
+    - echo "Deploying to dev (nebo)"
+    - ssh nebo 'mkdir -p /home/gitlab-runner/deploy/phone-pay-ui'
+    - scp $DEV_ARTIFACTS_PATH nebo:/home/gitlab-runner/deploy/phone-pay-ui
+    - ansible-playbook deploy.yml -e "target=udev"
+  only:
+    - development
+
+# Deploy to uhctest
+deploy-staging:
+  stage: deploy
+  script:
+    - echo "Deploying to staging (uhctest)"
+    - ssh uhctest 'mkdir -p /home/gitlab-runner/deploy/phone-pay-ui'
+    - scp $TEST_ARTIFACTS_PATH uhctest:/home/gitlab-runner/deploy/phone-pay-ui
+    - ansible-playbook deploy.yml -e "target=ustaging"
+  only:
+    - test
+
+# Deploy to production (phone-pay-ui)
+deploy-prod:
+  stage: deploy
+  script:
+    - echo "Deploying to production (phone-pay-ui)"
+    - ssh phone-pay-ui 'mkdir -p /home/gitlab-runner/deploy/phone-pay-ui'
+    - scp $PROD_ARTIFACTS_PATH phone-pay-ui:/home/gitlab-runner/deploy/phone-pay-ui
+    - ansible-playbook deploy.yml -e "target=uprod"
+  only:
+    - master

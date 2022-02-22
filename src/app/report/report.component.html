@@ -1,0 +1,24 @@
+<div id="wrapper">
+  <app-header></app-header>
+  <app-check-request-disabled *ngIf="userDetails.authorities !== 'ServicingAdmin'"></app-check-request-disabled>
+  <app-admin-check-request-disabled *ngIf="userDetails.authorities === 'ServicingAdmin'">
+  </app-admin-check-request-disabled>
+  <div id="content-wrapper">
+    <div class="col">
+      <div class="row-md-4">
+        <a routerLink="/app-research-payments" routerLinkActive="active">
+          <h3><span font-color="black">Research Payments</span></h3>
+        </a>
+      </div>
+      <div class="row-md-4">
+        <a routerLink="/app-statistic-details" routerLinkActive="active">
+          <h3><span font-color="black">Retrieving Statistics</span></h3>
+        </a>
+      </div>
+      <div class="row-md-4">
+        <a routerLink="#" routerLinkActive="active">
+          <h3><span color="black">Reports Retrieval</span></h3>
+        </a>
+      </div>
+    </div>
+  </div>
